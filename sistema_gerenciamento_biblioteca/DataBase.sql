@@ -1,0 +1,72 @@
+CREATE DATABASE IF NOT EXISTS biblioteca;
+
+USE biblioteca;
+
+CREATE TABLE IF NOT EXISTS genre(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE
+    );
+    
+CREATE TABLE IF NOT EXISTS author(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE
+    );
+
+CREATE TABLE IF NOT EXISTS publisher(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS book(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_publisher INT NOT NULL,
+    isbn varchar(13) NOT NULL UNIQUE,
+    title varchar(50) NOT NULL,
+    year_publication YEAR NOT NULL,
+    quantity int NOT NULL,
+    
+    CONSTRAINT FK_BOOKS_PUBLISHER FOREIGN KEY (id_publisher ) REFERENCES publisher(id)
+    );
+    
+CREATE TABLE IF NOT EXISTS authors_books(
+     id INT AUTO_INCREMENT PRIMARY KEY,
+    id_books INT NOT NULL,
+    id_author INT NOT NULL,
+    
+    CONSTRAINT FK_AUTHORSBOOKS_BOOK FOREIGN KEY (id_books) REFERENCES book(id),
+    CONSTRAINT FK_AUTHORSBOOKS_AUTHOR FOREIGN KEY (id_author) REFERENCES author(id)
+    );
+    
+CREATE TABLE IF NOT EXISTS genres_books(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_books INT NOT NULL,
+    id_genre INT NOT NULL,
+    
+    CONSTRAINT FK_GENDERSBOOKS_BOOK FOREIGN KEY (id_books) REFERENCES book(id),
+    CONSTRAINT FK_GENDERSBOOKS_GENDER FOREIGN KEY (id_genre) REFERENCES genre(id)
+    );
+    
+CREATE TABLE IF NOT EXISTS student(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    number_registration VARCHAR(10) NOT NULL UNIQUE,
+    name VARCHAR(50) NOT NULL,
+    borrowed_books INT  NOT NULL,
+    DEBITS FLOAT(4,2)
+    );
+    
+CREATE TABLE IF NOT EXISTS loan(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_student INT NOT NULL,
+    date_init DATE NOT NULL,
+    date_end DATE NOT NULL,
+    status VARCHAR(10) NOT NULL,
+    CONSTRAINT FK_LOAN_STUDENT FOREIGN KEY (id_student) REFERENCES student(id)
+    );
+
+CREATE TABLE IF NOT EXISTS borrowed_books(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_loan INT NOT NULL,
+    id_book INT NOT NULL,
+    CONSTRAINT FK_BORROWEDBOOKS_LOAN FOREIGN KEY (id_loan) REFERENCES loan(id),
+    CONSTRAINT FK_BORROWEDBOOKS_BOOKS FOREIGN KEY (id_book) REFERENCES book(id)
+    );
