@@ -67,8 +67,20 @@ public class Loan {
 	public List<Book> getListBooks() {
 		return listBooks;
 	}
-
+	
 	public void setListBooks(List<Book> listBooks) {
 		this.listBooks = listBooks;
+	}
+	
+	public void addListBooks(Book book) {
+		listBooks.add(book);
+	}
+	
+	public void removeBook(String isbn) {
+		for (Book book: listBooks) {
+			if(book.getIsbn().equals(isbn)) {
+				listBooks.remove(book);
+			}
+		}
 	}
 }

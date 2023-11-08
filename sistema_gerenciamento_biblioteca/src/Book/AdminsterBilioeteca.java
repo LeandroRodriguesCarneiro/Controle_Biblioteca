@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.time.Year;
 import java.time.DateTimeException;
+import java.time.LocalDate;
 
 import Author.Author;
 import Author.AuthorDAO;
@@ -563,12 +564,18 @@ public class AdminsterBilioeteca {
 			System.out.println("Digite o Numero de matricula: ");
 			numberRegistration = in.nextLong();
 			StudentDAO studentDAO = new StudentDAO();
-			List<Student> listStudent = studentDAO.selectStudentByNumerRegistration(numberRegistration);
-			for(Student student: listStudent) {
-				System.out.println("id: "+student.getId());
-				System.out.println("nome: "+student.getName());
-				System.out.println("numero de matricula: "+student.getNumberRegistration());
-				System.out.println("debitos: "+student.getDebits());
+			Student student =  studentDAO.selectStudentByNumerRegistration(numberRegistration).get(0);
+			System.out.println("id: "+student.getId());
+			System.out.println("nome: "+student.getName());
+			System.out.println("numero de matricula: "+student.getNumberRegistration());
+			System.out.println("debitos: "+student.getDebits());
+			int option = 0;
+			if(student.getDebits() > 0) {
+				System.out.println("Deseja quitar a divida digite 1 para sim e 0 para nao: ");
+				option = in.nextInt();
+				if(option == 1) {
+					quitarDivida(in,student.getId(),student.getDebits());
+				}
 			}
 		}
 		public void alterarAlunos(Scanner in) {
@@ -595,31 +602,41 @@ public class AdminsterBilioeteca {
 				studentDAO.deleteStudent(id);
 			}
 		}
+		public void quitarDivida(Scanner in, int idStudent, float debits) {
+		    in.nextLine();
+		    float pay = 0; // Inicializa com 0
+
+		    StudentDAO studentDAO = new StudentDAO();
+		    System.out.println("O aluno deve " + debits + ": ");
+	        pay = in.nextFloat();
+	        if (pay > 0) {
+	            if (pay >= debits) {
+	                studentDAO.payDebits(idStudent, debits);
+	                System.out.println("Dívida quitada. Troco: " + (pay - debits));
+	            } else {
+	                studentDAO.payDebits(idStudent, pay);
+	                System.out.println("O pagamento não é suficiente para quitar a dívida. A dívida é de: " + (debits - pay));
+	            }
+	        } else {
+	            System.out.println("O pagamento deve ser maior que zero.");
+	        }
+		}
 		
 		public void menuEmprestimos(Scanner in) {
 				int option;
 				do {
 					System.out.println("Digite: \n\t"
 							+ "1 para realizar novos emprestimos\n\t"
-							+ "2 para quitar dividas\n\t"
-							+ "3 para consultar novos emprestimos \n\t"
+							+ "2 para consultar emprestimos \n\t"
 							+ "0 para sair\n");
 					option = in.nextInt();
 					switch(option) {
 					case 1:{
-						adicionarAlunos(in);
+						realizarEmprestimos(in);
 						break;
 					}
 					case 2:{
 						consultarAlunos(in);
-						break;
-					}
-					case 3:{
-						alterarAlunos(in);
-						break;
-					}
-					case 4:{
-						deletarAlunos(in);
 						break;
 					}
 					}
@@ -631,7 +648,7 @@ public class AdminsterBilioeteca {
 			long numberRegistration;
 			int option;
 			do {
-				System.out.println("Digite o nunmero de matricula: ");
+				System.out.println("Digite o numero de matricula: ");
 				numberRegistration = in.nextLong();
 				System.out.println("Digite 1 para confirmar ou 0 para digitar novamente");
 				option = in.nextInt();
@@ -639,37 +656,58 @@ public class AdminsterBilioeteca {
 			}while(option != 1);
 			StudentDAO studentDAO = new StudentDAO();
 			List<Student> listStudent = studentDAO.selectStudentByNumerRegistration(numberRegistration);
-			int idStudent;
-			for (Student student: listStudent) {
-				idStudent = student.getId();
-				if(student.getDebits() > 0) {
-					quitarDivida(in,idStudent,student.getDebits());
-				}
-				if(student.getBorrowedBooks() <= 3) {
-					LoanDAO loanDAO = new LoanDAO();
-					
-					
+			Student student = listStudent.get(0);
+			option = 0;
+			if(student.getDebits() > 0) {
+				System.out.println("Deseja quitar a divida digite 1 para sim e 0 para nao: ");
+				option = in.nextInt();
+				if(option == 1) {
+					quitarDivida(in,student.getId(),student.getDebits());
+				}else {
+					System.out.println("Nao sera possivel realizar emprestimos ate quitar a divida");
+					return;
 				}
 			}
+			if(student.getBorrowedBooks() >= 1) {
+				LoanDAO loanDAO = new LoanDAO();
+				Loan loan = loanDAO.selectLoanBooks(student.getId()).get(0);
+				if (LocalDate.now().isAfter(loan.getDateEnd())) {
+					System.out.println("O emprestimo esta atrasado ");
+					// nao deixar emprestar livro  e calcular a multa
+					return;
+				}
+			}
+			BookDAO bookDAO = new BookDAO();
+			option = 0;
+			String isbn;
+			List<Book> listBooks = new ArrayList<>();
+			do {
+				System.out.println("Digite o ISBN do livro sem tracos: ");
+				isbn = in.nextLine();
+				System.out.println("Digite 1 para confirmar o livro ou 0 para digitar novamente: ");
+				option = in.nextInt();
+				if(option == 1) {
+					listBooks.add(bookDAO.selectBooksByISBN(isbn).get(0));
+					option = 0;
+				}
+				System.out.println("Digite 0 para adicionar outro livro ou digite 1 para ir para o proximo passo: ");
+				option = in.nextInt();
+				in.nextLine();
+			}while(option != 1);
+			LoanDAO loanDAO = new LoanDAO();
+			int days;
+			LocalDate endDate = null;
+			do {
+				System.out.println("Digite quantos dias deseja emprestar o livro no minimo 1 e no maximo 15: ");
+				days = in.nextInt();
+				if(1>=days && days<=15) {
+					endDate = LocalDate.now().plusDays(days);
+				}
+			}while(1>=days && days<=15);
+			loanDAO.insertLoan(student.getId(), LocalDate.now(), endDate, "Emprestimo", listBooks);
 		}
-		public void quitarDivida(Scanner in, int idStudent, float debits) {
-			in.nextLine();
-			float pay;
-			StudentDAO studentDAO = new StudentDAO();
-			System.out.println("O aluno deve "+debits+": ");
-			pay = in.nextFloat();
-			if (pay > 0) {
-		        if (pay >= debits) {
-		            studentDAO.payDebits(idStudent, debits);
-		            System.out.println("Dívida quitada. Troco: " + (pay - debits));
-		        } else {
-		        	studentDAO.payDebits(idStudent, pay);
-		            System.out.println("O pagamento não é suficiente para quitar a dívida. a divida e de: "+(debits-pay));
-		        }
-		    } else {
-		        System.out.println("O pagamento deve ser maior que zero.");
-		    }
+		
+		
 
-		}
 		
 	}
