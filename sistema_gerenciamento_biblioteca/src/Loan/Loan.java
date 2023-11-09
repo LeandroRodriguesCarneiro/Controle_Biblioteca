@@ -1,6 +1,6 @@
 package Loan;
 
-import Book.Book;
+import Book.BooksBorrowed;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -12,9 +12,9 @@ public class Loan {
 	private LocalDate dateInit;
 	private LocalDate dateEnd;
 	private String status = new String();
-	private List<Book> listBooks = new ArrayList<>(); 
+	private List<BooksBorrowed> listBooks = new ArrayList<>(); 
 	
-	public Loan(int id, int idStudent, LocalDate dateInit, LocalDate dateEnd, String status, List<Book> listBooks) {
+	public Loan(int id, int idStudent, LocalDate dateInit, LocalDate dateEnd, String status, List<BooksBorrowed> listBooks) {
 		listBooks.clear();
 		this.id = id;
 		this.idStudent = idStudent;
@@ -64,20 +64,20 @@ public class Loan {
 		this.status = status;
 	}
 
-	public List<Book> getListBooks() {
+	public List<BooksBorrowed> getListBooks() {
 		return listBooks;
 	}
 	
-	public void setListBooks(List<Book> listBooks) {
+	public void setListBooks(List<BooksBorrowed> listBooks) {
 		this.listBooks = listBooks;
 	}
 	
-	public void addListBooks(Book book) {
+	public void addListBooks(BooksBorrowed book) {
 		listBooks.add(book);
 	}
 	
 	public void removeBook(String isbn) {
-		for (Book book: listBooks) {
+		for (BooksBorrowed book: listBooks) {
 			if(book.getIsbn().equals(isbn)) {
 				listBooks.remove(book);
 			}

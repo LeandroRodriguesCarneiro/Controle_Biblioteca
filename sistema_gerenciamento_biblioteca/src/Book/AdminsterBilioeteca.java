@@ -6,6 +6,7 @@ import java.util.Scanner;
 import java.time.Year;
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 import Author.Author;
 import Author.AuthorDAO;
@@ -602,6 +603,11 @@ public class AdminsterBilioeteca {
 				studentDAO.deleteStudent(id);
 			}
 		}
+		public void calcularMulta(int idStudent, Loan loan) {
+			StudentDAO studentDAO = new StudentDAO();
+			float multa = (ChronoUnit.DAYS.between(LocalDate.now(), loan.getDateEnd())) * 0.5f;
+			studentDAO.addDebits(idStudent, multa);
+		}
 		public void quitarDivida(Scanner in, int idStudent, float debits) {
 		    in.nextLine();
 		    float pay = 0; // Inicializa com 0
@@ -648,15 +654,16 @@ public class AdminsterBilioeteca {
 			long numberRegistration;
 			int option;
 			do {
-				System.out.println("Digite o numero de matricula: ");
-				numberRegistration = in.nextLong();
-				System.out.println("Digite 1 para confirmar ou 0 para digitar novamente");
-				option = in.nextInt();
-				in.nextLine();
+				System.out.println("Digite o número de matrícula: ");
+	            numberRegistration = in.nextLong();
+	            in.nextLine(); 
+
+	            System.out.println("Você digitou o numero " + numberRegistration + ". Digite 1 para confirmar ou 0 para digitar novamente.");
+	            option = in.nextInt();
+	            in.nextLine(); 
 			}while(option != 1);
 			StudentDAO studentDAO = new StudentDAO();
-			List<Student> listStudent = studentDAO.selectStudentByNumerRegistration(numberRegistration);
-			Student student = listStudent.get(0);
+			Student student = studentDAO.selectStudentByNumerRegistration(numberRegistration).get(0);
 			option = 0;
 			if(student.getDebits() > 0) {
 				System.out.println("Deseja quitar a divida digite 1 para sim e 0 para nao: ");
@@ -673,37 +680,52 @@ public class AdminsterBilioeteca {
 				Loan loan = loanDAO.selectLoanBooks(student.getId()).get(0);
 				if (LocalDate.now().isAfter(loan.getDateEnd())) {
 					System.out.println("O emprestimo esta atrasado ");
-					// nao deixar emprestar livro  e calcular a multa
-					return;
+					calcularMulta(student.getId(), loan);
 				}
+				System.out.println("Precisa devolver os livors para poder emprestar outros");
+				return;
 			}
 			BookDAO bookDAO = new BookDAO();
 			option = 0;
 			String isbn;
 			List<Book> listBooks = new ArrayList<>();
 			do {
-				System.out.println("Digite o ISBN do livro sem tracos: ");
-				isbn = in.nextLine();
-				System.out.println("Digite 1 para confirmar o livro ou 0 para digitar novamente: ");
-				option = in.nextInt();
-				if(option == 1) {
-					listBooks.add(bookDAO.selectBooksByISBN(isbn).get(0));
-					option = 0;
-				}
-				System.out.println("Digite 0 para adicionar outro livro ou digite 1 para ir para o proximo passo: ");
-				option = in.nextInt();
-				in.nextLine();
-			}while(option != 1);
+		        System.out.println("Digite o ISBN do livro sem tracos: ");
+		        isbn = in.nextLine();
+
+		        System.out.println("Digite 1 para confirmar o livro ou 0 para digitar novamente: ");
+		        int confirmOption = in.nextInt();
+		        in.nextLine(); // Limpar o buffer do scanner
+
+		        if (confirmOption == 1) {
+		            List<Book> selectedBook = bookDAO.selectBooksByISBN(isbn);
+
+		            if (!selectedBook.isEmpty()) {
+		                listBooks.add(selectedBook.get(0));
+		                System.out.println("Livro adicionado ao emprestimo: " + selectedBook.get(0).getTitle());
+		            } else {
+		                System.out.println("Livro nao encontrado. Por favor, insira um ISBN valido.");
+		            }
+		        }
+
+		        System.out.println("Digite 0 para adicionar outro livro ou digite 1 para ir para o proximo passo: ");
+		        option = in.nextInt();
+		        in.nextLine(); 
+		    } while (option != 1);
 			LoanDAO loanDAO = new LoanDAO();
 			int days;
 			LocalDate endDate = null;
 			do {
-				System.out.println("Digite quantos dias deseja emprestar o livro no minimo 1 e no maximo 15: ");
-				days = in.nextInt();
-				if(1>=days && days<=15) {
-					endDate = LocalDate.now().plusDays(days);
-				}
-			}while(1>=days && days<=15);
+		        System.out.println("Digite quantos dias deseja emprestar o livro (mínimo 1 e máximo 15): ");
+		        days = in.nextInt();
+		        in.nextLine(); // Limpar o buffer do scanner
+
+		        if (days >= 1 && days <= 15) {
+		            endDate = LocalDate.now().plusDays(days);
+		        } else {
+		            System.out.println("O prazo do emprestimo deve estar entre 1 e 15 dias.");
+		        }
+		    } while (days < 1 || days > 15);
 			loanDAO.insertLoan(student.getId(), LocalDate.now(), endDate, "Emprestimo", listBooks);
 		}
 		

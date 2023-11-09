@@ -7,6 +7,7 @@ import java.util.List;
 import java.time.LocalDate;
 
 import Book.Book;
+import Book.BooksBorrowed;
 import DataBaseConnector.MySQLConnector;
 
 public class LoanDAO {
@@ -50,17 +51,18 @@ public class LoanDAO {
         		+ "LEFT JOIN genre AS gen ON gbk.id_genre = gen.id\r\n"
         		+ "LEFT JOIN authors_books AS atb ON bok.id = atb.id_books\r\n"
         		+ "LEFT JOIN author AS atr ON atb.id_author = atr.id\r\n"
-        		+ "WHERE loa.status IN ('Emprestimo','Atrasado') AND loa.id_student =" +idStudent;
+        		+ "WHERE loa.status IN ('Emprestimo','Atrasado','Devendo') AND loa.id_student =" +idStudent;
 
         query += " GROUP BY bok.id";
         ResultSet resultSet = sql.selectSQL(query);
         loanList.clear();
-        List<Book> booksList = new ArrayList<>();
+        List<BooksBorrowed> booksList = new ArrayList<>();
         if (resultSet != null) {
             try {
                 while (resultSet.next()) {
-                	booksList.add(new Book(resultSet.getInt("book_id"),resultSet.getString("book_title"),resultSet.getString("book_isbn"),resultSet.getInt("book_year"),
-                			resultSet.getInt("book_quantity"),resultSet.getString("book_publisher"),resultSet.getString("book_author"),resultSet.getString("book_genre")));
+                	booksList.add(new BooksBorrowed(resultSet.getInt("book_id"),resultSet.getString("book_title"),resultSet.getString("book_isbn"),resultSet.getInt("book_year"),
+                			resultSet.getInt("book_quantity"),resultSet.getString("book_publisher"),resultSet.getString("book_author"),resultSet.getString("book_genre"),
+                			resultSet.getString("borrowed_books_status")));
                 	
                 	if(resultSet.isLast()) {
                 		loanList.add(new Loan(resultSet.getInt("id"),resultSet.getInt("student_id"), resultSet.getDate("loan_date_init").toLocalDate(), 

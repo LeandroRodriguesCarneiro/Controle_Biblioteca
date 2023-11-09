@@ -25,7 +25,12 @@ public class StudentDAO {
     	MySQLConnector sql = new MySQLConnector();
     	 sql.executeSQL("UPDATE student SET DEBITS = DEBITS - "+pay+" WHERE id ="+id);
     }
-
+    
+    public void addDebits(int id, float debits) {
+    	MySQLConnector sql = new MySQLConnector();
+   	 	sql.executeSQL("UPDATE student SET DEBITS = "+debits+" WHERE id ="+id);
+    }
+    
     public List<Student> selectAllStudents() {
         MySQLConnector sql = new MySQLConnector();
         ResultSet resultSet = sql.selectSQL("SELECT \r\n"
