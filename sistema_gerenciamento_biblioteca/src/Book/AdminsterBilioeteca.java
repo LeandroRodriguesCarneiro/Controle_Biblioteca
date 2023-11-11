@@ -603,25 +603,26 @@ public class AdminsterBilioeteca {
 				studentDAO.deleteStudent(id);
 			}
 		}
-		public void calcularMulta(int idStudent, Loan loan) {
+		public void calcularMulta(Loan loan) {
 			StudentDAO studentDAO = new StudentDAO();
-			float multa = (ChronoUnit.DAYS.between(LocalDate.now(), loan.getDateEnd())) * 0.5f;
-			studentDAO.addDebits(idStudent, multa);
+			float multa = ((ChronoUnit.DAYS.between(LocalDate.now(), loan.getDateEnd())) * 0.5f);
+			System.out.println("Sua multa e de "+multa);
+			studentDAO.addDebits(loan.getIdStudent(), multa);
 		}
 		public void quitarDivida(Scanner in, int idStudent, float debits) {
 		    in.nextLine();
 		    float pay = 0; // Inicializa com 0
 
 		    StudentDAO studentDAO = new StudentDAO();
-		    System.out.println("O aluno deve " + debits + ": ");
+		    System.out.println("O aluno deve R$" + debits*(-1) + ": ");
 	        pay = in.nextFloat();
 	        if (pay > 0) {
-	            if (pay >= debits) {
-	                studentDAO.payDebits(idStudent, debits);
-	                System.out.println("Dívida quitada. Troco: " + (pay - debits));
+	            if (pay >= (debits*(-1))) {
+	                studentDAO.payDebits(idStudent, (debits * (-1)));
+	                System.out.println("Dívida quitada. Troco: " + (pay + debits));
 	            } else {
 	                studentDAO.payDebits(idStudent, pay);
-	                System.out.println("O pagamento não é suficiente para quitar a dívida. A dívida é de: " + (debits - pay));
+	                System.out.println("O pagamento não é suficiente para quitar a dívida. A dívida é de: " + ((debits*(-1)) - pay));
 	            }
 	        } else {
 	            System.out.println("O pagamento deve ser maior que zero.");
@@ -634,6 +635,7 @@ public class AdminsterBilioeteca {
 					System.out.println("Digite: \n\t"
 							+ "1 para realizar novos emprestimos\n\t"
 							+ "2 para consultar emprestimos \n\t"
+							+ "3 para devolver livro\n\t"
 							+ "0 para sair\n");
 					option = in.nextInt();
 					switch(option) {
@@ -645,6 +647,10 @@ public class AdminsterBilioeteca {
 						consultarAlunos(in);
 						break;
 					}
+					case 3:{
+						devolverLivro(in);
+						break;
+					}
 					}
 				}while(option != 0);
 				menu();
@@ -653,35 +659,46 @@ public class AdminsterBilioeteca {
 			in.nextLine();
 			long numberRegistration;
 			int option;
+			List <Student> listStudent = new ArrayList<>();
+			StudentDAO studentDAO = new StudentDAO();
+			Student student = null;
 			do {
 				System.out.println("Digite o número de matrícula: ");
 	            numberRegistration = in.nextLong();
 	            in.nextLine(); 
-
+	            
 	            System.out.println("Você digitou o numero " + numberRegistration + ". Digite 1 para confirmar ou 0 para digitar novamente.");
 	            option = in.nextInt();
+	            if(option == 1) {
+	            	listStudent = studentDAO.selectStudentByNumerRegistration(numberRegistration);
+		            if(!listStudent.isEmpty()) {
+		            	student = listStudent.get(0);
+		            }else {
+		            	option = 0;
+		            	System.out.println("Aluno nao encontrado digite novamente");
+		            }
+	            }
+	            
 	            in.nextLine(); 
 			}while(option != 1);
-			StudentDAO studentDAO = new StudentDAO();
-			Student student = studentDAO.selectStudentByNumerRegistration(numberRegistration).get(0);
 			option = 0;
-			if(student.getDebits() > 0) {
-				System.out.println("Deseja quitar a divida digite 1 para sim e 0 para nao: ");
+			if(student.getDebits() < 0) {
+				System.out.println("O aluno deve R$"+student.getDebits()*(-1)+"\n"
+						+ "Deseja quitar a divida digite 1 para sim e 0 para nao: ");
 				option = in.nextInt();
 				if(option == 1) {
 					quitarDivida(in,student.getId(),student.getDebits());
+					student = studentDAO.selectStudentByNumerRegistration(numberRegistration).get(0);
+					if(student.getDebits() < 0) {
+						System.out.println("Nao sera possivel realizar emprestimos ate quitar a divida");
+						return;
+					}
 				}else {
 					System.out.println("Nao sera possivel realizar emprestimos ate quitar a divida");
 					return;
 				}
 			}
 			if(student.getBorrowedBooks() >= 1) {
-				LoanDAO loanDAO = new LoanDAO();
-				Loan loan = loanDAO.selectLoanBooks(student.getId()).get(0);
-				if (LocalDate.now().isAfter(loan.getDateEnd())) {
-					System.out.println("O emprestimo esta atrasado ");
-					calcularMulta(student.getId(), loan);
-				}
 				System.out.println("Precisa devolver os livors para poder emprestar outros");
 				return;
 			}
@@ -707,9 +724,14 @@ public class AdminsterBilioeteca {
 		                System.out.println("Livro nao encontrado. Por favor, insira um ISBN valido.");
 		            }
 		        }
-
-		        System.out.println("Digite 0 para adicionar outro livro ou digite 1 para ir para o proximo passo: ");
-		        option = in.nextInt();
+		        if(listBooks.size() < 3) {
+		        	System.out.println("Digite 0 para adicionar outro livro ou digite 1 para ir para o proximo passo: ");
+			        option = in.nextInt();
+		        }else {
+		        	System.out.println("Digite 1 para ir para o proximo passo: ");
+			        option = in.nextInt();
+		        }
+		        
 		        in.nextLine(); 
 		    } while (option != 1);
 			LoanDAO loanDAO = new LoanDAO();
@@ -726,10 +748,81 @@ public class AdminsterBilioeteca {
 		            System.out.println("O prazo do emprestimo deve estar entre 1 e 15 dias.");
 		        }
 		    } while (days < 1 || days > 15);
-			loanDAO.insertLoan(student.getId(), LocalDate.now(), endDate, "Emprestimo", listBooks);
+			loanDAO.insertLoan(student.getId(), LocalDate.now(), endDate, listBooks);
 		}
-		
-		
+		public void devolverLivro(Scanner in) {
+			long numberRegistration;
+			int option;
+			List <Student> listStudent = new ArrayList<>();
+			StudentDAO studentDAO = new StudentDAO();
+			Student student = null;
+			do {
+				System.out.println("Digite o número de matrícula: ");
+	            numberRegistration = in.nextLong();
+	            in.nextLine(); 
+	            
+	            System.out.println("Você digitou o numero " + numberRegistration + ". Digite 1 para confirmar ou 0 para digitar novamente.");
+	            option = in.nextInt();
+	            if(option == 1) {
+	            	listStudent = studentDAO.selectStudentByNumerRegistration(numberRegistration);
+		            if(!listStudent.isEmpty()) {
+		            	student = listStudent.get(0);
+		            }else {
+		            	option = 0;
+		            	System.out.println("Aluno nao encontrado digite novamente");
+		            }
+	            }
+	            
+	            in.nextLine(); 
+			}while(option != 1);
+			
+			LoanDAO loanDAO = new LoanDAO();
+			Loan loan;
+			List <Loan> listLoan = loanDAO.selectLoanBooks(student.getId());
+			if(!listLoan.isEmpty()) {
+				loan = listLoan.get(0);
+			}else {
+				System.out.println("O aluno nao contem emprestimos");
+				return;
+			}
+			List <Book> listBooks = new ArrayList<>();
+			String isbn;
+			BookDAO bookDAO = new BookDAO();
+			do {
+		        System.out.println("Digite o ISBN do livro sem traços: ");
+		        isbn = in.nextLine();
 
-		
+		        System.out.println("Digite 1 para confirmar o livro ou 0 para digitar novamente: ");
+		        int confirmOption = in.nextInt();
+		        in.nextLine();
+
+		        if (confirmOption == 1) {
+		            List<Book> selectedBook = bookDAO.selectBooksByISBN(isbn);
+
+		            if (!selectedBook.isEmpty()) {
+		                listBooks.add(selectedBook.get(0));
+		                System.out.println("Livro adicionado a devolucao: " + selectedBook.get(0).getTitle());
+		            } else {
+		                System.out.println("Livro não encontrado. Por favor, insira um ISBN válido.");
+		            }
+		        }
+
+		        System.out.println("Digite 0 para adicionar outro livro ou digite 1 para ir para o próximo passo: ");
+		        option = in.nextInt();
+		        in.nextLine();
+		    } while (option != 1);
+			List<BooksBorrowed> booksNotReturned = new ArrayList<>(loan.getListBooks());
+			for (Book returnedBook : listBooks) {
+			    booksNotReturned.removeIf(book -> book.getIsbn().equals(returnedBook.getIsbn()));
+			}
+			if(booksNotReturned.size() == loan.getListBooks().size()) {
+				System.out.println("Nenhum livro emprestado foi devolvido");
+				return;
+			}else {
+				if(LocalDate.now().isAfter(loan.getDateEnd())) {
+					calcularMulta(loan);
+				}
+				loanDAO.returBook(loan, listBooks, booksNotReturned);
+			}
+		}
 	}

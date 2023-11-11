@@ -23,43 +23,17 @@ public class StudentDAO {
     
     public void payDebits(int id,float pay) {
     	MySQLConnector sql = new MySQLConnector();
-    	 sql.executeSQL("UPDATE student SET DEBITS = DEBITS - "+pay+" WHERE id ="+id);
+    	 sql.executeSQL("UPDATE student SET DEBITS = DEBITS + "+pay+" WHERE id ="+id);
     }
     
     public void addDebits(int id, float debits) {
     	MySQLConnector sql = new MySQLConnector();
-   	 	sql.executeSQL("UPDATE student SET DEBITS = "+debits+" WHERE id ="+id);
+   	 	sql.executeSQL("UPDATE student SET DEBITS = DEBITS + "+debits+" WHERE id ="+id);
     }
     
-    public List<Student> selectAllStudents() {
-        MySQLConnector sql = new MySQLConnector();
-        ResultSet resultSet = sql.selectSQL("SELECT \r\n"
-        		+ "	   id, \r\n"
-        		+ "    number_registration, \r\n"
-        		+ "    name, \r\n"
-        		+ "    borrowed_books, \r\n"
-        		+ "    DEBITS \r\n"
-        		+ "    FROM student ");
-        listStudent.clear(); 
-
-        if (resultSet != null) {
-            try {
-                while (resultSet.next()) {
-                	listStudent.add(new Student(resultSet.getInt("id"),resultSet.getInt("borrowed_books"),resultSet.getString("name"),resultSet.getLong("number_registration"),
-                			resultSet.getFloat("DEBITS")));
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    resultSet.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        return listStudent;
+    public void updateBorrowedBooks(int id, int qtd) {
+    	MySQLConnector sql = new MySQLConnector();
+   	 	sql.executeSQL("UPDATE student SET borrowed_books = "+qtd+" WHERE id ="+id);
     }
     
     public List<Student> selectStudentByNumerRegistration(long numberRegistration) {

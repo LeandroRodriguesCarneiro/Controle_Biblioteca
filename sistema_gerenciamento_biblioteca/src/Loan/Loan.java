@@ -14,14 +14,13 @@ public class Loan {
 	private String status = new String();
 	private List<BooksBorrowed> listBooks = new ArrayList<>(); 
 	
-	public Loan(int id, int idStudent, LocalDate dateInit, LocalDate dateEnd, String status, List<BooksBorrowed> listBooks) {
+	public Loan(int id, int idStudent, LocalDate dateInit, LocalDate dateEnd, String status) {
 		listBooks.clear();
 		this.id = id;
 		this.idStudent = idStudent;
 		this.dateInit = dateInit;
 		this.dateEnd = dateEnd;
 		this.status = status;
-		this.listBooks = listBooks;
 	}
 
 	public int getId() {
