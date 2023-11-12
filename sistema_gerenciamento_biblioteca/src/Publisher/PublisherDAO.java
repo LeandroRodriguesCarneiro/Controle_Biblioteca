@@ -12,7 +12,7 @@ public class PublisherDAO {
 
     public int insertPublisher(String name) {
         MySQLConnector sql = new MySQLConnector();
-        return sql.insertSQL("INSERT INTO publisher (name) VALUES ('" + name + "')");
+        return sql.executeProcedure("SP_insertPublisher", name);
     }
     
     public void deletePublisher(int id) {

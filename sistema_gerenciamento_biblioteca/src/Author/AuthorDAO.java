@@ -12,12 +12,7 @@ public class AuthorDAO {
 
     public void insertAuthor(String name) {
         MySQLConnector sql = new MySQLConnector();
-        sql.executeSQL("INSERT INTO author (name) VALUES ('" + name + "')");
-    }
-    
-    public void insertAthorBook(Author author, int idBook) {
-    	 MySQLConnector sql = new MySQLConnector();
-    	 sql.executeSQL("INSERT INTO authors_books (id_books,id_author) VALUES ("+idBook+","+author.getId()+")");
+        sql.executeProcedure("SP_InsertAuthor", name);
     }
     
     public void deleteAuthor(int id) {

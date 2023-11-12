@@ -1,5 +1,6 @@
 package DataBaseConnector;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -51,7 +52,51 @@ public class MySQLConnector {
 
         return id;
     }
+    
+    private CallableStatement prepareCallableStatement(Connection connection, String procedureName, Object... parameters) throws SQLException {
+        StringBuilder callString = new StringBuilder("{CALL " + procedureName + "(");
 
+        for (int i = 0; i < parameters.length; i++) {
+            if (i > 0) {
+                callString.append(",");
+            }
+            callString.append("?");
+        }
+
+        callString.append(")}");
+
+        CallableStatement callableStatement = connection.prepareCall(callString.toString());
+
+        for (int i = 0; i < parameters.length; i++) {
+            callableStatement.setObject(i + 1, parameters[i]);
+        }
+
+        return callableStatement;
+    }
+    
+    public int executeProcedure(String procedureName, Object... parameters) {
+        try (Connection connection = startConnection();
+             CallableStatement callableStatement = prepareCallableStatement(connection, procedureName, parameters)) {
+
+            boolean hasResults = callableStatement.execute();
+
+            if (hasResults) {
+                ResultSet resultSet = callableStatement.getResultSet();
+                
+                if (resultSet.next()) {
+                    return resultSet.getInt(1); 
+                }
+            }
+
+            return 0; 
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return -1;
+    }
+
+    
     public void executeSQL(String query) {
         try {
         	Connection connection = startConnection();

@@ -26,97 +26,110 @@ public class AdminsterBilioeteca {
 		adm.menu();
 	}	
 		public void menu() {
-			int option;
-			Scanner in = new Scanner(System.in);
-			
-			do {
-				System.out.println("Digite: \n\t"
-						+ "1 para entrar no menu de Livros\n\t"
-						+ "2 para entrar no menu de Alunos\n\t"
-						+ "3 para ir para o menu de Emprestimos\n\t"
-						+ "0 para sair\n");
-				option = in.nextInt();
-				switch(option) {
-				case 1:{
-					menuLivro(in);
-					break;
-				}
-				case 2:{
-					menuAlunos(in);
-					break;
-				}
-				case 3:{
-					menuEmprestimos(in);
-					break;
-				}
-				default:{
-                    System.out.println("Digite um valor valido");
-                }
-				}
-			}while(option != 0);
-			in.close();
+		    int option;
+		    Scanner in = new Scanner(System.in);
+	
+		    do {
+		        System.out.println("Digite: \n\t"
+		                + "1 para entrar no menu de Livros\n\t"
+		                + "2 para entrar no menu de Alunos\n\t"
+		                + "3 para ir para o menu de Empréstimos\n\t"
+		                + "0 para sair\n");
+	
+		        option = in.nextInt();
+		        in.nextLine();  // Limpa o buffer após a leitura do número
+	
+		        switch (option) {
+		            case 1:
+		                menuLivro(in);
+		                break;
+		            case 2:
+		                menuAlunos(in);
+		                break;
+		            case 3:
+		                menuEmprestimos(in);
+		                break;
+		            default:
+		                System.out.println("Digite um valor válido");
+		        }
+		    } while (option != 0);
+	
+		    in.close();
+		}
+
+		public void menuLivro(Scanner in) {
+		    int option = -1;
+		    do {
+		        System.out.println("Digite: \n\t"
+		                + "1 para menu de gêneros literários\n\t"
+		                + "2 para menu de autores de livros\n\t"
+		                + "3 para menu de editoras\n\t"
+		                + "4 para menu de livros\n\t"
+		                + "0 para sair\n");
+
+		        if (in.hasNextInt()) {
+		            option = in.nextInt();
+
+		            in.nextLine();
+		        } else {
+		            in.nextLine();
+		            System.out.println("Digite um número válido!");
+		            continue;
+		        }
+
+		        switch (option) {
+		            case 1:
+		                menuGenero(in);
+		                break;
+		            case 2:
+		                menuAutor(in);
+		                break;
+		            case 3:
+		                menuEditoras(in);
+		                break;
+		            case 4:
+		                menuLivros(in);
+		                break;
+		            default:
+		                System.out.println("Digite uma opção válida!");
+		        }
+		    } while (option != 0);
+
+		    menu();
+		}
+
+		public void menuGenero(Scanner in) {
+		    int option = -1; 
+		    do {
+		        System.out.println("Digite: \n\t"
+		                + "1 para adicionar gêneros literários \n\t"
+		                + "2 para listar gêneros \n\t"
+		                + "0 para sair\n");
+
+		        if (in.hasNextInt()) {
+		            option = in.nextInt();
+		            in.nextLine();
+		        } else {
+		            in.nextLine();
+		            System.out.println("Digite um número válido!");
+		            continue; 
+		        }
+
+		        switch (option) {
+		            case 1:
+		                adicionarGeneros(in);
+		                break;
+		            case 2:
+		                listarGeneros();
+		                break;
+		            default:
+		                System.out.println("Digite uma opção válida!");
+		        }
+		    } while (option != 0);
 		}
 	
-		public void menuLivro(Scanner in) {
-			int option;
-			do {
-				System.out.println("Digite: \n\t"
-						+ "1 para menu de generos Literarios\n\t"
-						+ "2 para menu de autor de livros \n\t"
-						+ "3 para menu de editoras \n\t"
-						+ "4 para menu de livros \n\t"
-						+ "0 para sair\n");
-				option = in.nextInt();
-				switch(option) {
-				case 1:{
-					menuGenero(in);
-					break;
-				}
-				case 2:{
-					menuAutor(in);
-					break;
-				}
-				case 3:{
-					menuEditoras(in);
-					break;
-				}
-				case 4:{
-					menuLivros(in);
-					break;
-				}
-				}
-			}while(option != 0);
-			menu();
-			
-		}
-		
-		public void menuGenero(Scanner in) {
-			int option;
-			do {
-				System.out.println("Digite: \n\t"
-						+ "1 para adicionar generos literarios \n\t"
-						+ "2 para para listar generos \n\t"
-						+ "0 para sair\n");
-				option = in.nextInt();
-				switch(option) {
-				case 1:{
-					adicionarGeneros(in);
-					break;
-					}
-				case 2:{
-					listarGeneros();
-					break;
-				}
-				default:{
-                    System.out.println("Digite um valor valido");
-                }
-				}
-				in.nextLine();
-			}while(option != 0);
-
-		}	
 		public void adicionarGeneros(Scanner in) {
-		    int option;
+		    int option = -1;
 
 		    do {
 		        System.out.println("Digite o nome do gênero que deseja adicionar:");
@@ -130,11 +143,19 @@ public class AdminsterBilioeteca {
 		        }
 
 		        System.out.println("Se deseja adicionar um novo gênero, digite 1; digite 0 para voltar ao menu anterior:");
-		        option = in.nextInt();
+		        
+		        if (in.hasNextInt()) {
+		            option = in.nextInt();
+		            in.nextLine();
+		        } else {
+		            in.nextLine();
+		            System.out.println("Digite um número válido!");
+		            continue;
+		        }
 
-		        in.nextLine();
 		    } while (option != 0);
 		}
+
 		public void listarGeneros() {
 			GenresDAO genresDAO = new GenresDAO();
 			List<Genres> genresList = genresDAO.selectAllGenres();
@@ -144,48 +165,67 @@ public class AdminsterBilioeteca {
 		}
 		
 		public void menuAutor(Scanner in) {
-			int option;
-			do {
-				System.out.println("Digite: \n\t"
-						+ "1 para adicionar autores \n\t"
-						+ "2 para para listar autores \n\t"
-						+ "0 para sair\n");
-				option = in.nextInt();
-				switch(option) {
-				case 1:{
-					adicionarAutores(in);
-					break;
-					}
-				case 2:{
-					listarAutores();
-					break;
-				}
-				default:{
-                    System.out.println("Digite um valor valido");
-                }
-				}
-				in.nextLine();
-			}while(option != 0);
+		    int option = -1;
+
+		    do {
+		        System.out.println("Digite: \n\t"
+		                + "1 para adicionar autores \n\t"
+		                + "2 para para listar autores \n\t"
+		                + "0 para sair\n");
+
+		        if (in.hasNextInt()) {
+		            option = in.nextInt();
+		            in.nextLine();
+		        } else {
+		            in.nextLine();
+		            System.out.println("Digite um número válido!");
+		            continue;
+		        }
+		        switch(option) {
+		            case 1:{
+		                adicionarAutores(in);
+		                break;
+		            }
+		            case 2:{
+		                listarAutores();
+		                break;
+		            }
+		            default:{
+		                System.out.println("Digite um valor válido");
+		            }
+		        }
+		    } while (option != 0);
 		}
+
 		public void adicionarAutores(Scanner in) {
-		    int option;
-		    in.nextLine();
+		    int option = -1;
+
 		    do {
 		        System.out.println("Digite o nome do autor que deseja adicionar:");
 		        String autor = in.nextLine().trim();
-		        
+		        in.nextLine();
+
 		        if (!autor.isEmpty()) {
 		            AuthorDAO authorDAO = new AuthorDAO();
 		            authorDAO.insertAuthor(autor);
 		        } else {
 		            System.out.println("Nome do autor não pode estar vazio.");
 		        }
-		        
+
 		        System.out.println("Se deseja adicionar um novo autor, digite 1; digite 0 para voltar ao menu anterior:");
-		        option = in.nextInt();
-		        in.nextLine(); // Limpa o buffer do scanner
+
+		        if (in.hasNextInt()) {
+		            option = in.nextInt();
+		            in.nextLine();
+		        } else {
+		            in.nextLine();
+		            System.out.println("Digite um número válido!");
+		            continue;  
+		        }
+
 		    } while (option != 0);
 		}
+
 		public void listarAutores() {
 			AuthorDAO authorDAO = new AuthorDAO();
 			List<Author> genresList = authorDAO.selectAllAuthors();
@@ -195,45 +235,60 @@ public class AdminsterBilioeteca {
 		}
 
 		public void menuEditoras(Scanner in) {
-			int option;
-			do {
-				System.out.println("Digite: \n\t"
-						+ "1 para adicionar editoras \n\t"
-						+ "2 para para listar editoras \n\t"
-						+ "0 para sair\n");
-				option = in.nextInt();
-				switch(option) {
-				case 1:{
-					adicionarEditoras(in);
-					break;
-				}
-				case 2:{
-					listarEditoras();
-					break;
-				}
-				default:{
-                    System.out.println("Digite um valor valido");
-                }
-				}
-			}while(option != 0);
-		}
-		public void adicionarEditoras(Scanner in) {
-		    int option;
-		    in.nextLine();
+		    int option = -1;
 		    do {
-		        System.out.println("Digite o nome do editora que deseja adicionar:");
-		        String aditora = in.nextLine().trim();
-		        
-		        if (!aditora.isEmpty()) {
-		        	PublisherDAO publisherDAO = new PublisherDAO();
-		        	publisherDAO.insertPublisher(aditora);
+		        System.out.println("Digite: \n\t"
+		                + "1 para adicionar editoras \n\t"
+		                + "2 para listar editoras \n\t"
+		                + "0 para sair\n");
+
+		        if (in.hasNextInt()) {
+		            option = in.nextInt();
+		            in.nextLine();
+		        } else {
+		            in.nextLine();
+		            System.out.println("Digite um número válido!");
+		            continue;
+		        }
+
+		        switch(option) {
+		            case 1:{
+		                adicionarEditoras(in);
+		                break;
+		            }
+		            case 2:{
+		                listarEditoras();
+		                break;
+		            }
+		            default:{
+		                System.out.println("Digite um valor válido");
+		            }
+		        }
+		    } while (option != 0);
+		}
+
+		public void adicionarEditoras(Scanner in) {
+		    int option =-1;
+		    do {
+		    	System.out.println("Digite o nome da editora que deseja adicionar:");
+		        String editora = in.nextLine().trim();
+
+		        if (!editora.isEmpty()) {
+		            PublisherDAO publisherDAO = new PublisherDAO();
+		            publisherDAO.insertPublisher(editora);
 		        } else {
 		            System.out.println("Nome da editora não pode estar vazio.");
 		        }
-		        
+
 		        System.out.println("Se deseja adicionar uma nova editora, digite 1; digite 0 para voltar ao menu anterior:");
-		        option = in.nextInt();
-		        in.nextLine();
+		        if (in.hasNextInt()) {
+		            option = in.nextInt();
+		            in.nextLine();
+		        } else {
+		            in.nextLine();
+		            System.out.println("Digite um número válido!");
+		            continue;  
+		        }
 		    } while (option != 0);
 		}
 		public void listarEditoras() {
@@ -245,39 +300,47 @@ public class AdminsterBilioeteca {
 		}
 		
 		public void menuLivros(Scanner in) {
-			int option;
-			do {
-				System.out.println("Digite: \n\t"
-						+ "1 para adicionar livros \n\t"
-						+ "2 para para listar livros \n\t"
-						+ "3 para alterar livros \n\t"
-						+ "4 para apagar livros \n\t"
-						+ "0 para sair\n");
-				option = in.nextInt();
-				switch(option) {
-				case 1:{
-					adicionarLivros(in);
-					break;
-				}
-				case 2:{
-					listarLIvros();
-					break;
-				}
-				case 3:{
-					alterarLivros(in);
-					break;
-				}
-				case 4:{
-					deletarLivros(in);
-					break;
-				}
-				default:{
-                    System.out.println("Digite um valor valido");
-                }
-				}
-				in.nextLine();
-			}while(option != 0);
+		    int option = -1;
+
+		    do {
+		        System.out.println("Digite: \n\t"
+		                + "1 para adicionar livros \n\t"
+		                + "2 para listar livros \n\t"
+		                + "3 para alterar livros \n\t"
+		                + "4 para apagar livros \n\t"
+		                + "0 para sair\n");
+		        if (in.hasNextInt()) {
+		            option = in.nextInt();
+		            in.nextLine();
+		        } else {
+		            in.nextLine();
+		            System.out.println("Digite um número válido!");
+		            continue;
+		        }
+
+		        switch (option) {
+		            case 1:
+		                adicionarLivros(in);
+		                break;
+		            case 2:
+		                listarLIvros();
+		                break;
+		            case 3:
+		                alterarLivros(in);
+		                break;
+		            case 4:
+		                deletarLivros(in);
+		                break;
+		            case 0:
+		                System.out.println("Saindo do menu de livros...");
+		                break;
+		            default:
+		                System.out.println("Digite um valor válido!");
+		        }
+		    } while (option != 0);
 		}
+
+
 		public void adicionarLivros(Scanner in) {
 			PublisherDAO publisherDAO = new PublisherDAO();
 			List<Publisher> publisherList = publisherDAO.selectPublisherByCountTitles();

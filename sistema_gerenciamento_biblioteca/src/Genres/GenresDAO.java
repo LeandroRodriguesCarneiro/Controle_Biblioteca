@@ -12,12 +12,7 @@ public class GenresDAO {
 
     public void insertGenres(String name) {
         MySQLConnector sql = new MySQLConnector();
-        sql.executeSQL("INSERT INTO genre (name) VALUES ('" + name + "')");
-    }
-    
-    public void insertGenresBooks(int idBook, Genres genres) {
-    	MySQLConnector sql = new MySQLConnector();
-        sql.executeSQL("INSERT INTO genres_books (id_books, id_genre) VALUES ("+idBook+","+genres.getId()+")");
+        sql.executeProcedure("SP_insertGenre", name);
     }
     
     public void deleteGenre(int id) {

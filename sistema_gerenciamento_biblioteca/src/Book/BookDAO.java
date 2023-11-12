@@ -7,9 +7,7 @@ import java.util.List;
 import java.time.Year;
 
 import Genres.Genres;
-import Genres.GenresDAO;
 import Author.Author;
-import Author.AuthorDAO;
 
 import DataBaseConnector.MySQLConnector;
 
@@ -18,15 +16,14 @@ public class BookDAO {
 
     public void insertBook(int id_publisher, String isbn, String title, Year year_publication, int quantity, List<Genres> genresList, List<Author> authorList) {
         MySQLConnector sql = new MySQLConnector();
-        int idBook = sql.insertSQL("INSERT INTO book (id_publisher,isbn,title,year_publication,quantity) VALUES ("+ id_publisher+","+isbn+",'"+title+"',"+year_publication+","+quantity+")");
+        int idBook = 0;
+        idBook = sql.executeProcedure("SP_InsertBook", id_publisher, isbn, title, year_publication.getValue(), quantity);
         
         for (Author author : authorList) {
-        	AuthorDAO authorDAO = new AuthorDAO();
-        	authorDAO.insertAthorBook(author, idBook);
+        	sql.executeProcedure("SP_InsertAuthorBook",idBook,author.getId());
         }
         for (Genres genres: genresList) {
-        	GenresDAO genresDAO = new GenresDAO();
-        	genresDAO.insertGenresBooks(idBook, genres);
+        	sql.executeProcedure("SP_InsertGenreBook",idBook,genres.getId());
         }
     }
     
