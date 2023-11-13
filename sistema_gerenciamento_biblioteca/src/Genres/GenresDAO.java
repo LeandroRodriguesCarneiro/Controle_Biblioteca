@@ -17,7 +17,7 @@ public class GenresDAO {
     
     public void deleteGenre(int id) {
     	MySQLConnector sql = new MySQLConnector();
-    	 sql.executeSQL("DELETE FROM genre WHERE id = "+ id);
+    	 sql.executeProcedure("SP_DeleteGenreBook", id);
     }
 
     public List<Genres> selectAllGenres() {

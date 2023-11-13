@@ -34,6 +34,7 @@ public class AdminsterBilioeteca {
 		                + "1 para entrar no menu de Livros\n\t"
 		                + "2 para entrar no menu de Alunos\n\t"
 		                + "3 para ir para o menu de Empréstimos\n\t"
+		                + "4 para relatorios"
 		                + "0 para sair\n");
 	
 		        option = in.nextInt();
@@ -49,14 +50,14 @@ public class AdminsterBilioeteca {
 		            case 3:
 		                menuEmprestimos(in);
 		                break;
-		            default:
-		                System.out.println("Digite um valor válido");
+		            case 4:
+		            	menuRelatorios(in);
+		            	break;
 		        }
 		    } while (option != 0);
 	
 		    in.close();
 		}
-
 		public void menuLivro(Scanner in) {
 		    int option = -1;
 		    do {
@@ -90,14 +91,9 @@ public class AdminsterBilioeteca {
 		            case 4:
 		                menuLivros(in);
 		                break;
-		            default:
-		                System.out.println("Digite uma opção válida!");
 		        }
 		    } while (option != 0);
-
-		    menu();
 		}
-
 		public void menuGenero(Scanner in) {
 		    int option = -1; 
 		    do {
@@ -122,9 +118,7 @@ public class AdminsterBilioeteca {
 		            case 2:
 		                listarGeneros();
 		                break;
-		            default:
-		                System.out.println("Digite uma opção válida!");
-		        }
+		            }
 		    } while (option != 0);
 		}
 	
@@ -155,7 +149,6 @@ public class AdminsterBilioeteca {
 
 		    } while (option != 0);
 		}
-
 		public void listarGeneros() {
 			GenresDAO genresDAO = new GenresDAO();
 			List<Genres> genresList = genresDAO.selectAllGenres();
@@ -190,13 +183,9 @@ public class AdminsterBilioeteca {
 		                listarAutores();
 		                break;
 		            }
-		            default:{
-		                System.out.println("Digite um valor válido");
-		            }
 		        }
 		    } while (option != 0);
 		}
-
 		public void adicionarAutores(Scanner in) {
 		    int option = -1;
 
@@ -225,7 +214,6 @@ public class AdminsterBilioeteca {
 
 		    } while (option != 0);
 		}
-
 		public void listarAutores() {
 			AuthorDAO authorDAO = new AuthorDAO();
 			List<Author> genresList = authorDAO.selectAllAuthors();
@@ -260,13 +248,9 @@ public class AdminsterBilioeteca {
 		                listarEditoras();
 		                break;
 		            }
-		            default:{
-		                System.out.println("Digite um valor válido");
-		            }
 		        }
 		    } while (option != 0);
 		}
-
 		public void adicionarEditoras(Scanner in) {
 		    int option =-1;
 		    do {
@@ -334,13 +318,9 @@ public class AdminsterBilioeteca {
 		            case 0:
 		                System.out.println("Saindo do menu de livros...");
 		                break;
-		            default:
-		                System.out.println("Digite um valor válido!");
 		        }
 		    } while (option != 0);
 		}
-
-
 		public void adicionarLivros(Scanner in) {
 			PublisherDAO publisherDAO = new PublisherDAO();
 			List<Publisher> publisherList = publisherDAO.selectPublisherByCountTitles();
@@ -540,7 +520,6 @@ public class AdminsterBilioeteca {
 		}
 		public void deletarLivros(Scanner in) {
 			in.nextLine();
-			int option;
 			String search;
 			BookDAO bookDAO = new BookDAO();
 			System.out.println("Digite o ISBN do livro que deseja selecionar apenas numeros");
@@ -666,12 +645,6 @@ public class AdminsterBilioeteca {
 				studentDAO.deleteStudent(id);
 			}
 		}
-		public void calcularMulta(Loan loan) {
-			StudentDAO studentDAO = new StudentDAO();
-			float multa = ((ChronoUnit.DAYS.between(LocalDate.now(), loan.getDateEnd())) * 0.5f);
-			System.out.println("Sua multa e de "+multa);
-			studentDAO.addDebits(loan.getIdStudent(), multa);
-		}
 		public void quitarDivida(Scanner in, int idStudent, float debits) {
 		    in.nextLine();
 		    float pay = 0; // Inicializa com 0
@@ -707,7 +680,7 @@ public class AdminsterBilioeteca {
 						break;
 					}
 					case 2:{
-						consultarAlunos(in);
+						consultarLivro(in);
 						break;
 					}
 					case 3:{
@@ -813,6 +786,58 @@ public class AdminsterBilioeteca {
 		    } while (days < 1 || days > 15);
 			loanDAO.insertLoan(student.getId(), LocalDate.now(), endDate, listBooks);
 		}
+		public void consultarLivro(Scanner in) {
+			long numberRegistration;
+			int option;
+			List <Student> listStudent = new ArrayList<>();
+			StudentDAO studentDAO = new StudentDAO();
+			Student student = null;
+			do {
+				System.out.println("Digite o número de matrícula: ");
+	            numberRegistration = in.nextLong();
+	            in.nextLine(); 
+	            
+	            System.out.println("Você digitou o numero " + numberRegistration + ". Digite 1 para confirmar ou 0 para digitar novamente.");
+	            option = in.nextInt();
+	            if(option == 1) {
+	            	listStudent = studentDAO.selectStudentByNumerRegistration(numberRegistration);
+		            if(!listStudent.isEmpty()) {
+		            	student = listStudent.get(0);
+		            }else {
+		            	option = 0;
+		            	System.out.println("Aluno nao encontrado digite novamente");
+		            }
+	            }
+	            
+	            in.nextLine(); 
+			}while(option != 1);
+			
+			LoanDAO loanDAO = new LoanDAO();
+			Loan loan;
+			List <Loan> listLoan = loanDAO.selectLoanBooks(student.getId());
+			if(!listLoan.isEmpty()) {
+				loan = listLoan.get(0);
+			}else {
+				System.out.println("O aluno nao contem emprestimos");
+				return;
+			}
+			for (BooksBorrowed book: loan.getListBooks()) {
+				System.out.println("id: "+book.getId());
+				System.out.println("isbn: "+book.getIsbn());
+				System.out.println("titulo: "+book.getTitle());
+				System.out.println("editora: "+book.getPublisher());
+				System.out.println("quantidade: "+book.getQuantity());
+				System.out.println("ano de publicacao: "+book.getYearPublication());
+				System.out.println("generos: ");
+				for (String string: book.getGenre()) {
+					System.out.println("	"+string);
+				}
+				System.out.println("Autores: ");
+				for (String string: book.getAuthor()) {
+					System.out.println("	"+string);
+				}
+			}
+		}
 		public void devolverLivro(Scanner in) {
 			long numberRegistration;
 			int option;
@@ -882,10 +907,50 @@ public class AdminsterBilioeteca {
 				System.out.println("Nenhum livro emprestado foi devolvido");
 				return;
 			}else {
-				if(LocalDate.now().isAfter(loan.getDateEnd())) {
-					calcularMulta(loan);
-				}
-				loanDAO.returBook(loan, listBooks, booksNotReturned);
+				loanDAO.returBook(loan, listBooks, LocalDate.now());
 			}
 		}
+		
+		public void menuRelatorios(Scanner in) {
+			int option = -1;
+		    do {
+		        System.out.println("Digite: \n\t"
+		        		+ "1 livros por genero\n\t"
+		        		+ "2 livros mais retirados\n\t"
+		        		+ "3 livros fora de estoque\n\t"
+		        		+ "4 livros publicados em um intervalo de tempo\n\t"
+		        		+ "5 Editoras com mais titulos\n\t"
+		        		+ "6 Livros de um autorepecifico\n\t"
+		        		+ "7 alunos com debitos\n\t"
+		        		+ "8 alunos com o maximo de livros emprestados"
+		                + "0 para sair\n");
+
+		        if (in.hasNextInt()) {
+		            option = in.nextInt();
+
+		            in.nextLine();
+		        } else {
+		            in.nextLine();
+		            System.out.println("Digite um número válido!");
+		            continue;
+		        }
+
+		        switch (option) {
+		            case 1:
+		                menuGenero(in);
+		                break;
+		            case 2:
+		                menuAutor(in);
+		                break;
+		            case 3:
+		                menuEditoras(in);
+		                break;
+		            case 4:
+		                menuLivros(in);
+		                break;
+		        }
+		    } while (option != 0);
+		}
+		
+		
 	}

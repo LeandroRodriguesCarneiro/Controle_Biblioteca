@@ -17,7 +17,7 @@ public class AuthorDAO {
     
     public void deleteAuthor(int id) {
     	MySQLConnector sql = new MySQLConnector();
-    	 sql.executeSQL("DELETE FROM author WHERE id = "+ id);
+    	sql.executeProcedure("SP_DeleteAuthor", id);
     }
 
     public List<Author> selectAllAuthors() {

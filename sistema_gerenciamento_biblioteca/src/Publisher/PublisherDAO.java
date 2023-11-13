@@ -17,7 +17,7 @@ public class PublisherDAO {
     
     public void deletePublisher(int id) {
     	MySQLConnector sql = new MySQLConnector();
-    	 sql.executeSQL("DELETE FROM publisher WHERE id = "+ id);
+    	 sql.executeProcedure("SP_InsertPublisher", id);
     }
 
     public List<Publisher> selectAllPublisher() {

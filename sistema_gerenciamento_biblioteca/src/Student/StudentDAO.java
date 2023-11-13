@@ -13,27 +13,17 @@ public class StudentDAO {
 
 	public void insertStudent(String name, long numberRegistration) {
         MySQLConnector sql = new MySQLConnector();
-        sql.insertSQL("INSERT INTO student(number_registration, name, borrowed_books, DEBITS) VALUES ('"+numberRegistration+"','"+name+"', 0, 0)");
+        sql.executeProcedure("SP_InsertStudent", name, numberRegistration);
     }
     
     public void deleteStudent(int id) {
     	MySQLConnector sql = new MySQLConnector();
-    	 sql.executeSQL("DELETE FROM student WHERE id = "+ id);
+    	 sql.executeProcedure("SP_DeleteStudent", id);
     }
     
     public void payDebits(int id,float pay) {
     	MySQLConnector sql = new MySQLConnector();
-    	 sql.executeSQL("UPDATE student SET DEBITS = DEBITS + "+pay+" WHERE id ="+id);
-    }
-    
-    public void addDebits(int id, float debits) {
-    	MySQLConnector sql = new MySQLConnector();
-   	 	sql.executeSQL("UPDATE student SET DEBITS = DEBITS + "+debits+" WHERE id ="+id);
-    }
-    
-    public void updateBorrowedBooks(int id, int qtd) {
-    	MySQLConnector sql = new MySQLConnector();
-   	 	sql.executeSQL("UPDATE student SET borrowed_books = "+qtd+" WHERE id ="+id);
+    	sql.executeProcedure("SP_PayDebits", id, pay);
     }
     
     public List<Student> selectStudentByNumerRegistration(long numberRegistration) {
