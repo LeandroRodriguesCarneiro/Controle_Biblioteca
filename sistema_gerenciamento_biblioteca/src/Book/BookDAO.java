@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDate;
 import java.time.Year;
 
 import Genres.Genres;
@@ -76,7 +77,7 @@ public class BookDAO {
 
         return booksList;
     }
-    
+
     public List<Book> selectBooksByISBN(String ISBN) {
         MySQLConnector sql = new MySQLConnector();
         String query = "SELECT * FROM vw_books WHERE isbn = '"+ISBN+"'";
@@ -102,5 +103,119 @@ public class BookDAO {
 
         return booksList;
     }
+    
+    public List<Book> selectBooksTimesBorrowed() {
+        MySQLConnector sql = new MySQLConnector();
+        String query = "SELECT \r\n"
+        		+ "	vbk.*,\r\n"
+        		+ "    COUNT(bbk.id_book) AS times_borrowed\r\n"
+        		+ "FROM vw_books as vbk\r\n"
+        		+ "LEFT JOIN borrowed_books as bbk ON vbk.id = bbk.id_book\r\n"
+        		+ "GROUP BY vbk.id\r\n"
+        		+ "ORDER BY times_borrowed DESC";
+        ResultSet resultSet = sql.selectSQL(query);
+        booksList.clear();
+        if (resultSet != null) {
+            try {
+                while (resultSet.next()) {
+                	Book book = new Book(resultSet.getInt("id"), resultSet.getString("title"), resultSet.getString("isbn"),
+                            resultSet.getInt("year"), resultSet.getInt("quantity"), resultSet.getString("publisher"),
+                            resultSet.getString("author"), resultSet.getString("genre"));
+                	book.setTimesBorrowed(resultSet.getInt("times_borrowed"));
+                	booksList.add(book);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
+        return booksList;
+    }
+    
+    public List<Book> selectBooksOutStockBooks() {
+        MySQLConnector sql = new MySQLConnector();
+        String query = "SELECT * FROM vw_books WHERE quantity<=0";
+        ResultSet resultSet = sql.selectSQL(query);
+        booksList.clear();
+        if (resultSet != null) {
+            try {
+                while (resultSet.next()) {
+                	Book book = new Book(resultSet.getInt("id"), resultSet.getString("title"), resultSet.getString("isbn"),
+                            resultSet.getInt("year"), resultSet.getInt("quantity"), resultSet.getString("publisher"),
+                            resultSet.getString("author"), resultSet.getString("genre"));
+                	booksList.add(book);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return booksList;
+    }
+    
+    public List<Book> selectBooksPublishedPeriodTime(LocalDate dateInit, LocalDate dateEnd) {
+        MySQLConnector sql = new MySQLConnector();
+        String query = "SELECT * FROM vw_books WHERE year >= '"+dateInit+"' AND year <= '"+dateEnd+"'";
+        ResultSet resultSet = sql.selectSQL(query);
+        booksList.clear();
+        if (resultSet != null) {
+            try {
+                while (resultSet.next()) {
+                	Book book = new Book(resultSet.getInt("id"), resultSet.getString("title"), resultSet.getString("isbn"),
+                            resultSet.getInt("year"), resultSet.getInt("quantity"), resultSet.getString("publisher"),
+                            resultSet.getString("author"), resultSet.getString("genre"));
+                	booksList.add(book);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return booksList;
+    }
+    
+    public List<Book> selectBooksSpecificAuthor (String authorName) {
+        MySQLConnector sql = new MySQLConnector();
+        String query = "SELECT * FROM vw_books WHERE author LIKE '%"+authorName+"%'";
+        ResultSet resultSet = sql.selectSQL(query);
+        booksList.clear();
+        if (resultSet != null) {
+            try {
+                while (resultSet.next()) {
+                	Book book = new Book(resultSet.getInt("id"), resultSet.getString("title"), resultSet.getString("isbn"),
+                            resultSet.getInt("year"), resultSet.getInt("quantity"), resultSet.getString("publisher"),
+                            resultSet.getString("author"), resultSet.getString("genre"));
+                	booksList.add(book);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return booksList;
+    }
 }

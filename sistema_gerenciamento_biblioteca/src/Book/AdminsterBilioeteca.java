@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.time.Year;
+import java.time.format.DateTimeFormatter;
 import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+
 
 import Author.Author;
 import Author.AuthorDAO;
@@ -34,7 +35,7 @@ public class AdminsterBilioeteca {
 		                + "1 para entrar no menu de Livros\n\t"
 		                + "2 para entrar no menu de Alunos\n\t"
 		                + "3 para ir para o menu de Empréstimos\n\t"
-		                + "4 para relatorios"
+		                + "4 para relatorios\n\t"
 		                + "0 para sair\n");
 	
 		        option = in.nextInt();
@@ -323,7 +324,7 @@ public class AdminsterBilioeteca {
 		}
 		public void adicionarLivros(Scanner in) {
 			PublisherDAO publisherDAO = new PublisherDAO();
-			List<Publisher> publisherList = publisherDAO.selectPublisherByCountTitles();
+			List<Publisher> publisherList = publisherDAO.selectPublisherByCountTitles10();
 			Publisher publisher = null;
 	
 			System.out.println("Aqui estão algumas opções de editoras. Se a editora estiver na lista, digite seu ID; caso contrário, digite 0");
@@ -920,9 +921,9 @@ public class AdminsterBilioeteca {
 		        		+ "3 livros fora de estoque\n\t"
 		        		+ "4 livros publicados em um intervalo de tempo\n\t"
 		        		+ "5 Editoras com mais titulos\n\t"
-		        		+ "6 Livros de um autorepecifico\n\t"
+		        		+ "6 Livros de um autor especifico\n\t"
 		        		+ "7 alunos com debitos\n\t"
-		        		+ "8 alunos com o maximo de livros emprestados"
+		        		+ "8 alunos com o maximo de livros emprestados\n\t"
 		                + "0 para sair\n");
 
 		        if (in.hasNextInt()) {
@@ -937,20 +938,212 @@ public class AdminsterBilioeteca {
 
 		        switch (option) {
 		            case 1:
-		                menuGenero(in);
+		            	relatorioLivrosGenero();
 		                break;
 		            case 2:
-		                menuAutor(in);
+		            	relatorioLivrosRetirados();
 		                break;
 		            case 3:
-		                menuEditoras(in);
+		            	relatorioLivroForaEstoque();
 		                break;
 		            case 4:
-		                menuLivros(in);
+		            	relatorioLivrosPublicadosIntervaloTempo(in);
 		                break;
+		            case 5:
+		            	relatorioEditoraComMaisTitulos();
+		            	break;
+		            case 6:
+		            	relatorioLivrosDeAuthorEspecifico(in);
+		            	break;
+		            case 7:
+		            	EstudantesComDividas();
+		            	break;
+		            case 8:
+		            	AlunosComMaximoLivrosEmprestados();
+		            	break;
+		            	
 		        }
 		    } while (option != 0);
 		}
 		
-		
+		public void relatorioLivrosGenero () {
+			BookDAO bookDAO = new BookDAO();
+			List<Book> bookList = bookDAO.selectAllBooks();
+			for (Book book: bookList) {
+				System.out.println("id: "+book.getId());
+				System.out.println("isbn: "+book.getIsbn());
+				System.out.println("titulo: "+book.getTitle());
+				System.out.println("editora: "+book.getPublisher());
+				System.out.println("quantidade: "+book.getQuantity());
+				System.out.println("ano de publicacao: "+book.getYearPublication());
+				System.out.println("generos: ");
+				for (String string: book.getGenre()) {
+					System.out.println("	"+string);
+				}
+				System.out.println("Autores: ");
+				for (String string: book.getAuthor()) {
+					System.out.println("	"+string);
+				}
+			}
+		}
+		public void relatorioLivrosRetirados() {
+			BookDAO bookDAO = new BookDAO();
+			List<Book> bookList = bookDAO.selectBooksTimesBorrowed();
+			for (Book book: bookList) {
+				System.out.println("id: "+book.getId());
+				System.out.println("isbn: "+book.getIsbn());
+				System.out.println("titulo: "+book.getTitle());
+				System.out.println("editora: "+book.getPublisher());
+				System.out.println("quantidade: "+book.getQuantity());
+				System.out.println("ano de publicacao: "+book.getYearPublication());
+				System.out.println("generos: ");
+				for (String string: book.getGenre()) {
+					System.out.println("	"+string);
+				}
+				System.out.println("Autores: ");
+				for (String string: book.getAuthor()) {
+					System.out.println("	"+string);
+				}
+				System.out.println("veses emprestado: "+book.getTimesBorrowed());
+			}
+		}
+		public void relatorioLivroForaEstoque() {
+			BookDAO bookDAO = new BookDAO();
+			List<Book> bookList = bookDAO.selectBooksOutStockBooks();
+			for (Book book: bookList) {
+				System.out.println("id: "+book.getId());
+				System.out.println("isbn: "+book.getIsbn());
+				System.out.println("titulo: "+book.getTitle());
+				System.out.println("editora: "+book.getPublisher());
+				System.out.println("quantidade: "+book.getQuantity());
+				System.out.println("ano de publicacao: "+book.getYearPublication());
+				System.out.println("generos: ");
+				for (String string: book.getGenre()) {
+					System.out.println("	"+string);
+				}
+				System.out.println("Autores: ");
+				for (String string: book.getAuthor()) {
+					System.out.println("	"+string);
+				}
+			}
+		}
+		public void relatorioLivrosPublicadosIntervaloTempo(Scanner in) {
+			in.nextLine();
+	        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+	        System.out.print("Digite a data inicial (formato yyyy-MM-dd): ");
+	        String dataInicialStr = in.next();
+
+	        System.out.print("Digite a data final (formato yyyy-MM-dd): ");
+	        String dataFinalStr = in.next();
+	        LocalDate dataInit = null;
+	        LocalDate dataEnd = null;
+	        try {
+	        	dataInit = LocalDate.parse(dataInicialStr, dateFormatter);
+	        	dataEnd = LocalDate.parse(dataFinalStr, dateFormatter);
+
+	        } catch (Exception e) {
+	            System.out.println("Formato de data inválido. Certifique-se de usar o formato yyyy-MM-dd.");
+	            e.printStackTrace();
+	        }
+	        
+	        BookDAO bookDAO = new BookDAO();
+			List<Book> bookList = bookDAO.selectBooksPublishedPeriodTime(dataInit,dataEnd);
+			for (Book book: bookList) {
+				System.out.println("id: "+book.getId());
+				System.out.println("isbn: "+book.getIsbn());
+				System.out.println("titulo: "+book.getTitle());
+				System.out.println("editora: "+book.getPublisher());
+				System.out.println("quantidade: "+book.getQuantity());
+				System.out.println("ano de publicacao: "+book.getYearPublication());
+				System.out.println("generos: ");
+				for (String string: book.getGenre()) {
+					System.out.println("	"+string);
+				}
+				System.out.println("Autores: ");
+				for (String string: book.getAuthor()) {
+					System.out.println("	"+string);
+				}
+			}
+		}
+		public void relatorioEditoraComMaisTitulos() {
+			PublisherDAO publisherDAO = new PublisherDAO();
+			List<Publisher> publisherList = publisherDAO.selectPublisherByCountTitles();
+			for (Publisher publisher : publisherList) {
+	            System.out.println("ID: " + publisher.getId() + ", Nome: " + publisher.getName());
+	        }
+		}
+		public void relatorioLivrosDeAuthorEspecifico(Scanner in) {
+	        in.nextLine();
+	        int option = -1;
+	        String author = null;
+
+	        do {
+	            System.out.println("Digite o nome do autor que deseja pesquisar:");
+	            author = in.nextLine().trim();
+
+	            System.out.println("Se deseja digitar novamente, digite 1; digite 0 para sair:");
+	            if (in.hasNextInt()) {
+	                option = in.nextInt();
+	                in.nextLine();
+	            } else {
+	                in.nextLine();
+	                System.out.println("Digite um número válido!");
+	                continue;
+	            }
+
+	            if (option == 1) {
+	                if (!author.isEmpty()) {
+	                    break;
+	                } else {
+	                    System.out.println("Nome do autor não pode estar vazio.");
+	                }
+	            }
+
+	        } while (option != 0);
+
+	        if (author != null) {
+	            BookDAO bookDAO = new BookDAO();
+	            List<Book> bookList = bookDAO.selectBooksSpecificAuthor(author);
+
+	            for (Book book : bookList) {
+	                System.out.println("id: " + book.getId());
+	                System.out.println("isbn: " + book.getIsbn());
+	                System.out.println("titulo: " + book.getTitle());
+	                System.out.println("editora: " + book.getPublisher());
+	                System.out.println("quantidade: " + book.getQuantity());
+	                System.out.println("ano de publicacao: " + book.getYearPublication());
+	                System.out.println("generos: ");
+	                for (String genre : book.getGenre()) {
+	                    System.out.println("    " + genre);
+	                }
+	                System.out.println("Autores: ");
+	                for (String authorName : book.getAuthor()) {
+	                    System.out.println("    " + authorName);
+	                }
+	            }
+	        } else {
+	            System.out.println("Operação cancelada. Autor não fornecido.");
+	        }
+	    }
+		public void EstudantesComDividas() {
+			StudentDAO studentDAO = new StudentDAO();
+			List<Student> listStudent = studentDAO.selectStudentsDebt();
+			for (Student student: listStudent) {
+				System.out.println("id: "+student.getId());
+				System.out.println("nome: "+student.getName());
+				System.out.println("numero de matricula: "+student.getNumberRegistration());
+				System.out.println("debitos: "+student.getDebits());
+			}
+		}
+		public void AlunosComMaximoLivrosEmprestados() {
+			StudentDAO studentDAO = new StudentDAO();
+			List<Student> listStudent = studentDAO.selectStudentsMaximumNumberBooksBorrowed();
+			for (Student student: listStudent) {
+				System.out.println("id: "+student.getId());
+				System.out.println("nome: "+student.getName());
+				System.out.println("numero de matricula: "+student.getNumberRegistration());
+				System.out.println("debitos: "+student.getDebits());
+			}
+		}
 	}

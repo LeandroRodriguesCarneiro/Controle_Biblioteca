@@ -67,7 +67,7 @@ public class PublisherDAO {
         return publisherList;
     }
     
-    public List<Publisher> selectPublisherByCountTitles() {
+    public List<Publisher> selectPublisherByCountTitles10() {
         MySQLConnector sql = new MySQLConnector();
         ResultSet resultSet = sql.selectSQL("SELECT \r\n"
         		+ "	pub.id, \r\n"
@@ -78,6 +78,36 @@ public class PublisherDAO {
         		+ "GROUP BY pub.id, pub.name \r\n"
         		+ "ORDER BY qtd_titles DESC \r\n"
         		+ "LIMIT 10");
+        publisherList.clear();
+        if (resultSet != null) {
+            try {
+                while (resultSet.next()) {
+                	publisherList.add(new Publisher(resultSet.getInt("id"), resultSet.getString("publisher")));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return publisherList;
+    }
+    
+    public List<Publisher> selectPublisherByCountTitles() {
+        MySQLConnector sql = new MySQLConnector();
+        ResultSet resultSet = sql.selectSQL("SELECT \r\n"
+        		+ "	pub.id, \r\n"
+        		+ "    pub.name as publisher,\r\n"
+        		+ "    COUNT(bok.id) as qtd_titles\r\n"
+        		+ "FROM publisher AS pub \r\n"
+        		+ "LEFT JOIN book AS bok ON pub.id = bok.id_publisher \r\n"
+        		+ "GROUP BY pub.id, pub.name \r\n"
+        		+ "ORDER BY qtd_titles DESC");
         publisherList.clear();
         if (resultSet != null) {
             try {

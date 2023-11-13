@@ -13,6 +13,7 @@ public class Book {
 	private List<String> genre = new ArrayList<>();
 	private Year yearPublication;
 	private int quantity;
+	private int timesBorrowed;
 	
 	public Book(int id, String title, String isbn, int yearPublication, int quantity, String publisher, String authors, String genres) {
 		this.id = id;
@@ -95,4 +96,15 @@ public class Book {
 		this.quantity = quantity;
 	}
 
+	public int getTimesBorrowed() {
+		return timesBorrowed;
+	}
+
+	public void setTimesBorrowed(int timesBorrowed) {
+		this.timesBorrowed = timesBorrowed;
+	}
+
+	public void setYearPublication(Year yearPublication) {
+		this.yearPublication = yearPublication;
+	}
 }
