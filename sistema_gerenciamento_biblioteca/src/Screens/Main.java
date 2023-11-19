@@ -1,99 +1,101 @@
 package Screens;
 
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 import java.awt.Font;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+
+import Manager.ClienteManager;
+import Manager.ProdutoManager;
+import Manager.Sistema;
+import system.MainFrame;
+import system.MainPanel;
+import system.SidebarPanel;
+import system.BancodeDados.DataBaseFirebase;
+import system.CRUDCustomers.CustomersPanel;
+import system.CRUDProducts.ProductsPanel;
+import system.Category.AddCategoryPanel;
+import system.Promotion.PromotionsPanel;
+import system.Reports.ReportsPanel;
+import system.Reports.SalesReportPanel;
+import system.Sales.SalesPanel;
+import system.Supplier.AddSupplierPanel;
+
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class Main {
-
-	private JFrame frame;
-
+public class Main extends JFrame{
 	/**
-	 * Launch the application.
+	 * 
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Main window = new Main();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	private static final long serialVersionUID = -6340235651217630471L;
+	private CardLayout cardLayout;
+	private JPanel cardPanel; // Contém todos os painéis da aplicação
+	//private Sistema sistema = new Sistema();
+	//private ClienteManager clienteManager = new ClienteManager();
+	//private ProdutoManager produtoManager = new ProdutoManager();
 
-	/**
-	 * Create the application.
-	 */
 	public Main() {
-		initialize();
+		// sistema.inicializarDadosDeTeste();
+		setTitle("Sistema de Gestão de biblioteca");
+		setSize(1200, 800);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocationRelativeTo(null); // Centraliza a janela
+
+		cardLayout = new CardLayout();
+		cardPanel = new JPanel(cardLayout);
+
+		MainPanel mainPanel = new MainPanel();
+		cardPanel.add(mainPanel, "MainPanel");
+
+//		SalesReportPanel salesReportPanel = new SalesReportPanel(sistema);
+//		cardPanel.add(salesReportPanel, "SalesReportPanel");
+//
+//		ProductsPanel productsPanel = new ProductsPanel(cardLayout, cardPanel, sistema, produtoManager);
+//		cardPanel.add(productsPanel, "ProductsPanel");
+//
+//		CustomersPanel customersPanel = new CustomersPanel(cardLayout, cardPanel, clienteManager);
+//		cardPanel.add(customersPanel, "CustomersPanel");
+//
+//		SalesPanel salesPanel = new SalesPanel(sistema, cardLayout, cardPanel, produtoManager, clienteManager);
+//		cardPanel.add(salesPanel, "SalesPanel");
+//
+//		PromotionsPanel promotionsPanel = new PromotionsPanel(productsPanel, produtoManager);
+//		cardPanel.add(promotionsPanel, "PromotionsPanel");
+//
+//		ReportsPanel reportsPanel = new ReportsPanel(sistema, produtoManager);
+//		cardPanel.add(reportsPanel, "ReportsPanel");
+//
+//		AddSupplierPanel addSupplierPanel = new AddSupplierPanel(sistema, cardLayout, cardPanel);
+//		cardPanel.add(addSupplierPanel, "AddSupplierPanel");
+//
+//		AddCategoryPanel addCategoryPanel = new AddCategoryPanel(sistema, cardLayout, cardPanel);
+//		cardPanel.add(addCategoryPanel, "AddCategoryPanel");
+//
+		SidebarPanel sidebarPanel = new SidebarPanel(cardLayout, cardPanel);
+
+		getContentPane().add(sidebarPanel, BorderLayout.WEST);
+		add(cardPanel);
+		cardLayout.show(cardPanel, "MainPanel");
 	}
 
-	/**
-	 * Initialize the contents of the frame.
-	 */
-	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(null);
-		
-		JLabel lblBiblioteca = new JLabel("Biblioteca");
-		lblBiblioteca.setHorizontalAlignment(SwingConstants.CENTER);
-		lblBiblioteca.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.BOLD, 35));
-		lblBiblioteca.setBounds(140, 11, 160, 44);
-		frame.getContentPane().add(lblBiblioteca);
-		
-		JButton ButAddBook = new JButton("Adicionar Livro");
-		ButAddBook.setFont(new Font("Tw Cen MT Condensed", Font.BOLD, 20));
-		ButAddBook.setBounds(49, 66, 147, 31);
-		frame.getContentPane().add(ButAddBook);
-		
-		JButton ButPreview = new JButton("Visualizar");
-		ButPreview.setFont(new Font("Tw Cen MT Condensed", Font.BOLD, 20));
-		ButPreview.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
+	public void showPanel(String panelName) {
+		cardLayout.show(cardPanel, panelName);
+	}
+
+	public static void main(String[] args) {
+		SwingUtilities.invokeLater(() -> {
+			// Instancia e mostra a interface gráfica
+			Main frame = new Main();
+			frame.setVisible(true);
 		});
-		ButPreview.setBounds(49, 116, 147, 31);
-		frame.getContentPane().add(ButPreview);
-		
-		JButton ButAddStud = new JButton("Adicionar Aluno");
-		ButAddStud.setFont(new Font("Tw Cen MT Condensed", Font.BOLD, 20));
-		ButAddStud.setBounds(242, 66, 147, 31);
-		frame.getContentPane().add(ButAddStud);
-		
-		JButton ButUpdate = new JButton("Atualizar");
-		ButUpdate.setFont(new Font("Tw Cen MT Condensed", Font.BOLD, 20));
-		ButUpdate.setBounds(242, 116, 147, 31);
-		frame.getContentPane().add(ButUpdate);
-		
-		JButton ButDelete = new JButton("Deletar Livro");
-		ButDelete.setFont(new Font("Tw Cen MT Condensed", Font.BOLD, 20));
-		ButDelete.setBounds(49, 158, 147, 31);
-		frame.getContentPane().add(ButDelete);
-		
-		JButton ButReport = new JButton("Relatório");
-		ButReport.setFont(new Font("Tw Cen MT Condensed", Font.BOLD, 20));
-		ButReport.setBounds(242, 158, 147, 31);
-		frame.getContentPane().add(ButReport);
-		
-		JButton ButDevo = new JButton("Devolução ");
-		ButDevo.setFont(new Font("Tw Cen MT Condensed", Font.BOLD, 20));
-		ButDevo.setBounds(242, 206, 147, 31);
-		frame.getContentPane().add(ButDevo);
-		
-		JButton ButLoan = new JButton("Empréstimo");
-		ButLoan.setFont(new Font("Tw Cen MT Condensed", Font.BOLD, 20));
-		ButLoan.setBounds(49, 206, 147, 31);
-		frame.getContentPane().add(ButLoan);
 	}
 }
