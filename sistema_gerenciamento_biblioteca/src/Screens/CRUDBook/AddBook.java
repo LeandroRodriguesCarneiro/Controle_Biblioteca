@@ -1,4 +1,4 @@
-package Screens;
+package Screens.CRUDBook;
 
 import java.awt.EventQueue;
 

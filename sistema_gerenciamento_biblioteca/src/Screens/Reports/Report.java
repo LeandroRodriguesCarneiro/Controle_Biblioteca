@@ -1,10 +1,12 @@
-package Screens;
+package Screens.Reports;
 
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
 
-public class Update {
+public class Report {
 
 	private JFrame frame;
 
@@ -15,7 +17,7 @@ public class Update {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Update window = new Update();
+					Report window = new Report();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -27,7 +29,7 @@ public class Update {
 	/**
 	 * Create the application.
 	 */
-	public Update() {
+	public Report() {
 		initialize();
 	}
 
@@ -38,6 +40,12 @@ public class Update {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		JComboBox comboBox = new JComboBox();
+		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Ficção", "Terror", "Comédia"}));
+		comboBox.setBounds(10, 11, 414, 20);
+		frame.getContentPane().add(comboBox);
 	}
 
 }

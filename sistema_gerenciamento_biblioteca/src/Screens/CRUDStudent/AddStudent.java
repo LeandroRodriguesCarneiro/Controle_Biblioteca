@@ -1,4 +1,4 @@
-package Screens;
+package Screens.CRUDStudent;
 
 import java.awt.EventQueue;
 
