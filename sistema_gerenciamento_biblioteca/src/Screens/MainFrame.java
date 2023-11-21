@@ -3,22 +3,20 @@ package Screens;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import java.awt.Font;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-
 import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 import Screens.Menu.MainPanel;
 import Screens.Menu.SidebarPanel;
-
+import Screens.CRUDBook.BookPanel;
 public class MainFrame extends JFrame{
 	/**
 	 * 
@@ -42,7 +40,10 @@ public class MainFrame extends JFrame{
 
 		MainPanel mainPanel = new MainPanel();
 		cardPanel.add(mainPanel, "MainPanel");
-
+		
+		BookPanel bookPanel = new BookPanel(cardLayout, cardPanel);
+		cardPanel.add(bookPanel, "Book Panel");
+		
 //		SalesReportPanel salesReportPanel = new SalesReportPanel(sistema);
 //		cardPanel.add(salesReportPanel, "SalesReportPanel");
 //
