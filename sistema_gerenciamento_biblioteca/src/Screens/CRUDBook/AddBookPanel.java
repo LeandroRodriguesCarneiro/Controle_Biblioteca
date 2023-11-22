@@ -40,7 +40,6 @@ public class AddBookPanel extends JPanel{
 	    private List<Genres> allGenresList;
 	    private JList<Genres> availableGenresList;
 	    private DefaultListModel<Genres> availableGenresModel;
-	    
 	    private List<Author> allAuthorList;
 	    private JList<Author> availableAuthorList;
 	    private DefaultListModel<Author> availableAuthorModel;
@@ -269,8 +268,6 @@ public class AddBookPanel extends JPanel{
 	        });
 	        add(removeGenre);
 	        
-	        
-	        
 	        btnAdd = new JButton("Adicionar Livro");
 	        btnAdd.setBounds(10, 500, 255, 25);
 	        btnAdd.addActionListener(new ActionListener() {
@@ -289,7 +286,7 @@ public class AddBookPanel extends JPanel{
 					    if (txtISBN.getText().isEmpty()) {
 					        JOptionPane.showMessageDialog(null, "Por favor, preencha o ISBN.");
 					        return;
-					    } else if (txtISBN.getText().length() < 13) {
+					    } else if (txtISBN.getText().length() != 13) {
 					        JOptionPane.showMessageDialog(null, "Por favor, o ISBN precisa ter 13 dígitos.");
 					        return;
 					    }

@@ -25,7 +25,7 @@ public class BookPanel extends JPanel{
 	private static final long serialVersionUID = -4843807817212241104L;
     private JTable table;
     private DefaultTableModel tableModel;
-    private JButton btnAdd, btnEdit, btnDelete;
+    private JButton btnAdd, btnEdit, btnDelete, btnGenres, btnPublisher, btnAuthor;
     private CardLayout cardLayout;
     private JPanel cardPanel;
     private BookDAO bookDao = new BookDAO();
@@ -89,9 +89,22 @@ public class BookPanel extends JPanel{
         backButton = new JButton("Voltar");
         backButton.setBounds(870, 10, 80, 30);
         add(backButton);
-
+        
+        btnGenres = new JButton("Generos");
+        btnGenres.setBounds(340, 360, 150, 30);
+        add(btnGenres);
+        
+        btnPublisher = new JButton("Editoras");
+        btnPublisher.setBounds(500, 360, 150, 30);
+        add(btnPublisher);
+        
+        btnAuthor = new JButton("Autores");
+        btnAuthor.setBounds(660, 360, 150, 30);
+        add(btnAuthor);
+        
         backButton.addActionListener(e -> cardLayout.show(cardPanel, "MainPanel"));
         refreshBookTable();
+        
         btnAdd.addActionListener(e -> {
         	loadBookList = false;
             AddBookPanel addBookPanel = new AddBookPanel(tableModel, cardLayout, cardPanel,
@@ -139,6 +152,24 @@ public class BookPanel extends JPanel{
     	    	cardPanel.add(updateBookPanel, "UpdateBookPanel");
     	    	cardLayout.show(cardPanel, "UpdateBookPanel");
     	    }
+        });
+        
+        btnGenres.addActionListener(e ->{
+        	GenresPanel GenresPanel = new GenresPanel(cardLayout, cardPanel, this);
+        	cardPanel.add(GenresPanel, "GenresPanel");
+            cardLayout.show(cardPanel, "GenresPanel");
+        });
+        
+        btnPublisher.addActionListener(e ->{
+        	PublisherPanel PublisherPanel = new PublisherPanel(cardLayout, cardPanel, this);
+        	cardPanel.add(PublisherPanel, "PublisherPanel");
+            cardLayout.show(cardPanel, "PublisherPanel");
+        });
+        
+        btnAuthor.addActionListener(e ->{
+        	AuthorPanel AuthorPanel = new AuthorPanel(cardLayout, cardPanel, this);
+        	cardPanel.add(AuthorPanel, "AuthorPanel");
+            cardLayout.show(cardPanel, "AuthorPanel");
         });
     }
     

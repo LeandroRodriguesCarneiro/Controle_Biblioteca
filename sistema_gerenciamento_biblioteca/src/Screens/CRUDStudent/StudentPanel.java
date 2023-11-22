@@ -28,7 +28,7 @@ public class StudentPanel extends JPanel{
     private JButton btnAdd, btnEdit, btnDelete;
     private CardLayout cardLayout;
     private JPanel cardPanel;
-    private StudentDAO studentDao = new StudentDAO();
+    private StudentDAO studentDAO = new StudentDAO();
     private JButton backButton;
     private JLabel lblStudents;
     private List<Student> studentsList = new ArrayList<>();
@@ -68,6 +68,10 @@ public class StudentPanel extends JPanel{
         columnModel.getColumn(0).setMinWidth(0);
         columnModel.getColumn(0).setPreferredWidth(0);
         columnModel.getColumn(0).setWidth(0);
+        columnModel.getColumn(3).setMaxWidth(0);
+        columnModel.getColumn(3).setMinWidth(0);
+        columnModel.getColumn(3).setPreferredWidth(0);
+        columnModel.getColumn(3).setWidth(0);
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBounds(20, 50, 930, 300);
         add(scrollPane);
@@ -76,7 +80,7 @@ public class StudentPanel extends JPanel{
         btnAdd.setBounds(180, 10, 150, 30);
         add(btnAdd);
 
-        btnEdit = new JButton("Editar");
+        btnEdit = new JButton("Editar Aluno");
         btnEdit.setBounds(20, 360, 150, 30);
         add(btnEdit);
 
@@ -89,7 +93,7 @@ public class StudentPanel extends JPanel{
         add(backButton);
 
         backButton.addActionListener(e -> cardLayout.show(cardPanel, "MainPanel"));
-        //refreshBookTable();
+        refreshStudentTable();
         btnAdd.addActionListener(e -> {
         	loadStudentList = false;
             AddStudentPanel addStudentPanel = new AddStudentPanel(tableModel, cardLayout, cardPanel,this);
@@ -126,34 +130,31 @@ public class StudentPanel extends JPanel{
     public void loadStudentsIntoTable() {
         tableModel.setRowCount(0);
         studentsList.clear();
-       // studentsList = studentDao.se;
+        List<Student> updatedStudentList = studentDAO.selectAllStudent();
         if(loadStudentList == false) {
-//        	if (updatedBooksList != null) {
-//                updatedBooksList.sort(Comparator.comparingInt(Student::getId));
-//                booksList.addAll(updatedBooksList);
-//                if (!studentsList.isEmpty()) {
-//                    SwingUtilities.invokeLater(() -> {
-//                        for (Student Student : studentsList) {
-//                            tableModel.addRow(new Object[]{
-//                                    Student.getId(),
-//                                    Student.getTitle(),
-//                                    Student.getIsbn(),
-//                                    Student.getPublisher(),
-//                                    Student.getYearPublication(),
-//                                    Student.getQuantity(),
-//                                    String.join(",", Student.getAuthor()),
-//                                    String.join(",", Student.getGenre())
-//                            });
-//                        }
-//                    });
+        	if (updatedStudentList != null) {
+                updatedStudentList.sort(Comparator.comparingInt(Student::getId));
+                studentsList.addAll(updatedStudentList);
+                if (!studentsList.isEmpty()) {
+                    SwingUtilities.invokeLater(() -> {
+                        for (Student student : studentsList) {
+                            tableModel.addRow(new Object[]{
+                                    student.getId(),
+                                    student.getName(),
+                                    student.getNumberRegistration(),
+                                    student.getBorrowedBooks(),
+                                    student.getDebits()
+                            });
+                        }
+                    });
                     loadStudentList = true;
-//                }
+                }
             } else {
                 JOptionPane.showMessageDialog(this, "Erro ao carregar dados do Banco de dados.", "Erro",
                         JOptionPane.ERROR_MESSAGE);
             }
         }
-//    }
+    }
 
     
 }

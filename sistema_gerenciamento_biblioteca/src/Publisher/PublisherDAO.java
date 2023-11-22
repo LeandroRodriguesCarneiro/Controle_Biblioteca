@@ -15,9 +15,14 @@ public class PublisherDAO {
         return sql.executeProcedure("SP_insertPublisher", name);
     }
     
+    public void updatePublisher(int id, String name) {
+		MySQLConnector sql = new MySQLConnector();
+    	sql.executeProcedure("SP_UpdatePublisher", id, name);
+	}
+    
     public void deletePublisher(int id) {
     	MySQLConnector sql = new MySQLConnector();
-    	 sql.executeProcedure("SP_InsertPublisher", id);
+    	sql.executeProcedure("SP_DeletePublisher", id);
     }
 
     public List<Publisher> selectAllPublisher() {

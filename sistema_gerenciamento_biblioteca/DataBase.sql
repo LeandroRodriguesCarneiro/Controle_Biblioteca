@@ -528,4 +528,11 @@ CREATE PROCEDURE SP_DeleteGenre(
 BEGIN
     DELETE FROM genre WHERE id = p_id_genre;
 END//
+
+CREATE PROCEDURE SP_DeletePublisher(
+    IN p_id_publihser INT
+)
+BEGIN
+    DELETE FROM publisher  WHERE id = p_id_publihser;
+END//
 DELIMITER ;

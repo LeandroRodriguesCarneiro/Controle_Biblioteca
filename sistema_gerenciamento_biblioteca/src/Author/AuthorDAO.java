@@ -15,6 +15,11 @@ public class AuthorDAO {
         sql.executeProcedure("SP_InsertAuthor", name);
     }
     
+    public void updateAuthor(int id, String name) {
+		MySQLConnector sql = new MySQLConnector();
+    	sql.executeProcedure("SP_UpdateAuthor", id, name);
+	}
+    
     public void deleteAuthor(int id) {
     	MySQLConnector sql = new MySQLConnector();
     	sql.executeProcedure("SP_DeleteAuthor", id);

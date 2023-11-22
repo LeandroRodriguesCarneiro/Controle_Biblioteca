@@ -17,9 +17,14 @@ public class GenresDAO {
     
     public void deleteGenre(int id) {
     	MySQLConnector sql = new MySQLConnector();
-    	 sql.executeProcedure("SP_DeleteGenreBook", id);
+    	 sql.executeProcedure("SP_DeleteGenre", id);
     }
-
+    
+    public void updateGenre(int id, String name) {
+    	MySQLConnector sql = new MySQLConnector();
+   	 	sql.executeProcedure("SP_UpdateGenre", id, name);
+    }
+    
     public List<Genres> selectAllGenres() {
         MySQLConnector sql = new MySQLConnector();
         ResultSet resultSet = sql.selectSQL("SELECT id, name FROM genre");

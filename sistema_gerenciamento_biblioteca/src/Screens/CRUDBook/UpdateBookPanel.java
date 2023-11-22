@@ -371,14 +371,6 @@ public class UpdateBookPanel extends JPanel{
 					}catch(Exception ex){
 						JOptionPane.showMessageDialog(null, "Este ISBN já está em uso. Por favor, insira um ISBN diferente.");
 					}
-					txtTitle.setText("");
-					txtISBN.setText("");
-					txtYearPublication.setText("");
-					txtQuantity.setText("");
-					selectedPublisher = -1;
-					cbbPublisher.setSelectedIndex(-1);
-					selectedAuthorModel.clear();
-					selectedGenresModel.clear();
 	            }
 	            
 	        });

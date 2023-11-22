@@ -1,58 +1,28 @@
 package Screens.CRUDStudent;
 
 import java.awt.CardLayout;
-import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import java.awt.Component;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
-import java.time.Year;
-
-import Genres.Genres;
-import Genres.GenresDAO;
-import Author.Author;
-import Author.AuthorDAO;
 import Student.StudentDAO;
-import Publisher.Publisher;
-import Publisher.PublisherDAO;
 
 public class AddStudentPanel extends JPanel{
 	 private static final long serialVersionUID = -1723482129844832445L;
-	    private JTextField txtTitle, txtISBN, txtYearPublication, txtQuantity;
-	    private List<Genres> allGenresList;
-	    private JList<Genres> availableGenresList;
-	    private DefaultListModel<Genres> availableGenresModel;
-	    
-	    private List<Author> allAuthorList;
-	    private JList<Author> availableAuthorList;
-	    private DefaultListModel<Author> availableAuthorModel;
+	    private JTextField txtStudent, txtnumberRegistration;
 	    private JLabel lblStudent;
-	    private JComboBox<Publisher>cbbPublisher;
 	    private JButton btnAdd;
 	    private DefaultTableModel tableModel;
 	    private JButton btnBack;
 	    private CardLayout cardLayout;
 	    private JPanel cardPanel;
 	    private StudentPanel StudentPanel;
-	    private int selectedPublisher = -1;
 
 	    public AddStudentPanel(DefaultTableModel tableModel, CardLayout cardLayout,
 	            JPanel cardPanel, StudentPanel StudentPanel) {
@@ -72,289 +42,54 @@ public class AddStudentPanel extends JPanel{
 	        lblTtitle.setBounds(10, 45, 80, 25);
 	        add(lblTtitle);
 
-	        txtTitle = new JTextField();
-	        txtTitle.setBounds(120, 45, 500, 25);
-	        add(txtTitle);
+	        txtStudent = new JTextField();
+	        txtStudent.setBounds(120, 45, 500, 25);
+	        add(txtStudent);
 
-	        JLabel lblISBN = new JLabel("Matricula:");
-	        lblISBN.setBounds(10, 80, 80, 25);
-	        add(lblISBN);
+	        JLabel lblnumberRegistration = new JLabel("Matricula:");
+	        lblnumberRegistration.setBounds(10, 80, 80, 25);
+	        add(lblnumberRegistration);
 
-	        txtISBN = new JTextField();
-	        txtISBN.setBounds(530, 80, 90, 25);
-	        add(txtISBN);
-
-	        JLabel lblYearPublication = new JLabel("Ano de publicacao:");
-	        lblYearPublication.setBounds(10, 115, 150, 25);
-	        add(lblYearPublication);
-
-	        txtYearPublication = new JTextField();
-	        txtYearPublication.setBounds(585, 115, 35, 25);
-	        add(txtYearPublication);
-	        
-	        JLabel lblQuantity = new JLabel("Quantidade:");
-	        lblQuantity.setBounds(10, 150, 80, 25);
-	        add(lblQuantity);
-
-	        txtQuantity = new JTextField();
-	        txtQuantity.setBounds(585, 150, 35, 25);
-	        add(txtQuantity);
-	        
-	        JLabel lblPublisher = new JLabel("Editora:");
-	        lblPublisher.setBounds(10, 185, 80, 25);
-	        add(lblPublisher);
-	        
-	        PublisherDAO publisherDAO = new PublisherDAO();
-	        List<Publisher> publisherList = publisherDAO.selectAllPublisher();
-	        DefaultComboBoxModel<Publisher> publisherModel = new DefaultComboBoxModel<>(publisherList.toArray(new Publisher[0]));
-	        cbbPublisher = new JComboBox<>(publisherModel);
-	        cbbPublisher.setRenderer(new DefaultListCellRenderer() {
-	            @Override
-	            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-	                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-	                if (value instanceof Publisher) {
-	                    Publisher publisher = (Publisher) value;
-	                    setText(publisher.getName());
-	                }
-	                return this;
-	            }
-	        });
-	        cbbPublisher.setSelectedIndex(-1);
-	        cbbPublisher.setBounds(455, 185, 165, 25);
-	        add(cbbPublisher);
-	        
-	        JLabel lblAuthor = new JLabel("Autor:");
-	        lblAuthor.setBounds(10, 210, 80, 25); 
-	        add(lblAuthor);
-
-	        AuthorDAO authorDAO = new AuthorDAO();
-	        allAuthorList = authorDAO.selectAllAuthors();
-	        availableAuthorModel = new DefaultListModel<>(); // Correção: Inicializando o modelo
-	        for (Author author : allAuthorList) {
-	            availableAuthorModel.addElement(author);
-	        }
-	        availableAuthorList = new JList<>(availableAuthorModel); // Correção: Inicializando a lista com o modelo
-	        availableAuthorList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-	        availableAuthorList.setCellRenderer(new DefaultListCellRenderer() {
-	            @Override
-	            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-	                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-	                if (value instanceof Author) {
-	                    Author author = (Author) value;
-	                    setText(author.getName()); 
-	                }
-	                return this;
-	            }
-	        });
-	        JScrollPane availableAuthorPane = new JScrollPane(availableAuthorList);
-	        availableAuthorPane.setBounds(10, 230, 180, 95);
-	        add(availableAuthorPane);
-
-	        DefaultListModel<Author> selectedAuthorModel = new DefaultListModel<>();
-	        JList<Author> selectedAuthorList = new JList<>(selectedAuthorModel);
-	        selectedAuthorList.setCellRenderer(new DefaultListCellRenderer() {
-	            @Override
-	            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-	                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-	                if (value instanceof Author) {
-	                    Author author = (Author) value;
-	                    setText(author.getName()); 
-	                }
-	                return this;
-	            }
-	        });
-	        JScrollPane selectedAuthorPane = new JScrollPane(selectedAuthorList);
-	        selectedAuthorPane.setBounds(440, 230, 180, 95);
-	        add(selectedAuthorPane);
-
-	        JButton addAuthor = new JButton("Adicionar");
-	        addAuthor.setBounds(270, 245, 90, 25);
-	        addAuthor.addActionListener(new ActionListener() {
-	            public void actionPerformed(ActionEvent e) {
-	                List<Author> selectedValues = availableAuthorList.getSelectedValuesList();
-
-	                for (Author selectedValue : selectedValues) {
-	                    if (!selectedAuthorModel.contains(selectedValue)) {
-	                        selectedAuthorModel.addElement(selectedValue);
-	                    }
-	                }
-	            }
-	        });
-	        add(addAuthor);
-
-	        JButton removeAuthor = new JButton("Remover");
-	        removeAuthor.setBounds(270, 280, 90, 25);
-	        removeAuthor.addActionListener(new ActionListener() {
-	            public void actionPerformed(ActionEvent e) {
-	                int selectedIndex = selectedAuthorList.getSelectedIndex();
-	                if (selectedIndex != -1) {
-	                    selectedAuthorModel.remove(selectedIndex);
-	                }
-	            }
-	        });
-	        add(removeAuthor);
-	        
-	        JLabel lblGenre = new JLabel("Gênero:");
-	        lblGenre.setBounds(10, 335, 80, 25);
-	        add(lblGenre);
-	        
-	        	        
-	        GenresDAO genresDAO = new GenresDAO();
-	        allGenresList = genresDAO.selectAllGenres();
-	        availableGenresModel = new DefaultListModel<>();
-	        for (Genres genre : allGenresList) {
-	            availableGenresModel.addElement(genre);
-	        }
-	        availableGenresList = new JList<>(availableGenresModel);
-	        availableGenresList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-	        availableGenresList.setCellRenderer(new DefaultListCellRenderer() {
-	            @Override
-	            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-	                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-	                if (value instanceof Genres) {
-	                    Genres genre = (Genres) value;
-	                    setText(genre.getName()); 
-	                }
-	                return this;
-	            }
-	        });
-	        
-	        JScrollPane availableGenrePane = new JScrollPane(availableGenresList);
-	        availableGenrePane.setBounds(10, 355, 180, 95);
-	        add(availableGenrePane);
-	        
-	        DefaultListModel<Genres> selectedGenresModel = new DefaultListModel<>();
-	        JList<Genres> selectedGenresList = new JList<>(selectedGenresModel);
-	        selectedGenresList.setCellRenderer(new DefaultListCellRenderer() {
-	            @Override
-	            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-	                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-	                if (value instanceof Genres) {
-	                    Genres genre = (Genres) value;
-	                    setText(genre.getName()); 
-	                }
-	                return this;
-	            }
-	        });
-	        JScrollPane selectedGenrePane = new JScrollPane(selectedGenresList);
-	        selectedGenrePane.setBounds(440, 355, 180, 95);
-	        add(selectedGenrePane);
-	        
-	        JButton addGenre = new JButton("Adicionar");
-	        addGenre.setBounds(270, 365, 90, 25);
-	        addGenre.addActionListener(new ActionListener() {
-	            public void actionPerformed(ActionEvent e) {
-	                List<Genres> selectedValues = availableGenresList.getSelectedValuesList();
-	                int selectedCount = selectedGenresModel.size();
-
-	                for (Genres selectedValue : selectedValues) {
-	                    if (!selectedGenresModel.contains(selectedValue) && selectedCount < 5) {
-	                        selectedGenresModel.addElement(selectedValue);
-	                        selectedCount++;
-	                    }
-	                }
-	            }
-	        });
-	        add(addGenre);
-
-	        JButton removeGenre = new JButton("Remover");
-	        removeGenre.setBounds(270, 395, 90, 25);
-	        removeGenre.addActionListener(new ActionListener() {
-	            public void actionPerformed(ActionEvent e) {
-	                int selectedIndex = selectedGenresList.getSelectedIndex();
-	                if (selectedIndex != -1) {
-	                    selectedGenresModel.remove(selectedIndex);
-	                }
-	            }
-	        });
-	        add(removeGenre);
-	        
-	        
+	        txtnumberRegistration = new JTextField();
+	        txtnumberRegistration.setBounds(530, 80, 90, 25);
+	        add(txtnumberRegistration);
 	        
 	        btnAdd = new JButton("Adicionar Aluno");
 	        btnAdd.setBounds(10, 500, 255, 25);
 	        btnAdd.addActionListener(new ActionListener() {
 				@Override
 	            public void actionPerformed(ActionEvent e) {
-					String title = null;
-					String ISBN = null;
-					Year yearPublication = null;
-					Integer quantity = null;
+					String name = null;
+					Long numberRegistration = null;
 					try {
-					    if (txtTitle.getText().isEmpty()) {
+					    if (txtStudent.getText().isEmpty()) {
 					        JOptionPane.showMessageDialog(null, "Por favor, preencha o nome.");
 					        return;
 					    }
 
-					    if (txtISBN.getText().isEmpty()) {
-					        JOptionPane.showMessageDialog(null, "Por favor, preencha o ISBN.");
+					    if (txtnumberRegistration.getText().isEmpty()) {
+					        JOptionPane.showMessageDialog(null, "Por favor, preencha o numero de matricula.");
 					        return;
-					    } else if (txtISBN.getText().length() < 13) {
-					        JOptionPane.showMessageDialog(null, "Por favor, o ISBN precisa ter 13 dígitos.");
-					        return;
-					    }
-
-					    if (txtYearPublication.getText().length() != 4) {
-					        JOptionPane.showMessageDialog(null, "Por favor, o ano precisa ter 4 digitos.");
+					    } else if (txtnumberRegistration.getText().length() != 10) {
+					        JOptionPane.showMessageDialog(null, "Por favor, o numero de matricula precisa ter 10 dígitos.");
 					        return;
 					    }
-					    
-					    if(txtQuantity.getText().isEmpty()) {
-					    	JOptionPane.showMessageDialog(null, "Por favor, Digite a quantidade");
-					        return;
-					    }
-					    
-
-					    if(selectedPublisher<1) {
-					    	JOptionPane.showMessageDialog(null, "Por favor, selecione uma editora.");
-					        return;
-					    }
-					    
-					    if(selectedAuthorModel.isEmpty()) {
-					    	JOptionPane.showMessageDialog(null, "Por favor, Selecione um autor");
-					        return;
-					    }
-					    List<Integer> authorListID = new ArrayList<>();
-					    for (int i = 0; i < selectedAuthorModel.size(); i++) {
-					        Author author = selectedAuthorModel.getElementAt(i);
-					        authorListID.add(author.getId());
-					    }
-					    
-					    if(selectedGenresModel.isEmpty()) {
-					    	JOptionPane.showMessageDialog(null, "Por favor, Selecione um genero");
-					        return;
-					    }
-					    List<Integer> genresListID = new ArrayList<>();
-					    for (int i = 0; i < selectedGenresModel.size(); i++) {
-					        Genres genre = selectedGenresModel.getElementAt(i);
-					        genresListID.add(genre.getId());
-					    }
-					    title = String.valueOf(txtTitle.getText());
-					    ISBN = String.valueOf(txtISBN.getText());
-					    yearPublication = Year.of(Integer.valueOf(txtYearPublication.getText()));
-					    quantity = Integer.valueOf(txtQuantity.getText());
+					   
+					    name = String.valueOf(txtStudent.getText());
+					    numberRegistration = Long.parseLong(txtnumberRegistration.getText());
 					} catch (NumberFormatException ex) {
-					    JOptionPane.showMessageDialog(null, "Certifique-se de inserir números válidos para Ano e Quantidade.");
+					    JOptionPane.showMessageDialog(null, "Certifique-se de inserir números válidos para numero de matricula.");
 					}
 					try {
 						StudentDAO StudentDAO = new StudentDAO();
-						StudentDAO.insertStudent(selectedPublisher, Nome, Matricula, yearPublication, quantity, allGenresList, allAuthorList);
+						StudentDAO.insertStudent(name,numberRegistration);
 					}catch(Exception ex){
 						JOptionPane.showMessageDialog(null, "Este ISBN já está em uso. Por favor, insira um ISBN diferente.");
-					}         
+					}
+					txtStudent.setText("");
+					txtnumberRegistration.setText("");
 	            }
 	            
-	        });
-	        cbbPublisher.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
-					JComboBox<Publisher> combo = (JComboBox<Publisher>) e.getSource();
-	                Publisher selectedPublisherCbb = (Publisher) combo.getSelectedItem();
-	                
-	                if (selectedPublisherCbb != null) {
-	                	AddStudentPanel.this.selectedPublisher = selectedPublisherCbb.getId();
-	                }
-	            }
 	        }); 
 	        add(btnAdd);
 
@@ -363,7 +98,7 @@ public class AddStudentPanel extends JPanel{
 	        btnBack.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
 	            	StudentPanel.refreshStudentTable();
-	                cardLayout.show(cardPanel, "StudantPanel");
+	                cardLayout.show(cardPanel, "StudentPanel");
 	            }
 	        });
 	        add(btnBack);

@@ -26,6 +26,37 @@ public class StudentDAO {
     	sql.executeProcedure("SP_PayDebits", id, pay);
     }
     
+    public List<Student> selectAllStudent() {
+        MySQLConnector sql = new MySQLConnector();
+        ResultSet resultSet = sql.selectSQL("SELECT \r\n"
+        		+ "	   id, \r\n"
+        		+ "    number_registration, \r\n"
+        		+ "    name, \r\n"
+        		+ "    borrowed_books, \r\n"
+        		+ "    DEBITS \r\n"
+        		+ "    FROM student ");
+        listStudent.clear(); 
+
+        if (resultSet != null) {
+            try {
+                while (resultSet.next()) {
+                	listStudent.add(new Student(resultSet.getInt("id"),resultSet.getInt("borrowed_books"),resultSet.getString("name"),resultSet.getLong("number_registration"),
+                			resultSet.getFloat("DEBITS")));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return listStudent;
+    }
+    
     public List<Student> selectStudentByNumerRegistration(long numberRegistration) {
         MySQLConnector sql = new MySQLConnector();
         ResultSet resultSet = sql.selectSQL("SELECT \r\n"
