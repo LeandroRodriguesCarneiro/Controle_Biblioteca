@@ -91,6 +91,7 @@ public class MySQLConnector {
             return 0; 
         } catch (SQLException e) {
             e.printStackTrace();
+
         }
 
         return -1;

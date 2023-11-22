@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS genres_books(
 CREATE TABLE IF NOT EXISTS student(
     id INT AUTO_INCREMENT PRIMARY KEY,
     number_registration VARCHAR(10) NOT NULL,
-    name VARCHAR(50) NOT NULL,
+    name VARCHAR(100) NOT NULL,
     borrowed_books INT  NOT NULL,
     DEBITS FLOAT(4,2) NOT NULL,
 

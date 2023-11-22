@@ -16,6 +16,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 
 import Book.BookDAO;
 import Book.Book;
@@ -29,8 +30,9 @@ public class BookPanel extends JPanel{
     private JPanel cardPanel;
     private BookDAO bookDao = new BookDAO();
     private JButton backButton;
-    private JLabel lblClientes;
+    private JLabel lblBooks;
     private List<Book> booksList = new ArrayList<>();
+    private boolean loadBookList = false;
     
     public BookPanel(CardLayout cardLayout, JPanel cardPanel) {
         this.cardPanel = cardPanel;
@@ -48,6 +50,7 @@ public class BookPanel extends JPanel{
                 return false;
             }
         };
+        tableModel.addColumn("ID");
         tableModel.addColumn("Titulo");
         tableModel.addColumn("ISBN");
         tableModel.addColumn("Editora");
@@ -56,18 +59,21 @@ public class BookPanel extends JPanel{
         tableModel.addColumn("Autores");
         tableModel.addColumn("Generos");
 
-        loadBooksIntoTable();
-
-        lblClientes = new JLabel("Livros");
-        lblClientes.setFont(new Font("Arial", Font.BOLD, 30));
-        lblClientes.setBounds(20, 10, 150, 30);
-        add(lblClientes);
+        lblBooks = new JLabel("Livros");
+        lblBooks.setFont(new Font("Arial", Font.BOLD, 30));
+        lblBooks.setBounds(20, 10, 150, 30);
+        add(lblBooks);
 
         table = new JTable(tableModel);
+        TableColumnModel columnModel = table.getColumnModel();
+        columnModel.getColumn(0).setMaxWidth(0);
+        columnModel.getColumn(0).setMinWidth(0);
+        columnModel.getColumn(0).setPreferredWidth(0);
+        columnModel.getColumn(0).setWidth(0);
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBounds(20, 50, 930, 300);
         add(scrollPane);
-
+        
         btnAdd = new JButton("Adicionar Livro");
         btnAdd.setBounds(180, 10, 150, 30);
         add(btnAdd);
@@ -85,43 +91,72 @@ public class BookPanel extends JPanel{
         add(backButton);
 
         backButton.addActionListener(e -> cardLayout.show(cardPanel, "MainPanel"));
-        
+        refreshBookTable();
         btnAdd.addActionListener(e -> {
+        	loadBookList = false;
             AddBookPanel addBookPanel = new AddBookPanel(tableModel, cardLayout, cardPanel,
                     this);
             cardPanel.add(addBookPanel, "AddBookPanel");
             cardLayout.show(cardPanel, "AddBookPanel");
         });
+        
+        btnDelete.addActionListener(e -> {
+//            DeleteBookPanel deleteBookPanel = new DeleteBookPanel(tableModel, cardLayout,
+//                    cardPanel, this);
+//            cardPanel.add(deleteBookPanel, "DeleteBookPanel");
+//            cardLayout.show(cardPanel, "DeleteBookPanel");
+        	int selectedRow = table.getSelectedRow();
+    	    if (selectedRow != -1) {
+    	        int BookID = Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString());
+	    	    int dialogResult = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir?", "Confirmação", JOptionPane.YES_NO_OPTION);
+	    	    if (dialogResult == JOptionPane.YES_OPTION) {
+	    	    	BookDAO bookDAO = new BookDAO();
+		    	    bookDAO.deleteBook(BookID);
+		    	    loadBookList = false;
+		    	    refreshBookTable();
+	    	    } else {
+	    	        return;
+	    	    }
+    	    } else {
+    	        JOptionPane.showMessageDialog(null, "Por favor, selecione um livro na tabela.");
+    	    }
+        });
     }
-    public void refreshCustomerTable() {
+    public void refreshBookTable() {
     	loadBooksIntoTable();
     }
 
     public void loadBooksIntoTable() {
-        tableModel.setRowCount(0); // Limpa a tabela
+        tableModel.setRowCount(0);
         booksList.clear();
-        booksList = bookDao.selectAllBooks();
-        if(booksList != null) {
-        	booksList.sort(Comparator.comparingInt(Book::getId));
-        	 SwingUtilities.invokeLater(() -> { // Atualizar a tabela na thread de despacho de eventos
-        		 for (Book book: booksList) {
-        			 tableModel.addRow(new Object[] {
-        					 book.getTitle(),
-        					 book.getIsbn(),
-        					 book.getPublisher(),
-        					 book.getYearPublication(),
-        					 book.getQuantity(),
-        					 String.join(",",book.getAuthor()),
-        					 String.join(",",book.getGenre())
-        			 });
-        		 }
-        		 
-        	 });
-        }else {
-        	 JOptionPane.showMessageDialog(this, "Erro ao carregar dados do Banco de dados.", "Erro",
-                     JOptionPane.ERROR_MESSAGE);
-        	 }
-
+        List<Book> updatedBooksList = bookDao.selectAllBooks();
+        if(loadBookList == false) {
+        	if (updatedBooksList != null) {
+                updatedBooksList.sort(Comparator.comparingInt(Book::getId));
+                booksList.addAll(updatedBooksList);
+                if (!booksList.isEmpty()) {
+                    SwingUtilities.invokeLater(() -> {
+                        for (Book book : booksList) {
+                            tableModel.addRow(new Object[]{
+                                    book.getId(),
+                                    book.getTitle(),
+                                    book.getIsbn(),
+                                    book.getPublisher(),
+                                    book.getYearPublication(),
+                                    book.getQuantity(),
+                                    String.join(",", book.getAuthor()),
+                                    String.join(",", book.getGenre())
+                            });
+                        }
+                    });
+                    loadBookList = true;
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Erro ao carregar dados do Banco de dados.", "Erro",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
+
     
 }

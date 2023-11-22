@@ -42,7 +42,7 @@ public class MainFrame extends JFrame{
 		cardPanel.add(mainPanel, "MainPanel");
 		
 		BookPanel bookPanel = new BookPanel(cardLayout, cardPanel);
-		cardPanel.add(bookPanel, "Book Panel");
+		cardPanel.add(bookPanel, "BookPanel");
 		
 //		SalesReportPanel salesReportPanel = new SalesReportPanel(sistema);
 //		cardPanel.add(salesReportPanel, "SalesReportPanel");

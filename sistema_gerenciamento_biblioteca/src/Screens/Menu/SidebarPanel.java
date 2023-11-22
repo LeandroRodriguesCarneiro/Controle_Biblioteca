@@ -33,7 +33,7 @@ public class SidebarPanel extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         
         addButton("Tela Principal", "MainPanel", null);
-        addButton("Livros", "Book Panel", null);
+        addButton("Livros", "BookPanel", null);
         addButton("Adicionar Aluno", "PromotionsPanel", null); 
         addButton("Emprestimo", "ProductsPanel", null);
         addButton("Devolucao", "CustomersPanel", null);
