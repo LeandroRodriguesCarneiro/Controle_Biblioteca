@@ -34,7 +34,7 @@ public class SidebarPanel extends JPanel {
         
         addButton("Tela Principal", "MainPanel", null);
         addButton("Livros", "BookPanel", null);
-        addButton("Adicionar Aluno", "PromotionsPanel", null); 
+        addButton("Alunos", "StudentPanel", null); 
         addButton("Emprestimo", "ProductsPanel", null);
         addButton("Devolucao", "CustomersPanel", null);
         addButton("Visualizacao", "AddSupplierPanel", null);

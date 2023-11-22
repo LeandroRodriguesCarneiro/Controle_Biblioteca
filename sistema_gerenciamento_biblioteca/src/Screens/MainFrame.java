@@ -17,6 +17,7 @@ import javax.swing.JButton;
 import Screens.Menu.MainPanel;
 import Screens.Menu.SidebarPanel;
 import Screens.CRUDBook.BookPanel;
+import Screens.CRUDStudent.StudentPanel;
 public class MainFrame extends JFrame{
 	/**
 	 * 
@@ -44,9 +45,9 @@ public class MainFrame extends JFrame{
 		BookPanel bookPanel = new BookPanel(cardLayout, cardPanel);
 		cardPanel.add(bookPanel, "BookPanel");
 		
-//		SalesReportPanel salesReportPanel = new SalesReportPanel(sistema);
-//		cardPanel.add(salesReportPanel, "SalesReportPanel");
-//
+		StudentPanel StudentPanel = new StudentPanel(cardLayout, cardPanel);
+	    cardPanel.add(StudentPanel, "StudentPanel");
+
 //		ProductsPanel productsPanel = new ProductsPanel(cardLayout, cardPanel, sistema, produtoManager);
 //		cardPanel.add(productsPanel, "ProductsPanel");
 //
