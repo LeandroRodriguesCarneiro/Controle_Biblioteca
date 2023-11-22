@@ -342,22 +342,22 @@ BEGIN
     SET @query = 'UPDATE book SET ';
 
     IF p_id_publisher IS NOT NULL THEN
-        SET @query = CONCAT(@query, 'id_publisher = ', p_id_publisher, ', ');
+        SET @query = CONCAT(@query, 'id_publisher = ', p_id_publisher, ',  ');
         SET set_added = TRUE;
     END IF;
 
     IF p_isbn IS NOT NULL THEN
-        SET @query = CONCAT(@query, 'isbn = ''', p_isbn, ''', ');
+        SET @query = CONCAT(@query, 'isbn = ''', p_isbn, ''',  ');
         SET set_added = TRUE;
     END IF;
 
     IF p_title IS NOT NULL THEN
-        SET @query = CONCAT(@query, 'title = ''', p_title, ''', ');
+        SET @query = CONCAT(@query, 'title = ''', p_title, ''',  ');
         SET set_added = TRUE;
     END IF;
 
     IF p_year_publication IS NOT NULL THEN
-        SET @query = CONCAT(@query, 'year_publication = ', p_year_publication, ', ');
+        SET @query = CONCAT(@query, 'year_publication = ', p_year_publication, ',  ');
         SET set_added = TRUE;
     END IF;
 

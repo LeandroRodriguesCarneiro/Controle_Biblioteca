@@ -22,13 +22,19 @@ public class Book {
 		this.yearPublication = Year.of(yearPublication);
 		this.quantity = quantity;
 		this.publisher = publisher;
-		String[] Temp = genres.split(",");
-		for (String genreTemp: Temp) {
-			this.genre.add(genreTemp);
+		String[] Temp;
+		if (genres != null) {
+			 Temp = genres.split(",");
+			for (String genreTemp: Temp) {
+				this.genre.add(genreTemp);
+			}
 		}
-		Temp = authors.split(",");
-		for (String authorTemp: Temp) {
-			this.author.add(authorTemp);
+		
+		if(authors != null) {
+			Temp = authors.split(",");
+			for (String authorTemp: Temp) {
+				this.author.add(authorTemp);
+			}
 		}
 	}
 

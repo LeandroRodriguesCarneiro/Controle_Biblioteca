@@ -30,17 +30,17 @@ import Genres.Genres;
 import Genres.GenresDAO;
 import Author.Author;
 import Author.AuthorDAO;
+import Book.Book;
 import Book.BookDAO;
 import Publisher.Publisher;
 import Publisher.PublisherDAO;
 
-public class AddBookPanel extends JPanel{
+public class UpdateBookPanel extends JPanel{
 	 private static final long serialVersionUID = -1723482129844832445L;
 	    private JTextField txtTitle, txtISBN, txtYearPublication, txtQuantity;
 	    private List<Genres> allGenresList;
 	    private JList<Genres> availableGenresList;
 	    private DefaultListModel<Genres> availableGenresModel;
-	    
 	    private List<Author> allAuthorList;
 	    private JList<Author> availableAuthorList;
 	    private DefaultListModel<Author> availableAuthorModel;
@@ -54,10 +54,10 @@ public class AddBookPanel extends JPanel{
 	    private BookPanel BookPanel;
 	    private int selectedPublisher = -1;
 
-	    public AddBookPanel(DefaultTableModel tableModel, CardLayout cardLayout,
-	        JPanel cardPanel, BookPanel BookPanel) {
+	    public UpdateBookPanel(DefaultTableModel tableModel, CardLayout cardLayout,
+	            JPanel cardPanel, BookPanel BookPanel, Book book) {
 	        
-	    	lblBooks = new JLabel("Inserir Livros");
+	    	lblBooks = new JLabel("Editar Livro");
 	        lblBooks.setFont(new Font("Arial", Font.BOLD, 30));
 	        lblBooks.setBounds(20, 10, 400, 30);
 	        add(lblBooks);
@@ -74,6 +74,7 @@ public class AddBookPanel extends JPanel{
 
 	        txtTitle = new JTextField();
 	        txtTitle.setBounds(120, 45, 500, 25);
+	        txtTitle.setText(book.getTitle());
 	        add(txtTitle);
 
 	        JLabel lblISBN = new JLabel("ISBN:");
@@ -82,6 +83,7 @@ public class AddBookPanel extends JPanel{
 
 	        txtISBN = new JTextField();
 	        txtISBN.setBounds(530, 80, 90, 25);
+	        txtISBN.setText(book.getIsbn());
 	        add(txtISBN);
 
 	        JLabel lblYearPublication = new JLabel("Ano de publicacao:");
@@ -90,6 +92,7 @@ public class AddBookPanel extends JPanel{
 
 	        txtYearPublication = new JTextField();
 	        txtYearPublication.setBounds(585, 115, 35, 25);
+	        txtYearPublication.setText(book.getYearPublication().toString());
 	        add(txtYearPublication);
 	        
 	        JLabel lblQuantity = new JLabel("Quantidade:");
@@ -98,6 +101,7 @@ public class AddBookPanel extends JPanel{
 
 	        txtQuantity = new JTextField();
 	        txtQuantity.setBounds(585, 150, 35, 25);
+	        txtQuantity.setText(String.valueOf(book.getQuantity()));
 	        add(txtQuantity);
 	        
 	        JLabel lblPublisher = new JLabel("Editora:");
@@ -119,7 +123,14 @@ public class AddBookPanel extends JPanel{
 	                return this;
 	            }
 	        });
-	        cbbPublisher.setSelectedIndex(-1);
+	        for (int i = 0; i < publisherList.size(); i++) {
+	            Publisher publisher = publisherList.get(i);
+	            if (publisher.getName().equals(book.getPublisher())) {
+	                cbbPublisher.setSelectedIndex(i);
+	                selectedPublisher = publisher.getId();
+	                break;
+	            }
+	        }
 	        cbbPublisher.setBounds(455, 185, 165, 25);
 	        add(cbbPublisher);
 	        
@@ -149,8 +160,15 @@ public class AddBookPanel extends JPanel{
 	        JScrollPane availableAuthorPane = new JScrollPane(availableAuthorList);
 	        availableAuthorPane.setBounds(10, 230, 180, 95);
 	        add(availableAuthorPane);
-
+	        
 	        DefaultListModel<Author> selectedAuthorModel = new DefaultListModel<>();
+	        for (Author author: allAuthorList) {
+	        	for(String authorSelected: book.getAuthor()) {
+	        		if(authorSelected.equals(author.getName())) {
+	        			selectedAuthorModel.addElement(author);
+	        		}
+	        	}
+	        }
 	        JList<Author> selectedAuthorList = new JList<>(selectedAuthorModel);
 	        selectedAuthorList.setCellRenderer(new DefaultListCellRenderer() {
 	            @Override
@@ -205,6 +223,7 @@ public class AddBookPanel extends JPanel{
 	        for (Genres genre : allGenresList) {
 	            availableGenresModel.addElement(genre);
 	        }
+	        
 	        availableGenresList = new JList<>(availableGenresModel);
 	        availableGenresList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 	        availableGenresList.setCellRenderer(new DefaultListCellRenderer() {
@@ -224,6 +243,13 @@ public class AddBookPanel extends JPanel{
 	        add(availableGenrePane);
 	        
 	        DefaultListModel<Genres> selectedGenresModel = new DefaultListModel<>();
+	        for (Genres genre: allGenresList) {
+	        	for(String genreSelected: book.getGenre()) {
+	        		if(genreSelected.equals(genre.getName())) {
+	        			selectedGenresModel.addElement(genre);
+	        		}
+	        	}
+	        }
 	        JList<Genres> selectedGenresList = new JList<>(selectedGenresModel);
 	        selectedGenresList.setCellRenderer(new DefaultListCellRenderer() {
 	            @Override
@@ -236,6 +262,7 @@ public class AddBookPanel extends JPanel{
 	                return this;
 	            }
 	        });
+	        
 	        JScrollPane selectedGenrePane = new JScrollPane(selectedGenresList);
 	        selectedGenrePane.setBounds(440, 355, 180, 95);
 	        add(selectedGenrePane);
@@ -271,7 +298,7 @@ public class AddBookPanel extends JPanel{
 	        
 	        
 	        
-	        btnAdd = new JButton("Adicionar Livro");
+	        btnAdd = new JButton("Salvar");
 	        btnAdd.setBounds(10, 500, 255, 25);
 	        btnAdd.addActionListener(new ActionListener() {
 				@Override
@@ -280,6 +307,8 @@ public class AddBookPanel extends JPanel{
 					String ISBN = null;
 					Year yearPublication = null;
 					Integer quantity = null;
+					List<Author> authorList = new ArrayList<>();
+					List<Genres> genresList = new ArrayList<>();
 					try {
 					    if (txtTitle.getText().isEmpty()) {
 					        JOptionPane.showMessageDialog(null, "Por favor, preencha o título.");
@@ -314,20 +343,20 @@ public class AddBookPanel extends JPanel{
 					    	JOptionPane.showMessageDialog(null, "Por favor, Selecione um autor");
 					        return;
 					    }
-					    List<Integer> authorListID = new ArrayList<>();
+					    
 					    for (int i = 0; i < selectedAuthorModel.size(); i++) {
 					        Author author = selectedAuthorModel.getElementAt(i);
-					        authorListID.add(author.getId());
+					        authorList.add(author);
 					    }
 					    
 					    if(selectedGenresModel.isEmpty()) {
 					    	JOptionPane.showMessageDialog(null, "Por favor, Selecione um genero");
 					        return;
 					    }
-					    List<Integer> genresListID = new ArrayList<>();
+					    
 					    for (int i = 0; i < selectedGenresModel.size(); i++) {
 					        Genres genre = selectedGenresModel.getElementAt(i);
-					        genresListID.add(genre.getId());
+					        genresList.add(genre);
 					    }
 					    title = String.valueOf(txtTitle.getText());
 					    ISBN = String.valueOf(txtISBN.getText());
@@ -338,7 +367,7 @@ public class AddBookPanel extends JPanel{
 					}
 					try {
 						BookDAO bookDAO = new BookDAO();
-						bookDAO.insertBook(selectedPublisher, ISBN, title, yearPublication, quantity, allGenresList, allAuthorList);
+						bookDAO.UpdateBook(book.getId(),selectedPublisher, ISBN, title, yearPublication, quantity, genresList, authorList);
 					}catch(Exception ex){
 						JOptionPane.showMessageDialog(null, "Este ISBN já está em uso. Por favor, insira um ISBN diferente.");
 					}
@@ -360,7 +389,7 @@ public class AddBookPanel extends JPanel{
 	                Publisher selectedPublisherCbb = (Publisher) combo.getSelectedItem();
 	                
 	                if (selectedPublisherCbb != null) {
-	                	AddBookPanel.this.selectedPublisher = selectedPublisherCbb.getId();
+	                	UpdateBookPanel.this.selectedPublisher = selectedPublisherCbb.getId();
 	                }
 	            }
 	        }); 

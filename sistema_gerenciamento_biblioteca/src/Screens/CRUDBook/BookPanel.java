@@ -121,7 +121,27 @@ public class BookPanel extends JPanel{
     	        JOptionPane.showMessageDialog(null, "Por favor, selecione um livro na tabela.");
     	    }
         });
+        btnEdit.addActionListener(e ->{
+        	int selectedRow = table.getSelectedRow();
+    	    if (selectedRow != -1) {
+    	    	Book book = new Book(
+    	    			Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString()),
+    	    	    	tableModel.getValueAt(selectedRow, 1).toString(),
+    	    	    	tableModel.getValueAt(selectedRow, 2).toString(),
+    	    	    	Integer.parseInt(tableModel.getValueAt(selectedRow, 4).toString()),
+    	    	    	Integer.parseInt(tableModel.getValueAt(selectedRow, 5).toString()),
+    	    	    	tableModel.getValueAt(selectedRow, 3).toString(),
+    	    	    	tableModel.getValueAt(selectedRow, 6).toString(),
+    	    	    	tableModel.getValueAt(selectedRow, 7).toString()
+    	    		);
+    	    	loadBookList = false;
+    	    	UpdateBookPanel updateBookPanel = new UpdateBookPanel(tableModel, cardLayout, cardPanel, this, book);
+    	    	cardPanel.add(updateBookPanel, "UpdateBookPanel");
+    	    	cardLayout.show(cardPanel, "UpdateBookPanel");
+    	    }
+        });
     }
+    
     public void refreshBookTable() {
     	loadBooksIntoTable();
     }

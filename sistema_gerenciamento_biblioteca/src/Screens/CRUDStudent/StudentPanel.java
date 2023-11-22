@@ -28,7 +28,7 @@ public class StudentPanel extends JPanel{
     private JButton btnAdd, btnEdit, btnDelete;
     private CardLayout cardLayout;
     private JPanel cardPanel;
-    private studentDAO studentDao = new studentDAO();
+    private StudentDAO studentDao = new StudentDAO();
     private JButton backButton;
     private JLabel lblStudents;
     private List<Student> studentsList = new ArrayList<>();
@@ -89,7 +89,7 @@ public class StudentPanel extends JPanel{
         add(backButton);
 
         backButton.addActionListener(e -> cardLayout.show(cardPanel, "MainPanel"));
-        refreshBookTable();
+        //refreshBookTable();
         btnAdd.addActionListener(e -> {
         	loadStudentList = false;
             AddStudentPanel addStudentPanel = new AddStudentPanel(tableModel, cardLayout, cardPanel,this);
@@ -107,10 +107,10 @@ public class StudentPanel extends JPanel{
     	        int StudentID = Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString());
 	    	    int dialogResult = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir?", "Confirmação", JOptionPane.YES_NO_OPTION);
 	    	    if (dialogResult == JOptionPane.YES_OPTION) {
-	    	    	studentDAO studentDAO = new studentDAO();
-		    	    studentDAO.deleteStudent(StudentID);
+	    	    	//studentDAO studentDAO = new studentDAO();
+		    	    //studentDAO.deleteStudent(StudentID);
 		    	    loadStudentList = false;
-		    	    refreshBookTable();
+		    	    //refreshBookTable();
 	    	    } else {
 	    	        return;
 	    	    }
@@ -125,35 +125,35 @@ public class StudentPanel extends JPanel{
 
     public void loadStudentsIntoTable() {
         tableModel.setRowCount(0);
-        booksList.clear();
-        List<Student> updatedBooksList = studentDao.selectAllBooks();
-        if(loadBookList == false) {
-        	if (updatedBooksList != null) {
-                updatedBooksList.sort(Comparator.comparingInt(Student::getId));
-                booksList.addAll(updatedBooksList);
-                if (!studentsList.isEmpty()) {
-                    SwingUtilities.invokeLater(() -> {
-                        for (Student Student : studentsList) {
-                            tableModel.addRow(new Object[]{
-                                    Student.getId(),
-                                    Student.getTitle(),
-                                    Student.getIsbn(),
-                                    Student.getPublisher(),
-                                    Student.getYearPublication(),
-                                    Student.getQuantity(),
-                                    String.join(",", Student.getAuthor()),
-                                    String.join(",", Student.getGenre())
-                            });
-                        }
-                    });
-                    loadBookList = true;
-                }
+        studentsList.clear();
+       // studentsList = studentDao.se;
+        if(loadStudentList == false) {
+//        	if (updatedBooksList != null) {
+//                updatedBooksList.sort(Comparator.comparingInt(Student::getId));
+//                booksList.addAll(updatedBooksList);
+//                if (!studentsList.isEmpty()) {
+//                    SwingUtilities.invokeLater(() -> {
+//                        for (Student Student : studentsList) {
+//                            tableModel.addRow(new Object[]{
+//                                    Student.getId(),
+//                                    Student.getTitle(),
+//                                    Student.getIsbn(),
+//                                    Student.getPublisher(),
+//                                    Student.getYearPublication(),
+//                                    Student.getQuantity(),
+//                                    String.join(",", Student.getAuthor()),
+//                                    String.join(",", Student.getGenre())
+//                            });
+//                        }
+//                    });
+                    loadStudentList = true;
+//                }
             } else {
                 JOptionPane.showMessageDialog(this, "Erro ao carregar dados do Banco de dados.", "Erro",
                         JOptionPane.ERROR_MESSAGE);
             }
         }
-    }
+//    }
 
     
 }
