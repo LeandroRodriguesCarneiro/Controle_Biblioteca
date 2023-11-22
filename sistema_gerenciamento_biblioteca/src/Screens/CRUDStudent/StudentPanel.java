@@ -25,7 +25,7 @@ public class StudentPanel extends JPanel{
 	private static final long serialVersionUID = -4843807817212241104L;
     private JTable table;
     private DefaultTableModel tableModel;
-    private JButton btnAdd, btnEdit, btnDelete;
+    private JButton btnAdd, btnEdit, btnDelete, btnDebits;
     private CardLayout cardLayout;
     private JPanel cardPanel;
     private StudentDAO studentDAO = new StudentDAO();
@@ -91,6 +91,10 @@ public class StudentPanel extends JPanel{
         backButton = new JButton("Voltar");
         backButton.setBounds(870, 10, 80, 30);
         add(backButton);
+        
+        btnDebits = new JButton("Pagar Multa");
+        btnDebits.setBounds(340, 360, 150, 30);
+        add(btnDebits);
 
         backButton.addActionListener(e -> cardLayout.show(cardPanel, "MainPanel"));
         refreshStudentTable();
@@ -99,6 +103,23 @@ public class StudentPanel extends JPanel{
             AddStudentPanel addStudentPanel = new AddStudentPanel(tableModel, cardLayout, cardPanel,this);
             cardPanel.add(addStudentPanel, "AddStudentPanel");
             cardLayout.show(cardPanel, "AddStudentPanel");
+        });
+        
+        btnEdit.addActionListener(e ->{
+        	int selectedRow = table.getSelectedRow();
+    	    if (selectedRow != -1) {
+    	    	Student student = new Student(
+    	    			Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString()),
+    	    	    	Integer.parseInt(tableModel.getValueAt(selectedRow, 3).toString()),
+    	    			tableModel.getValueAt(selectedRow, 1).toString(),
+    	    	    	Long.parseLong(tableModel.getValueAt(selectedRow, 2).toString()),
+    	    	    	Float.parseFloat(tableModel.getValueAt(selectedRow, 4).toString())
+    	    	    	);
+    	    	loadStudentList = false;
+    	    	UpdateStudentPanel updateStudentPanel = new UpdateStudentPanel(tableModel, cardLayout, cardPanel, this, student);
+    	    	cardPanel.add(updateStudentPanel, "updateStudentPanel");
+    	    	cardLayout.show(cardPanel, "updateStudentPanel");
+    	    }
         });
         
         btnDelete.addActionListener(e -> {
@@ -111,13 +132,37 @@ public class StudentPanel extends JPanel{
     	        int StudentID = Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString());
 	    	    int dialogResult = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir?", "Confirmação", JOptionPane.YES_NO_OPTION);
 	    	    if (dialogResult == JOptionPane.YES_OPTION) {
-	    	    	//studentDAO studentDAO = new studentDAO();
-		    	    //studentDAO.deleteStudent(StudentID);
+	    	    	StudentDAO studentDAO = new StudentDAO();
+		    	    studentDAO.deleteStudent(StudentID);
 		    	    loadStudentList = false;
-		    	    //refreshBookTable();
+		    	    refreshStudentTable();
 	    	    } else {
 	    	        return;
 	    	    }
+    	    } else {
+    	        JOptionPane.showMessageDialog(null, "Por favor, selecione um livro na tabela.");
+    	    }
+        });
+        
+        btnDebits.addActionListener(e -> {
+        	int selectedRow = table.getSelectedRow();
+    	    if (selectedRow != -1) {
+    	    	Student student = new Student(
+    	    			Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString()),
+    	    	    	Integer.parseInt(tableModel.getValueAt(selectedRow, 3).toString()),
+    	    			tableModel.getValueAt(selectedRow, 1).toString(),
+    	    	    	Long.parseLong(tableModel.getValueAt(selectedRow, 2).toString()),
+    	    	    	(Float.parseFloat(tableModel.getValueAt(selectedRow, 4).toString()) * (-1))
+    	    	    	);
+    	    	if(student.getDebits()>=0) {
+    	    		JOptionPane.showMessageDialog(null, "O aluno selecionado nao tem Multa a pagar!");
+    	    	}else {
+    	    		loadStudentList = false;
+    	    		PayDebitsPanel PayDebitsPanel = new PayDebitsPanel(tableModel, cardLayout, cardPanel, this, student); 
+    	    		cardPanel.add(PayDebitsPanel, "PayDebitsPanel");
+        	    	cardLayout.show(cardPanel, "PayDebitsPanel");
+    	    	}
+    	    	
     	    } else {
     	        JOptionPane.showMessageDialog(null, "Por favor, selecione um livro na tabela.");
     	    }
@@ -143,7 +188,7 @@ public class StudentPanel extends JPanel{
                                     student.getName(),
                                     student.getNumberRegistration(),
                                     student.getBorrowedBooks(),
-                                    student.getDebits()
+                                    student.getDebits() < 0 ? student.getDebits() * (-1) : student.getDebits()
                             });
                         }
                     });

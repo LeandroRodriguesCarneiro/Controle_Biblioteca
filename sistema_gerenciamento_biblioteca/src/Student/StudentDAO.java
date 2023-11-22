@@ -26,6 +26,11 @@ public class StudentDAO {
     	sql.executeProcedure("SP_PayDebits", id, pay);
     }
     
+    public void updateStudent(int id, String name, Long numberRegistration, int borrowedBooks, float debits) {
+		MySQLConnector sql = new MySQLConnector();
+        sql.executeProcedure("SP_UpdateStudent", id, name, numberRegistration, borrowedBooks, debits);
+	}
+    
     public List<Student> selectAllStudent() {
         MySQLConnector sql = new MySQLConnector();
         ResultSet resultSet = sql.selectSQL("SELECT \r\n"
@@ -151,5 +156,4 @@ public class StudentDAO {
 
         return listStudent;
     }
-    
 }

@@ -34,6 +34,8 @@ import Book.Book;
 import Book.BookDAO;
 import Publisher.Publisher;
 import Publisher.PublisherDAO;
+import Screens.CRUDStudent.StudentPanel;
+import Student.Student;
 
 public class UpdateBookPanel extends JPanel{
 	 private static final long serialVersionUID = -1723482129844832445L;
@@ -55,7 +57,7 @@ public class UpdateBookPanel extends JPanel{
 	    private int selectedPublisher = -1;
 
 	    public UpdateBookPanel(DefaultTableModel tableModel, CardLayout cardLayout,
-	            JPanel cardPanel, BookPanel BookPanel, Book book) {
+	            JPanel cardPanel, Screens.CRUDBook.BookPanel bookPanel2, Book book) {
 	        
 	    	lblBooks = new JLabel("Editar Livro");
 	        lblBooks.setFont(new Font("Arial", Font.BOLD, 30));
@@ -65,7 +67,7 @@ public class UpdateBookPanel extends JPanel{
 	        this.tableModel = tableModel;
 	        this.cardLayout = cardLayout;
 	        this.cardPanel = cardPanel;
-	        this.BookPanel = BookPanel;
+	        this.BookPanel = bookPanel2;
 	        setLayout(null);
 
 	        JLabel lblTtitle = new JLabel("title:");
@@ -391,7 +393,7 @@ public class UpdateBookPanel extends JPanel{
 	        btnBack.setBounds(351, 500, 89, 25);
 	        btnBack.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
-	            	BookPanel.refreshBookTable();
+	            	bookPanel2.refreshBookTable();
 	                cardLayout.show(cardPanel, "BookPanel");
 	            }
 	        });

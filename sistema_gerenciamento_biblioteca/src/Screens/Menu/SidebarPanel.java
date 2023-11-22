@@ -37,8 +37,6 @@ public class SidebarPanel extends JPanel {
         addButton("Alunos", "StudentPanel", null); 
         addButton("Emprestimo", "ProductsPanel", null);
         addButton("Devolucao", "CustomersPanel", null);
-        addButton("Visualizacao", "AddSupplierPanel", null);
-        addButton("Deletar Livro", "AddCategoryPanel", null);
         addButton("Relatorio", "ReportsPanel", null);
         
         setPreferredSize(new Dimension(200, getHeight()));

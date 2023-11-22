@@ -155,7 +155,7 @@ BEGIN
     DECLARE custom_error CONDITION FOR SQLSTATE '45000';
     DECLARE existing_id INT;
     
-    SELECT id INTO existing_id FROM loan WHERE loan.id_student = 1 LIMIT 1;    
+    SELECT id INTO existing_id FROM loan WHERE loan.id_student = OLD.id LIMIT 1;    
     IF (existing_id) IS NOT NULL THEN 
         SIGNAL custom_error
             SET MESSAGE_TEXT = 'Tem emprestimos relacionados a esse aluno';
