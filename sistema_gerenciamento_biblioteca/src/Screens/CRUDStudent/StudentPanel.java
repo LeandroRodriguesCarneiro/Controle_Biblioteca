@@ -40,9 +40,6 @@ public class StudentPanel extends JPanel{
         setLayout(null);
 
         tableModel = new DefaultTableModel() {
-            /**
-             * 
-             */
             private static final long serialVersionUID = -9049266189071413309L;
 
             @Override
@@ -123,10 +120,6 @@ public class StudentPanel extends JPanel{
         });
         
         btnDelete.addActionListener(e -> {
-//            DeleteBookPanel deleteBookPanel = new DeleteBookPanel(tableModel, cardLayout,
-//                    cardPanel, this);
-//            cardPanel.add(deleteBookPanel, "DeleteBookPanel");
-//            cardLayout.show(cardPanel, "DeleteBookPanel");
         	int selectedRow = table.getSelectedRow();
     	    if (selectedRow != -1) {
     	        int StudentID = Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString());

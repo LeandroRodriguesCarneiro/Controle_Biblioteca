@@ -32,7 +32,6 @@ public class BookPanel extends JPanel{
     private JButton backButton;
     private JLabel lblBooks;
     private List<Book> booksList = new ArrayList<>();
-    private boolean loadBookList = false;
     
     public BookPanel(CardLayout cardLayout, JPanel cardPanel) {
         this.cardPanel = cardPanel;
@@ -40,9 +39,6 @@ public class BookPanel extends JPanel{
         setLayout(null);
 
         tableModel = new DefaultTableModel() {
-            /**
-             * 
-             */
             private static final long serialVersionUID = -9049266189071413309L;
 
             @Override
@@ -106,7 +102,6 @@ public class BookPanel extends JPanel{
         refreshBookTable();
         
         btnAdd.addActionListener(e -> {
-        	loadBookList = false;
             AddBookPanel addBookPanel = new AddBookPanel(tableModel, cardLayout, cardPanel,
                     this);
             cardPanel.add(addBookPanel, "AddBookPanel");
@@ -114,10 +109,6 @@ public class BookPanel extends JPanel{
         });
         
         btnDelete.addActionListener(e -> {
-//            DeleteBookPanel deleteBookPanel = new DeleteBookPanel(tableModel, cardLayout,
-//                    cardPanel, this);
-//            cardPanel.add(deleteBookPanel, "DeleteBookPanel");
-//            cardLayout.show(cardPanel, "DeleteBookPanel");
         	int selectedRow = table.getSelectedRow();
     	    if (selectedRow != -1) {
     	        int BookID = Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString());
@@ -125,7 +116,6 @@ public class BookPanel extends JPanel{
 	    	    if (dialogResult == JOptionPane.YES_OPTION) {
 	    	    	BookDAO bookDAO = new BookDAO();
 		    	    bookDAO.deleteBook(BookID);
-		    	    loadBookList = false;
 		    	    refreshBookTable();
 	    	    } else {
 	    	        return;
@@ -147,7 +137,6 @@ public class BookPanel extends JPanel{
     	    	    	tableModel.getValueAt(selectedRow, 6).toString(),
     	    	    	tableModel.getValueAt(selectedRow, 7).toString()
     	    		);
-    	    	loadBookList = false;
     	    	UpdateBookPanel updateBookPanel = new UpdateBookPanel(tableModel, cardLayout, cardPanel, this, book);
     	    	cardPanel.add(updateBookPanel, "UpdateBookPanel");
     	    	cardLayout.show(cardPanel, "UpdateBookPanel");
@@ -181,27 +170,24 @@ public class BookPanel extends JPanel{
         tableModel.setRowCount(0);
         booksList.clear();
         List<Book> updatedBooksList = bookDao.selectAllBooks();
-        if(loadBookList == false) {
-        	if (updatedBooksList != null) {
-                updatedBooksList.sort(Comparator.comparingInt(Book::getId));
-                booksList.addAll(updatedBooksList);
-                if (!booksList.isEmpty()) {
-                    SwingUtilities.invokeLater(() -> {
-                        for (Book book : booksList) {
-                            tableModel.addRow(new Object[]{
-                                    book.getId(),
-                                    book.getTitle(),
-                                    book.getIsbn(),
-                                    book.getPublisher(),
-                                    book.getYearPublication(),
-                                    book.getQuantity(),
-                                    String.join(",", book.getAuthor()),
-                                    String.join(",", book.getGenre())
-                            });
-                        }
-                    });
-                    loadBookList = true;
-                }
+    	if (updatedBooksList != null) {
+            updatedBooksList.sort(Comparator.comparingInt(Book::getId));
+            booksList.addAll(updatedBooksList);
+            if (!booksList.isEmpty()) {
+                SwingUtilities.invokeLater(() -> {
+                    for (Book book : booksList) {
+                        tableModel.addRow(new Object[]{
+                                book.getId(),
+                                book.getTitle(),
+                                book.getIsbn(),
+                                book.getPublisher(),
+                                book.getYearPublication(),
+                                book.getQuantity(),
+                                String.join(",", book.getAuthor()),
+                                String.join(",", book.getGenre())
+                        });
+                    }
+                });
             } else {
                 JOptionPane.showMessageDialog(this, "Erro ao carregar dados do Banco de dados.", "Erro",
                         JOptionPane.ERROR_MESSAGE);
