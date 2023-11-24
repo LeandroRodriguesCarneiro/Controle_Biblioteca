@@ -1,5 +1,5 @@
 package Screens.CRUDBook;
-
+//-*- coding: utf-8 -*-
 import java.awt.CardLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -11,14 +11,16 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
+import Book.BookDAO;
 import Genres.Genres;
 import Genres.GenresDAO;
+import Screens.ConfigPanel.Styles;
 
 
 public class UpdateGenrePanel extends JPanel{
 		private static final long serialVersionUID = 8876543210123456789L;
-	    private JTextField txtname;
-	    private JLabel lblBooks;
+	    private JTextField txtGenre;
+	    private JLabel lblBooks,lblGenre;
 	    private JButton btnAdd;
 	    private DefaultTableModel tableModel;
 	    private JButton btnBack;
@@ -27,49 +29,60 @@ public class UpdateGenrePanel extends JPanel{
 	    private GenresPanel GenresPanel;
 	    private Genres genre;
 
-	    public UpdateGenrePanel(DefaultTableModel tableModel, CardLayout cardLayout,
+	    public UpdateGenrePanel(CardLayout cardLayout,
 	        JPanel cardPanel, GenresPanel GenresPanel, Genres genre) {
 	        
-	    	lblBooks = new JLabel("Atualizar Genero");
-	        lblBooks.setFont(new Font("Arial", Font.BOLD, 30));
-	        lblBooks.setBounds(20, 10, 400, 30);
+	    	lblBooks = new JLabel("Editar Gêneros");
+	        lblBooks.setBounds(140, 10, 400, 30);
+	        Styles.styleTitleFont(lblBooks);
 	        add(lblBooks);
 	        
-	        this.tableModel = tableModel;
 	        this.cardLayout = cardLayout;
 	        this.cardPanel = cardPanel;
 	        this.GenresPanel = GenresPanel;
 	        setLayout(null);
 
-	        JLabel lblTtitle = new JLabel("Genero:");
-	        lblTtitle.setBounds(10, 45, 80, 25);
-	        add(lblTtitle);
+	        lblGenre = new JLabel("Genero:");
+	        lblGenre.setBounds(140, 45, 80, 30);
+	        Styles.styleFont(lblGenre);
+	        add(lblGenre);
 
-	        txtname = new JTextField();
-	        txtname.setBounds(120, 45, 500, 25);
-	        txtname.setText(genre.getName());
-	        add(txtname);
+	        txtGenre = new JTextField();
+	        txtGenre.setBounds(292, 45, 150, 30);
+	        txtGenre.setText(genre.getName());
+	        add(txtGenre);
 
 	        btnAdd = new JButton("Salvar");
-	        btnAdd.setBounds(10, 500, 255, 25);
+	        btnAdd.setBounds(140, 135, 150, 30);
+	        Styles.styleButton(btnAdd);
 	        btnAdd.addActionListener(new ActionListener() {
 				@Override
 	            public void actionPerformed(ActionEvent e) {
-					String name = null;
-					
-				    if (txtname.getText().isEmpty()) {
-				        JOptionPane.showMessageDialog(null, "Por favor, preencha o nome do genero.");
+					String genreName = null;
+				    if (txtGenre.getText().isEmpty()) {
+				        JOptionPane.showMessageDialog(null, "Por favor, preencha o nome do gênero.");
+				        txtGenre.requestFocus();
 				        return;
 				    }
-				    name = String.valueOf(txtname.getText());
-					
+				    genreName = String.valueOf(txtGenre.getText());
 					try {
-						GenresDAO GenresDAO = new GenresDAO();
-						GenresDAO.updateGenre(genre.getId(),name);
+						int dialogResult = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja salvar?", "Confirmação", JOptionPane.YES_NO_OPTION);
+			    	    if (dialogResult == JOptionPane.YES_OPTION) {
+			    	    	GenresDAO GenresDAO = new GenresDAO();
+							GenresDAO.updateGenre(genre.getId(),genreName);
+							GenresPanel.refreshGesnresTable();
+			                cardLayout.show(cardPanel, "GenresPanel");
+			    	    } else {
+			    	        return;
+			    	    }
 					}catch(Exception ex){
 						JOptionPane.showMessageDialog(null, "Este genero já existe. Por favor, insira um genero diferente.");
+						txtGenre.setText("");
+						txtGenre.requestFocus();
 					}
 					
+					txtGenre.setText("");
+					txtGenre.requestFocus();
 	            }
 	            
 	        });
@@ -77,7 +90,8 @@ public class UpdateGenrePanel extends JPanel{
 	        add(btnAdd);
 
 	        btnBack = new JButton("Voltar");
-	        btnBack.setBounds(351, 500, 89, 25);
+	        btnBack.setBounds(351, 135, 89, 25);
+	        Styles.styleButton(btnBack);
 	        btnBack.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
 	            	GenresPanel.refreshGesnresTable();

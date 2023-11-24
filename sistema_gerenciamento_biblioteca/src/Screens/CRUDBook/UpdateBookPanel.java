@@ -1,5 +1,5 @@
 package Screens.CRUDBook;
-
+//-*- coding: utf-8 -*-
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Font;
@@ -24,6 +24,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
+import java.time.LocalDate;
 import java.time.Year;
 
 import Genres.Genres;
@@ -35,79 +36,81 @@ import Book.BookDAO;
 import Publisher.Publisher;
 import Publisher.PublisherDAO;
 import Screens.CRUDStudent.StudentPanel;
+import Screens.ConfigPanel.Styles;
 import Student.Student;
 
 public class UpdateBookPanel extends JPanel{
 	 private static final long serialVersionUID = -1723482129844832445L;
-	    private JTextField txtTitle, txtISBN, txtYearPublication, txtQuantity;
+	 private JTextField txtTitle, txtISBN, txtYearPublication, txtQuantity;
 	    private List<Genres> allGenresList;
-	    private JList<Genres> availableGenresList;
-	    private DefaultListModel<Genres> availableGenresModel;
+	    private JList<Genres> availableGenresList,selectedGenresList;
+	    private DefaultListModel<Genres> availableGenresModel,selectedGenresModel;
 	    private List<Author> allAuthorList;
-	    private JList<Author> availableAuthorList;
+	    private JList<Author> availableAuthorList, selectedAuthorList;
 	    private DefaultListModel<Author> availableAuthorModel;
-	    private JLabel lblBooks;
+	    private JLabel lblBooks,lblTtitle, lblISBN, lblYearPublication, lblQuantity, lblPublisher, lblAuthor, lblGenre;
 	    private JComboBox<Publisher>cbbPublisher;
-	    private JButton btnAdd;
-	    private DefaultTableModel tableModel;
-	    private JButton btnBack;
+	    private JScrollPane availableAuthorPane, selectedAuthorPane, availableGenrePane, selectedGenrePane;
+	    private JButton btnAdd,btnBack, addAuthor,removeAuthor,AddGenre,removeGenre;
 	    private CardLayout cardLayout;
 	    private JPanel cardPanel;
 	    private BookPanel BookPanel;
 	    private int selectedPublisher = -1;
 
-	    public UpdateBookPanel(DefaultTableModel tableModel, CardLayout cardLayout,
-	            JPanel cardPanel, Screens.CRUDBook.BookPanel bookPanel2, Book book) {
-	        
-	    	lblBooks = new JLabel("Editar Livro");
-	        lblBooks.setFont(new Font("Arial", Font.BOLD, 30));
-	        lblBooks.setBounds(20, 10, 400, 30);
-	        add(lblBooks);
-	        
-	        this.tableModel = tableModel;
+	    public UpdateBookPanel(CardLayout cardLayout,JPanel cardPanel, BookPanel bookPanel, Book book) {
 	        this.cardLayout = cardLayout;
 	        this.cardPanel = cardPanel;
-	        this.BookPanel = bookPanel2;
+	        this.BookPanel = bookPanel;
 	        setLayout(null);
+	        
+	    	lblBooks = new JLabel("Atualizar Livros");
+	    	lblBooks.setBounds(250, 10, 400, 30);
+	    	Styles.styleTitleFont(lblBooks);
+	        add(lblBooks);
 
-	        JLabel lblTtitle = new JLabel("title:");
-	        lblTtitle.setBounds(10, 45, 80, 25);
+	        lblTtitle = new JLabel("Título:");
+	        lblTtitle.setBounds(250, 45, 80, 25);
+	        Styles.styleFont(lblTtitle);
 	        add(lblTtitle);
 
 	        txtTitle = new JTextField();
-	        txtTitle.setBounds(120, 45, 500, 25);
+	        txtTitle.setBounds(380, 45, 500, 25);
 	        txtTitle.setText(book.getTitle());
 	        add(txtTitle);
 
-	        JLabel lblISBN = new JLabel("ISBN:");
-	        lblISBN.setBounds(10, 80, 80, 25);
+	        lblISBN = new JLabel("ISBN:");
+	        Styles.styleFont(lblISBN);
+	        lblISBN.setBounds(250, 80, 80, 25);
 	        add(lblISBN);
 
 	        txtISBN = new JTextField();
-	        txtISBN.setBounds(530, 80, 90, 25);
+	        txtISBN.setBounds(790, 80, 90, 25);
 	        txtISBN.setText(book.getIsbn());
 	        add(txtISBN);
 
-	        JLabel lblYearPublication = new JLabel("Ano de publicacao:");
-	        lblYearPublication.setBounds(10, 115, 150, 25);
+	        lblYearPublication = new JLabel("Ano de publicação:");
+	        lblYearPublication.setBounds(250, 115, 150, 25);
+	        Styles.styleFont(lblYearPublication);
 	        add(lblYearPublication);
 
 	        txtYearPublication = new JTextField();
-	        txtYearPublication.setBounds(585, 115, 35, 25);
+	        txtYearPublication.setBounds(845, 115, 35, 25);
 	        txtYearPublication.setText(book.getYearPublication().toString());
 	        add(txtYearPublication);
 	        
-	        JLabel lblQuantity = new JLabel("Quantidade:");
-	        lblQuantity.setBounds(10, 150, 80, 25);
+	        lblQuantity = new JLabel("Quantidade:");
+	        Styles.styleFont(lblQuantity);
+	        lblQuantity.setBounds(250, 150, 80, 25);
 	        add(lblQuantity);
 
 	        txtQuantity = new JTextField();
-	        txtQuantity.setBounds(585, 150, 35, 25);
+	        txtQuantity.setBounds(845, 150, 35, 25);
 	        txtQuantity.setText(String.valueOf(book.getQuantity()));
 	        add(txtQuantity);
 	        
-	        JLabel lblPublisher = new JLabel("Editora:");
-	        lblPublisher.setBounds(10, 185, 80, 25);
+	        lblPublisher = new JLabel("Editora:");
+	        lblPublisher.setBounds(250, 185, 80, 25);
+	        Styles.styleFont(lblPublisher);
 	        add(lblPublisher);
 	        
 	        PublisherDAO publisherDAO = new PublisherDAO();
@@ -133,20 +136,22 @@ public class UpdateBookPanel extends JPanel{
 	                break;
 	            }
 	        }
-	        cbbPublisher.setBounds(455, 185, 165, 25);
+	        cbbPublisher.setBounds(715, 185, 165, 25);
+	        Styles.styleComboBox(cbbPublisher);
 	        add(cbbPublisher);
 	        
-	        JLabel lblAuthor = new JLabel("Autor:");
-	        lblAuthor.setBounds(10, 210, 80, 25); 
+	        lblAuthor = new JLabel("Autor:");
+	        Styles.styleFont(lblAuthor);
+	        lblAuthor.setBounds(250, 230, 80, 25); 
 	        add(lblAuthor);
 
 	        AuthorDAO authorDAO = new AuthorDAO();
 	        allAuthorList = authorDAO.selectAllAuthors();
-	        availableAuthorModel = new DefaultListModel<>(); // Correção: Inicializando o modelo
+	        availableAuthorModel = new DefaultListModel<>();
 	        for (Author author : allAuthorList) {
 	            availableAuthorModel.addElement(author);
 	        }
-	        availableAuthorList = new JList<>(availableAuthorModel); // Correção: Inicializando a lista com o modelo
+	        availableAuthorList = new JList<>(availableAuthorModel);
 	        availableAuthorList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 	        availableAuthorList.setCellRenderer(new DefaultListCellRenderer() {
 	            @Override
@@ -159,8 +164,9 @@ public class UpdateBookPanel extends JPanel{
 	                return this;
 	            }
 	        });
-	        JScrollPane availableAuthorPane = new JScrollPane(availableAuthorList);
-	        availableAuthorPane.setBounds(10, 230, 180, 95);
+	        availableAuthorPane = new JScrollPane(availableAuthorList);
+	        availableAuthorPane.setBounds(250, 255, 180, 95);
+	        Styles.styleJScrollPane(availableAuthorPane);
 	        add(availableAuthorPane);
 	        
 	        DefaultListModel<Author> selectedAuthorModel = new DefaultListModel<>();
@@ -171,7 +177,7 @@ public class UpdateBookPanel extends JPanel{
 	        		}
 	        	}
 	        }
-	        JList<Author> selectedAuthorList = new JList<>(selectedAuthorModel);
+	        selectedAuthorList = new JList<>(selectedAuthorModel);
 	        selectedAuthorList.setCellRenderer(new DefaultListCellRenderer() {
 	            @Override
 	            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -183,12 +189,14 @@ public class UpdateBookPanel extends JPanel{
 	                return this;
 	            }
 	        });
-	        JScrollPane selectedAuthorPane = new JScrollPane(selectedAuthorList);
-	        selectedAuthorPane.setBounds(440, 230, 180, 95);
+	        selectedAuthorPane = new JScrollPane (selectedAuthorList);
+	        selectedAuthorPane.setBounds(705, 255, 180, 95);
+	        Styles.styleJScrollPane(selectedAuthorPane);
 	        add(selectedAuthorPane);
 
-	        JButton addAuthor = new JButton("Adicionar");
-	        addAuthor.setBounds(270, 245, 90, 25);
+	        addAuthor = new JButton("Adicionar");
+	        addAuthor.setBounds(515, 275, 100, 25);
+	        Styles.styleButton(addAuthor);
 	        addAuthor.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
 	                List<Author> selectedValues = availableAuthorList.getSelectedValuesList();
@@ -202,8 +210,9 @@ public class UpdateBookPanel extends JPanel{
 	        });
 	        add(addAuthor);
 
-	        JButton removeAuthor = new JButton("Remover");
-	        removeAuthor.setBounds(270, 280, 90, 25);
+	        removeAuthor = new JButton("Remover");
+	        removeAuthor.setBounds(515, 305, 100, 25);
+	        Styles.styleButton(removeAuthor);
 	        removeAuthor.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
 	                int selectedIndex = selectedAuthorList.getSelectedIndex();
@@ -214,8 +223,9 @@ public class UpdateBookPanel extends JPanel{
 	        });
 	        add(removeAuthor);
 	        
-	        JLabel lblGenre = new JLabel("Gênero:");
-	        lblGenre.setBounds(10, 335, 80, 25);
+	        lblGenre = new JLabel("Gênero:");
+	        lblGenre.setBounds(250, 350, 80, 25);
+	        Styles.styleFont(lblGenre);
 	        add(lblGenre);
 	        
 	        	        
@@ -225,7 +235,6 @@ public class UpdateBookPanel extends JPanel{
 	        for (Genres genre : allGenresList) {
 	            availableGenresModel.addElement(genre);
 	        }
-	        
 	        availableGenresList = new JList<>(availableGenresModel);
 	        availableGenresList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 	        availableGenresList.setCellRenderer(new DefaultListCellRenderer() {
@@ -240,11 +249,12 @@ public class UpdateBookPanel extends JPanel{
 	            }
 	        });
 	        
-	        JScrollPane availableGenrePane = new JScrollPane(availableGenresList);
-	        availableGenrePane.setBounds(10, 355, 180, 95);
+	        availableGenrePane = new JScrollPane(availableGenresList);
+	        availableGenrePane.setBounds(250, 375, 180, 95);
+	        Styles.styleJScrollPane(availableGenrePane);
 	        add(availableGenrePane);
 	        
-	        DefaultListModel<Genres> selectedGenresModel = new DefaultListModel<>();
+	        selectedGenresModel = new DefaultListModel<>();
 	        for (Genres genre: allGenresList) {
 	        	for(String genreSelected: book.getGenre()) {
 	        		if(genreSelected.equals(genre.getName())) {
@@ -252,7 +262,7 @@ public class UpdateBookPanel extends JPanel{
 	        		}
 	        	}
 	        }
-	        JList<Genres> selectedGenresList = new JList<>(selectedGenresModel);
+	        selectedGenresList = new JList<>(selectedGenresModel);
 	        selectedGenresList.setCellRenderer(new DefaultListCellRenderer() {
 	            @Override
 	            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -264,14 +274,15 @@ public class UpdateBookPanel extends JPanel{
 	                return this;
 	            }
 	        });
-	        
-	        JScrollPane selectedGenrePane = new JScrollPane(selectedGenresList);
-	        selectedGenrePane.setBounds(440, 355, 180, 95);
+	        selectedGenrePane = new JScrollPane (selectedGenresList);
+	        selectedGenrePane.setBounds(705, 375, 180, 95);
+	        Styles.styleJScrollPane(selectedGenrePane);
 	        add(selectedGenrePane);
 	        
-	        JButton addGenre = new JButton("Adicionar");
-	        addGenre.setBounds(270, 365, 90, 25);
-	        addGenre.addActionListener(new ActionListener() {
+	        AddGenre = new JButton("Adicionar");
+	        AddGenre.setBounds(515, 395, 100, 25);
+	        Styles.styleButton(AddGenre);
+	        AddGenre.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
 	                List<Genres> selectedValues = availableGenresList.getSelectedValuesList();
 	                int selectedCount = selectedGenresModel.size();
@@ -284,10 +295,11 @@ public class UpdateBookPanel extends JPanel{
 	                }
 	            }
 	        });
-	        add(addGenre);
+	        add(AddGenre);
 
-	        JButton removeGenre = new JButton("Remover");
-	        removeGenre.setBounds(270, 395, 90, 25);
+	        removeGenre = new JButton("Remover");
+	        removeGenre.setBounds(515, 425, 100, 25);
+	        Styles.styleButton(removeGenre);
 	        removeGenre.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
 	                int selectedIndex = selectedGenresList.getSelectedIndex();
@@ -298,10 +310,9 @@ public class UpdateBookPanel extends JPanel{
 	        });
 	        add(removeGenre);
 	        
-	        
-	        
 	        btnAdd = new JButton("Salvar");
-	        btnAdd.setBounds(10, 500, 255, 25);
+	        btnAdd.setBounds(250, 500, 255, 25);
+	        Styles.styleButton(btnAdd);
 	        btnAdd.addActionListener(new ActionListener() {
 				@Override
 	            public void actionPerformed(ActionEvent e) {
@@ -314,28 +325,37 @@ public class UpdateBookPanel extends JPanel{
 					try {
 					    if (txtTitle.getText().isEmpty()) {
 					        JOptionPane.showMessageDialog(null, "Por favor, preencha o título.");
+					        txtTitle.requestFocus();
 					        return;
 					    }
 
 					    if (txtISBN.getText().isEmpty()) {
 					        JOptionPane.showMessageDialog(null, "Por favor, preencha o ISBN.");
+					        txtISBN.requestFocus();
 					        return;
-					    } else if (txtISBN.getText().length() < 13) {
+					    } else if (txtISBN.getText().length() != 13) {
 					        JOptionPane.showMessageDialog(null, "Por favor, o ISBN precisa ter 13 dígitos.");
+					        txtISBN.requestFocus();
 					        return;
 					    }
 
 					    if (txtYearPublication.getText().length() != 4) {
 					        JOptionPane.showMessageDialog(null, "Por favor, o ano precisa ter 4 digitos.");
+					        txtYearPublication.requestFocus();
 					        return;
+					    }else if(Year.of(Integer.valueOf(txtYearPublication.getText())).compareTo(Year.of(LocalDate.now().getYear()))>0) {
+					    	txtYearPublication.setText("");
+					    	txtYearPublication.requestFocus();
+					    	JOptionPane.showMessageDialog(null, "Por Favor, Digite um ano valido");
+					    	return;
 					    }
 					    
 					    if(txtQuantity.getText().isEmpty()) {
 					    	JOptionPane.showMessageDialog(null, "Por favor, Digite a quantidade");
+					    	txtQuantity.requestFocus();
 					        return;
 					    }
 					    
-
 					    if(selectedPublisher<1) {
 					    	JOptionPane.showMessageDialog(null, "Por favor, selecione uma editora.");
 					        return;
@@ -368,8 +388,16 @@ public class UpdateBookPanel extends JPanel{
 					    JOptionPane.showMessageDialog(null, "Certifique-se de inserir números válidos para Ano e Quantidade.");
 					}
 					try {
-						BookDAO bookDAO = new BookDAO();
-						bookDAO.UpdateBook(book.getId(),selectedPublisher, ISBN, title, yearPublication, quantity, genresList, authorList);
+						int dialogResult = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja salvar?", "Confirmação", JOptionPane.YES_NO_OPTION);
+			    	    if (dialogResult == JOptionPane.YES_OPTION) {
+			    	    	BookDAO bookDAO = new BookDAO();
+							bookDAO.UpdateBook(book.getId(),selectedPublisher, ISBN, title, yearPublication, quantity, genresList, authorList);
+							bookPanel.refreshBookTable();
+			                cardLayout.show(cardPanel, "BookPanel");
+			    	    } else {
+			    	        return;
+			    	    }
+						
 					}catch(Exception ex){
 						JOptionPane.showMessageDialog(null, "Este ISBN já está em uso. Por favor, insira um ISBN diferente.");
 					}
@@ -390,10 +418,11 @@ public class UpdateBookPanel extends JPanel{
 	        add(btnAdd);
 
 	        btnBack = new JButton("Voltar");
-	        btnBack.setBounds(351, 500, 89, 25);
+	        Styles.styleButton(btnBack);
+	        btnBack.setBounds(790, 500, 89, 25);
 	        btnBack.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
-	            	bookPanel2.refreshBookTable();
+	            	bookPanel.refreshBookTable();
 	                cardLayout.show(cardPanel, "BookPanel");
 	            }
 	        });

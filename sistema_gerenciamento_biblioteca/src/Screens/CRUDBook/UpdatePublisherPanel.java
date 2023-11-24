@@ -1,73 +1,85 @@
 package Screens.CRUDBook;
-
+//-*- coding: utf-8 -*-
 import java.awt.CardLayout;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import Publisher.PublisherDAO;
+import Publisher.Publisher;
+
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
 
-import Publisher.Publisher;
-import Publisher.PublisherDAO;
+import Screens.ConfigPanel.Styles;
 
 public class UpdatePublisherPanel extends JPanel{
 		private static final long serialVersionUID = 8876543210123456789L;
-	    private JTextField txtname;
-	    private JLabel lblBooks;
+	    private JTextField txtPublisher;
+	    private JLabel lblBooks, lblPublisher;
 	    private JButton btnAdd;
-	    private DefaultTableModel tableModel;
 	    private JButton btnBack;
 	    private CardLayout cardLayout;
 	    private JPanel cardPanel;
 	    private PublisherPanel PublisherPanel;
-	    private Publisher Publisher;
+	    private Publisher publisher;
 
-	    public UpdatePublisherPanel(DefaultTableModel tableModel, CardLayout cardLayout,
-	        JPanel cardPanel, PublisherPanel PublisherPanel, Publisher Publisher) {
-	        
-	    	lblBooks = new JLabel("Atualizar Editora");
-	        lblBooks.setFont(new Font("Arial", Font.BOLD, 30));
-	        lblBooks.setBounds(20, 10, 400, 30);
-	        add(lblBooks);
-	        
-	        this.tableModel = tableModel;
+	    public UpdatePublisherPanel(CardLayout cardLayout,
+	        JPanel cardPanel, PublisherPanel PublisherPanel, Publisher publisher) {
 	        this.cardLayout = cardLayout;
 	        this.cardPanel = cardPanel;
 	        this.PublisherPanel = PublisherPanel;
+	        this.publisher = publisher;
 	        setLayout(null);
+	        
+	        lblBooks = new JLabel("Editar Editora");
+	        lblBooks.setBounds(140, 10, 400, 30);
+	        Styles.styleTitleFont(lblBooks);
+	        add(lblBooks);
+	        
+	        lblPublisher = new JLabel("Editora:");
+	        lblPublisher.setBounds(140, 45, 80, 30);
+	        Styles.styleFont(lblPublisher);
+	        add(lblPublisher);
+	        
+	        txtPublisher = new JTextField();
+	        txtPublisher.setBounds(292, 45, 150, 30);
+	        txtPublisher.setText(publisher.getName());
+	        add(txtPublisher);
 
-	        JLabel lblTtitle = new JLabel("Editora:");
-	        lblTtitle.setBounds(10, 45, 80, 25);
-	        add(lblTtitle);
-
-	        txtname = new JTextField();
-	        txtname.setBounds(120, 45, 500, 25);
-	        txtname.setText(Publisher.getName());
-	        add(txtname);
-
-	        btnAdd = new JButton("Salvar");
-	        btnAdd.setBounds(10, 500, 255, 25);
+	        btnAdd = new JButton("Adicionar Editora");
+	        btnAdd.setBounds(140, 135, 150, 30);
+	        Styles.styleButton(btnAdd);
 	        btnAdd.addActionListener(new ActionListener() {
 				@Override
 	            public void actionPerformed(ActionEvent e) {
-					String name = null;
+					String Publisher = null;
 					
-				    if (txtname.getText().isEmpty()) {
-				        JOptionPane.showMessageDialog(null, "Por favor, preencha o nome do Editora.");
+				    if (txtPublisher.getText().isEmpty()) {
+				        JOptionPane.showMessageDialog(null, "Por favor, preencha o nome da Editora.");
+				        txtPublisher.requestFocus();
 				        return;
 				    }
-				    name = String.valueOf(txtname.getText());
-					
+				    Publisher = String.valueOf(txtPublisher.getText());
 					try {
-						PublisherDAO PublisherDAO = new PublisherDAO();
-						PublisherDAO.updatePublisher(Publisher.getId(),name);
+						int dialogResult = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja salvar?", "Confirmação", JOptionPane.YES_NO_OPTION);
+			    	    if (dialogResult == JOptionPane.YES_OPTION) {
+			    	    	PublisherDAO PublisherDAO = new PublisherDAO();
+							PublisherDAO.updatePublisher(publisher.getId(), Publisher);
+							PublisherPanel.refreshPublisherTable();
+			                cardLayout.show(cardPanel, "PublisherPanel");
+			    	    } else {
+			    	        return;
+			    	    }
 					}catch(Exception ex){
-						JOptionPane.showMessageDialog(null, "Este Editora já existe. Por favor, insira um Editora diferente.");
+						JOptionPane.showMessageDialog(null, "Este Editora já existe. Por favor, insira uma Editora diferente.");
+						txtPublisher.setText("");
+						txtPublisher.requestFocus();
+						return;
 					}
+					txtPublisher.setText("");
 	            }
 	            
 	        });
@@ -75,10 +87,11 @@ public class UpdatePublisherPanel extends JPanel{
 	        add(btnAdd);
 
 	        btnBack = new JButton("Voltar");
-	        btnBack.setBounds(351, 500, 89, 25);
+	        btnBack.setBounds(351, 135, 89, 25);
+	        Styles.styleButton(btnBack);
 	        btnBack.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
-	            	PublisherPanel.refreshGesnresTable();
+	            	PublisherPanel.refreshPublisherTable();
 	                cardLayout.show(cardPanel, "PublisherPanel");
 	            }
 	        });

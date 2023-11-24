@@ -1,5 +1,5 @@
 package Screens;
-
+//-*- coding: utf-8 -*-
 import javax.swing.*;
 import java.awt.*;
 

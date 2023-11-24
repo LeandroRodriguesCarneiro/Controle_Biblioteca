@@ -1,5 +1,5 @@
 package Genres;
-
+//-*- coding: utf-8 -*-
 public class Genres {
 	private String name;
 	private int id;

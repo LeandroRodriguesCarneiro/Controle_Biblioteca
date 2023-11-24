@@ -1,5 +1,5 @@
 package Screens.CRUDBook;
-
+//-*- coding: utf-8 -*-
 import java.awt.CardLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -14,35 +14,71 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
 import Publisher.Publisher;
 import Publisher.PublisherDAO;
+import Publisher.Publisher;
+import Publisher.PublisherDAO;
+import Screens.ConfigPanel.Styles;
 
 public class PublisherPanel extends JPanel{
 	private static final long serialVersionUID = -4843807817212241104L;
-    private JTable table;
+	private JTable table;
     private DefaultTableModel tableModel;
-    private JButton btnAdd, btnEdit, btnDelete;
+    private JButton btnAdd, btnEdit, btnDelete, search;
     private CardLayout cardLayout;
     private JPanel cardPanel;
     private PublisherDAO PublisherDAO = new PublisherDAO();
     private JButton backButton;
-    private JLabel lblBooks;
+    private JLabel lblBooks,lblTitle;
     private List<Publisher> PublisherList = new ArrayList<>();
-    private boolean loadPublisherList = false;
+    private JTextField txtTitle;
+    private BookPanel BookPanel;
     
     public PublisherPanel(CardLayout cardLayout, JPanel cardPanel, BookPanel BookPanel) {
-        this.cardPanel = cardPanel;
-
+    	this.cardPanel = cardPanel;
+        this.cardLayout = cardLayout;
+        this.BookPanel = BookPanel;
         setLayout(null);
+        
+        lblBooks = new JLabel("Editoras");
+        Styles.styleTitleFont(lblBooks);
+        lblBooks.setBounds(142, 10, 150, 30);
+        add(lblBooks);
+        
+        backButton = new JButton("Voltar");
+        backButton.setBounds(992, 10, 80, 30);
+        Styles.styleButton(backButton);
+        backButton.addActionListener(e -> {
+            	BookPanel.refreshBookTable();
+                cardLayout.show(cardPanel, "BookPanel");
+        });
+        add(backButton);
+        
+        lblTitle = new JLabel("Editora:");
+        Styles.styleFont(lblTitle);
+        lblTitle.setBounds(142, 45, 80, 25);
+        add(lblTitle);
 
+        txtTitle = new JTextField();
+        txtTitle.setBounds(210, 45, 500, 25);
+        add(txtTitle);
+
+        search = new JButton("Pesquisar");
+        search.setBounds(932, 45, 140, 25);
+        Styles.styleButton(search);
+        add(search);
+        
+        btnAdd = new JButton("Adicionar Editora");
+        btnAdd.setBounds(140, 90, 150, 30);
+        Styles.styleButton(btnAdd);
+        add(btnAdd);
+        
         tableModel = new DefaultTableModel() {
-            /**
-             * 
-             */
             private static final long serialVersionUID = -9049266189071413309L;
 
             @Override
@@ -51,12 +87,7 @@ public class PublisherPanel extends JPanel{
             }
         };
         tableModel.addColumn("ID");
-        tableModel.addColumn("Nome");
-
-        lblBooks = new JLabel("Editoras");
-        lblBooks.setFont(new Font("Arial", Font.BOLD, 30));
-        lblBooks.setBounds(20, 10, 150, 30);
-        add(lblBooks);
+        tableModel.addColumn("Editoras");
 
         table = new JTable(tableModel);
         TableColumnModel columnModel = table.getColumnModel();
@@ -65,33 +96,27 @@ public class PublisherPanel extends JPanel{
         columnModel.getColumn(0).setPreferredWidth(0);
         columnModel.getColumn(0).setWidth(0);
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBounds(20, 50, 930, 300);
+        scrollPane.setBounds(140, 135, 930, 300);
+        Styles.styleTable(table,scrollPane);
         add(scrollPane);
         
-        btnAdd = new JButton("Adicionar Editora");
-        btnAdd.setBounds(180, 10, 150, 30);
-        add(btnAdd);
-
         btnEdit = new JButton("Editar Editora");
-        btnEdit.setBounds(20, 360, 150, 30);
+        btnEdit.setBounds(140, 445, 150, 30);
+        Styles.styleButton(btnEdit);
         add(btnEdit);
 
         btnDelete = new JButton("Deletar Editora");
-        btnDelete.setBounds(180, 360, 150, 30);
+        btnDelete.setBounds(300, 445, 150, 30);
+        Styles.styleButton(btnDelete);
         add(btnDelete);
 
-        backButton = new JButton("Voltar");
-        backButton.setBounds(870, 10, 80, 30);
-        add(backButton);
-
-        backButton.addActionListener(e -> cardLayout.show(cardPanel, "BookPanel"));
-        loadPublisherIntoTable();
+        refreshPublisherTable();
         
         btnAdd.addActionListener(e -> {
-        	loadPublisherList = false;
-            AddPublisherPanel AddPublisherPanel = new AddPublisherPanel(tableModel, cardLayout, cardPanel, this); 
-            cardPanel.add(AddPublisherPanel, "AddPublisherPanel");
-            cardLayout.show(cardPanel, "AddPublisherPanel");
+                AddPublisherPanel addPublisherPanel = new AddPublisherPanel(cardLayout, cardPanel,
+                        this);
+                cardPanel.add(addPublisherPanel, "AddPublisherPanel");
+                cardLayout.show(cardPanel, "AddPublisherPanel");
         });
         
         btnDelete.addActionListener(e -> {
@@ -100,33 +125,34 @@ public class PublisherPanel extends JPanel{
     	        int PublisherID = Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString());
 	    	    int dialogResult = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir?", "Confirmação", JOptionPane.YES_NO_OPTION);
 	    	    if (dialogResult == JOptionPane.YES_OPTION) {
-		    	    PublisherDAO.deletePublisher(PublisherID);
-		    	    loadPublisherList = false;
-		    	    loadPublisherIntoTable();
+	    	    	PublisherDAO.deletePublisher(PublisherID);
+		    	    refreshPublisherTable();
 	    	    } else {
 	    	        return;
 	    	    }
     	    } else {
     	        JOptionPane.showMessageDialog(null, "Por favor, selecione um Editora na tabela.");
+    	        return;
     	    }
         });
-        
         btnEdit.addActionListener(e ->{
         	int selectedRow = table.getSelectedRow();
     	    if (selectedRow != -1) {
-    	    	Publisher publisher= new Publisher(
+    	    	Publisher Publisher = new Publisher(
     	    			Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString()),
     	    	    	tableModel.getValueAt(selectedRow, 1).toString()
     	    		);
-    	    	loadPublisherList = false;
-    	    	UpdatePublisherPanel UpdatePublisherPanel = new UpdatePublisherPanel(tableModel, cardLayout, cardPanel, this, publisher);
-    	    	cardPanel.add(UpdatePublisherPanel, "UpdatePublisherPanel");
-    	    	cardLayout.show(cardPanel, "UpdatePublisherPanel");
+    	    	UpdatePublisherPanel updatePublisherPanel = new UpdatePublisherPanel(cardLayout, cardPanel, this, Publisher);
+    	    	cardPanel.add(updatePublisherPanel, "UpdateBookPanel");
+    	    	cardLayout.show(cardPanel, "UpdateBookPanel");
+    	    }else {
+    	    	JOptionPane.showMessageDialog(null, "Por favor, selecione um Editora na tabela.");
+    	        return;
     	    }
         });
     }
     
-    public void refreshGesnresTable() {
+    public void refreshPublisherTable() {
     	loadPublisherIntoTable();
     }
 
@@ -134,27 +160,22 @@ public class PublisherPanel extends JPanel{
         tableModel.setRowCount(0);
         PublisherList.clear();
         List<Publisher> updatedPublisherList = PublisherDAO.selectAllPublisher();
-        if(loadPublisherList == false) {
-        	if (updatedPublisherList != null) {
-        		updatedPublisherList.sort(Comparator.comparingInt(Publisher::getId));
-                PublisherList.addAll(updatedPublisherList);
-                if (!updatedPublisherList.isEmpty()) {
-                    SwingUtilities.invokeLater(() -> {
-                        for (Publisher Publisher : PublisherList) {
-                            tableModel.addRow(new Object[]{
-                                    Publisher.getId(),
-                                    Publisher.getName()
-                            });
-                        }
-                    });
-                    loadPublisherList = true;
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Erro ao carregar dados do Banco de dados.", "Erro",
-                        JOptionPane.ERROR_MESSAGE);
+    	if (updatedPublisherList != null) {
+    		updatedPublisherList.sort(Comparator.comparingInt(Publisher::getId));
+            PublisherList.addAll(updatedPublisherList);
+            if (!updatedPublisherList.isEmpty()) {
+                SwingUtilities.invokeLater(() -> {
+                    for (Publisher Publisher : PublisherList) {
+                        tableModel.addRow(new Object[]{
+                                Publisher.getId(),
+                                Publisher.getName()
+                        });
+                    }
+                });
             }
+        } else {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar dados do Banco de dados.", "Erro",
+                    JOptionPane.ERROR_MESSAGE);
+        }
         }
     }
-
-    
-}

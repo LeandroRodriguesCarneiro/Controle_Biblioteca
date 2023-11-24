@@ -1,5 +1,5 @@
 package Screens.CRUDBook;
-
+//-*- coding: utf-8 -*-
 import java.awt.CardLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -14,35 +14,71 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
+import Book.Book;
+import Book.BookDAO;
 import Genres.Genres;
 import Genres.GenresDAO;
+import Screens.ConfigPanel.Styles;
 
 public class GenresPanel extends JPanel{
 	private static final long serialVersionUID = -4843807817212241104L;
     private JTable table;
     private DefaultTableModel tableModel;
-    private JButton btnAdd, btnEdit, btnDelete;
+    private JButton btnAdd, btnEdit, btnDelete,search,btnBack;
     private CardLayout cardLayout;
     private JPanel cardPanel;
-    private GenresDAO genresDAO = new GenresDAO();
     private JButton backButton;
-    private JLabel lblBooks;
+    private JTextField txtTitle;
+    private JLabel lblBooks, lblTitle;
     private List<Genres> genresList = new ArrayList<>();
-    private boolean loadGenresList = false;
+    private GenresDAO genresDAO = new GenresDAO();
+    private BookPanel BookPanel;
     
     public GenresPanel(CardLayout cardLayout, JPanel cardPanel, BookPanel BookPanel) {
-        this.cardPanel = cardPanel;
-
+    	this.cardPanel = cardPanel;
+        this.cardLayout = cardLayout;
+        this.BookPanel = BookPanel;
         setLayout(null);
+        
+        lblBooks = new JLabel("Gêneros");
+        Styles.styleTitleFont(lblBooks);
+        lblBooks.setBounds(142, 10, 150, 30);
+        add(lblBooks);
+        
+        backButton = new JButton("Voltar");
+        backButton.setBounds(992, 10, 80, 30);
+        Styles.styleButton(backButton);
+        backButton.addActionListener(e -> {
+            	BookPanel.refreshBookTable();
+                cardLayout.show(cardPanel, "BookPanel");
+        });
+        add(backButton);
+        
+        lblTitle = new JLabel("Gênero:");
+        Styles.styleFont(lblTitle);
+        lblTitle.setBounds(142, 45, 80, 25);
+        add(lblTitle);
 
+        txtTitle = new JTextField();
+        txtTitle.setBounds(210, 45, 500, 25);
+        add(txtTitle);
+
+        search = new JButton("Pesquisar");
+        search.setBounds(932, 45, 140, 25);
+        Styles.styleButton(search);
+        add(search);
+        
+        btnAdd = new JButton("Adicionar Gênero");
+        btnAdd.setBounds(140, 90, 150, 30);
+        Styles.styleButton(btnAdd);
+        add(btnAdd);
+        
         tableModel = new DefaultTableModel() {
-            /**
-             * 
-             */
             private static final long serialVersionUID = -9049266189071413309L;
 
             @Override
@@ -51,12 +87,7 @@ public class GenresPanel extends JPanel{
             }
         };
         tableModel.addColumn("ID");
-        tableModel.addColumn("Nome");
-
-        lblBooks = new JLabel("Generos");
-        lblBooks.setFont(new Font("Arial", Font.BOLD, 30));
-        lblBooks.setBounds(20, 10, 150, 30);
-        add(lblBooks);
+        tableModel.addColumn("Genêros");
 
         table = new JTable(tableModel);
         TableColumnModel columnModel = table.getColumnModel();
@@ -65,33 +96,27 @@ public class GenresPanel extends JPanel{
         columnModel.getColumn(0).setPreferredWidth(0);
         columnModel.getColumn(0).setWidth(0);
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBounds(20, 50, 930, 300);
+        scrollPane.setBounds(140, 135, 930, 300);
+        Styles.styleTable(table,scrollPane);
         add(scrollPane);
         
-        btnAdd = new JButton("Adicionar Genero");
-        btnAdd.setBounds(180, 10, 150, 30);
-        add(btnAdd);
-
-        btnEdit = new JButton("Editar Genero");
-        btnEdit.setBounds(20, 360, 150, 30);
+        btnEdit = new JButton("Editar Gênero");
+        btnEdit.setBounds(140, 445, 150, 30);
+        Styles.styleButton(btnEdit);
         add(btnEdit);
 
-        btnDelete = new JButton("Deletar Genero");
-        btnDelete.setBounds(180, 360, 150, 30);
+        btnDelete = new JButton("Deletar Gênero");
+        btnDelete.setBounds(300, 445, 150, 30);
+        Styles.styleButton(btnDelete);
         add(btnDelete);
 
-        backButton = new JButton("Voltar");
-        backButton.setBounds(870, 10, 80, 30);
-        add(backButton);
-
-        backButton.addActionListener(e -> cardLayout.show(cardPanel, "BookPanel"));
-        loadGenresIntoTable();
+        refreshGesnresTable();
         
         btnAdd.addActionListener(e -> {
-        	loadGenresList = false;
-            AddGenrePanel AddGenresPanel = new AddGenrePanel(tableModel, cardLayout, cardPanel, this); 
-            cardPanel.add(AddGenresPanel, "AddGenresPanel");
-            cardLayout.show(cardPanel, "AddGenresPanel");
+            AddGenrePanel addGenrePanel = new AddGenrePanel(cardLayout, cardPanel,
+                    this);
+            cardPanel.add(addGenrePanel, "AddGenrePanel");
+            cardLayout.show(cardPanel, "AddGenrePanel");
         });
         
         btnDelete.addActionListener(e -> {
@@ -100,30 +125,32 @@ public class GenresPanel extends JPanel{
     	        int GenreID = Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString());
 	    	    int dialogResult = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir?", "Confirmação", JOptionPane.YES_NO_OPTION);
 	    	    if (dialogResult == JOptionPane.YES_OPTION) {
-		    	    genresDAO.deleteGenre(GenreID);
-		    	    loadGenresList = false;
-		    	    loadGenresIntoTable();
+	    	    	genresDAO.deleteGenre(GenreID);
+		    	    refreshGesnresTable();
 	    	    } else {
 	    	        return;
 	    	    }
     	    } else {
-    	        JOptionPane.showMessageDialog(null, "Por favor, selecione um genero na tabela.");
+    	        JOptionPane.showMessageDialog(null, "Por favor, selecione um gênero na tabela.");
+    	        return;
     	    }
         });
-        
         btnEdit.addActionListener(e ->{
         	int selectedRow = table.getSelectedRow();
     	    if (selectedRow != -1) {
-    	    	Genres genre= new Genres(
+    	    	Genres genre = new Genres(
     	    			Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString()),
     	    	    	tableModel.getValueAt(selectedRow, 1).toString()
     	    		);
-    	    	loadGenresList = false;
-    	    	UpdateGenrePanel UpdateGenrePanel = new UpdateGenrePanel(tableModel, cardLayout, cardPanel, this, genre);
-    	    	cardPanel.add(UpdateGenrePanel, "UpdateGenrePanel");
-    	    	cardLayout.show(cardPanel, "UpdateGenrePanel");
+    	    	UpdateGenrePanel updateGenrePanel = new UpdateGenrePanel(cardLayout, cardPanel, this, genre);
+    	    	cardPanel.add(updateGenrePanel, "UpdateBookPanel");
+    	    	cardLayout.show(cardPanel, "UpdateBookPanel");
+    	    }else {
+    	    	JOptionPane.showMessageDialog(null, "Por favor, selecione um gênero na tabela.");
+    	        return;
     	    }
         });
+
     }
     
     public void refreshGesnresTable() {
@@ -134,7 +161,6 @@ public class GenresPanel extends JPanel{
         tableModel.setRowCount(0);
         genresList.clear();
         List<Genres> updatedGenresList = genresDAO.selectAllGenres();
-        if(loadGenresList == false) {
         	if (updatedGenresList != null) {
         		updatedGenresList.sort(Comparator.comparingInt(Genres::getId));
                 genresList.addAll(updatedGenresList);
@@ -147,14 +173,11 @@ public class GenresPanel extends JPanel{
                             });
                         }
                     });
-                    loadGenresList = true;
+                    
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Erro ao carregar dados do Banco de dados.", "Erro",
                         JOptionPane.ERROR_MESSAGE);
             }
         }
-    }
-
-    
-}
+  }

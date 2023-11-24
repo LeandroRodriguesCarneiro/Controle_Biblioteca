@@ -1,5 +1,5 @@
 package Student;
-
+//-*- coding: utf-8 -*-
 public class Student {
 	private int id;
 	private int borrowedBooks;

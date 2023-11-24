@@ -1,37 +1,38 @@
 package Screens.Menu;
 
+//-*- coding: utf-8 -*-
+
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import Screens.Functionalities.ReturnBookPanel;
+import Screens.ConfigPanel.Styles;
 
-public class SidebarPanel extends JPanel {
+public class TopMenuPanel extends JPanel {
 
     private static final long serialVersionUID = -1666701738391775114L;
     private CardLayout cardLayout;
     private JPanel cardPanel;
 
-    public SidebarPanel(CardLayout cardLayout, JPanel cardPanel) {
+    public TopMenuPanel(CardLayout cardLayout, JPanel cardPanel) {
         this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
-     
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setBackground(new Color(240, 240, 240));
+        setLayout(new FlowLayout(FlowLayout.LEFT));
         
         addButton("Tela Principal", "MainPanel", null);
         addButton("Livros", "BookPanel", null);
         addButton("Alunos", "StudentPanel", null); 
         addButton("Emprestimo", "LoanPanel", null);
-        addButton("Devolucao", "ReturnBookPanel", null);
-        addButton("Relatorio", "", null);
-        
-        setPreferredSize(new Dimension(200, getHeight()));
+        addButton("Devolução", "ReturnBookPanel", null);
+        addButton("Relatório", "", null);
     }
 
     private void addButton(String buttonText, String panelName, Runnable additionalAction) {
@@ -58,24 +59,20 @@ public class SidebarPanel extends JPanel {
                                 LoanPanel.setInvisible();
                             }
                             if (comp instanceof Screens.CRUDBook.BookPanel) {
-                            	Screens.CRUDBook.BookPanel BookPanel = (Screens.CRUDBook.BookPanel) comp;
+                                Screens.CRUDBook.BookPanel BookPanel = (Screens.CRUDBook.BookPanel) comp;
                                 BookPanel.refreshBookTable();
                             }
                             if (comp instanceof Screens.CRUDStudent.StudentPanel) {
-                            	Screens.CRUDStudent.StudentPanel StudentPanel = (Screens.CRUDStudent.StudentPanel) comp;
-                            	StudentPanel.refreshStudentTable();
+                                Screens.CRUDStudent.StudentPanel StudentPanel = (Screens.CRUDStudent.StudentPanel) comp;
+                                StudentPanel.refreshStudentTable();
                             }
                         }
                     }
                 }
             }
         });
+        Styles.styleButtonMenu(button);
         add(button);
     }
 
-
-
-
-    
 }
-

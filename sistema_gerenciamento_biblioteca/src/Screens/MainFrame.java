@@ -1,60 +1,69 @@
 package Screens;
 
+//-*- coding: utf-8 -*-
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import Screens.Menu.MainPanel;
-import Screens.Menu.SidebarPanel;
+import Screens.Menu.TopMenuPanel;
 import Screens.CRUDBook.BookPanel;
 import Screens.CRUDStudent.StudentPanel;
+import Screens.ConfigPanel.Styles;
 import Screens.Functionalities.LoanPanel;
 import Screens.Functionalities.ReturnBookPanel;
 
-public class MainFrame extends JFrame{
-	private static final long serialVersionUID = -6340235651217630471L;
-	private CardLayout cardLayout;
-	private JPanel cardPanel; 
+public class MainFrame extends JFrame {
+    private static final long serialVersionUID = -6340235651217630471L;
+    private CardLayout cardLayout;
+    private JPanel cardPanel;
 
-	public MainFrame() {
-		setTitle("Sistema de Gestão de biblioteca");
-		setSize(1200, 800);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setLocationRelativeTo(null); 
+    public MainFrame() {
+        setTitle("Sistema de Gestão de Biblioteca");
+        setSize(1200, 800);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        
+        cardLayout = new CardLayout();
+        cardPanel = new JPanel(cardLayout);
 
-		cardLayout = new CardLayout();
-		cardPanel = new JPanel(cardLayout);
+        MainPanel mainPanel = new MainPanel();
+        mainPanel.setBackground(Styles.BACKGROUND_COLOR);
+        cardPanel.add(mainPanel, "MainPanel");
 
-		MainPanel mainPanel = new MainPanel();
-		cardPanel.add(mainPanel, "MainPanel");
-		
-		BookPanel bookPanel = new BookPanel(cardLayout, cardPanel);
-		cardPanel.add(bookPanel, "BookPanel");
-		
-		StudentPanel StudentPanel = new StudentPanel(cardLayout, cardPanel);
-	    cardPanel.add(StudentPanel, "StudentPanel");
-	    
-	    LoanPanel LoanPanel = new LoanPanel(cardLayout, cardPanel);
-	    cardPanel.add(LoanPanel, "LoanPanel");
-	    
-	    ReturnBookPanel ReturnBookPanel = new ReturnBookPanel(cardLayout, cardPanel);
-	    cardPanel.add(ReturnBookPanel, "ReturnBookPanel");
+        BookPanel bookPanel = new BookPanel(cardLayout, cardPanel);
+        bookPanel.setBackground(Styles.BACKGROUND_COLOR);
+        cardPanel.add(bookPanel, "BookPanel");
 
-		SidebarPanel sidebarPanel = new SidebarPanel(cardLayout, cardPanel);
-		getContentPane().add(sidebarPanel, BorderLayout.WEST);
-		add(cardPanel);
-		cardLayout.show(cardPanel, "MainPanel");
-	}
+        StudentPanel studentPanel = new StudentPanel(cardLayout, cardPanel);
+        studentPanel.setBackground(Styles.BACKGROUND_COLOR);
+        cardPanel.add(studentPanel, "StudentPanel");
 
-	public void showPanel(String panelName) {
-		cardLayout.show(cardPanel, panelName);
-	}
+        LoanPanel loanPanel = new LoanPanel(cardLayout, cardPanel);
+        loanPanel.setBackground(Styles.BACKGROUND_COLOR);
+        cardPanel.add(loanPanel, "LoanPanel");
 
-	public static void main(String[] args) {
-		SwingUtilities.invokeLater(() -> {
-			MainFrame frame = new MainFrame();
-			frame.setVisible(true);
-		});
-	}
+        ReturnBookPanel returnBookPanel = new ReturnBookPanel(cardLayout, cardPanel);
+        returnBookPanel.setBackground(Styles.BACKGROUND_COLOR);
+        cardPanel.add(returnBookPanel, "ReturnBookPanel");
+
+        TopMenuPanel topMenuPanel = new TopMenuPanel(cardLayout, cardPanel);
+        topMenuPanel.setBackground(Styles.BACKGROUND_COLOR);
+        getContentPane().add(topMenuPanel, BorderLayout.NORTH); 
+        add(cardPanel);
+        cardLayout.show(cardPanel, "MainPanel");
+    }
+
+    public void showPanel(String panelName) {
+        cardLayout.show(cardPanel, panelName);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            MainFrame frame = new MainFrame();
+            frame.setVisible(true);
+        });
+    }
 }

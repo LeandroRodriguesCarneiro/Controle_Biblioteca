@@ -1,5 +1,5 @@
 package Publisher;
-
+//-*- coding: utf-8 -*-
 public class Publisher {
 	private String name;
 	private int id;
