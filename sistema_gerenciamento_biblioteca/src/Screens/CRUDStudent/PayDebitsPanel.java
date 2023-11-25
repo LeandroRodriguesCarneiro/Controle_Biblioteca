@@ -25,7 +25,7 @@ import Student.Student;
 public class PayDebitsPanel extends JPanel{
 	 private static final long serialVersionUID = -1723482129844832445L;
 	    private JFormattedTextField txtPay;
-	    private JLabel lblBooks, lblStudent,lblPay;
+	    private JLabel lblBooks, lblStudent,lblPay, lblReturnPay;
 	    private JButton btnPay;
 	    private JButton btnBack;
 	    private CardLayout cardLayout;
@@ -48,12 +48,13 @@ public class PayDebitsPanel extends JPanel{
 	        add(lblBooks);
 	        
 	        lblStudent = new JLabel("Aluno: "+student.getName());
-	        lblStudent.setBounds(10, 45, 400, 25);
+	        lblStudent.setBounds(250, 45, 400, 25);
 	        Styles.styleFont(lblStudent);
 	        add(lblStudent);
 	        
-	        lblPay = new JLabel("O aluno deve: "+ (student.getDebits() * (-1) +" Informe o pagamento" ));
-	        lblPay.setBounds(10, 80, 300, 25);
+	        lblPay = new JLabel("O aluno deve: "+ (Screens.CRUDStudent.StudentPanel.formatDecimal(student.getDebits() * (-1)) +" Informe o pagamento" ));
+	        lblPay.setBounds(250, 80, 300, 25);
+	        Styles.styleFont(lblPay);
 	        add(lblPay);
 	        
 	        DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
@@ -69,12 +70,13 @@ public class PayDebitsPanel extends JPanel{
 	        txtPay.setBounds(585, 80, 35, 25);
 	        add(txtPay);
 	        
-	        JLabel lblReturnPay = new JLabel();
+	        lblReturnPay = new JLabel();
 	        lblReturnPay.setBounds(10,115,400,25);
 	        add(lblReturnPay);
 	        
 	        btnPay = new JButton("Pagar");
-	        btnPay.setBounds(10, 500, 255, 25);
+	        btnPay.setBounds(250, 125, 255, 25);
+	        Styles.styleButton(btnPay);
 	        btnPay.addActionListener(new ActionListener() {
 				@Override
 	            public void actionPerformed(ActionEvent e) {
@@ -114,7 +116,8 @@ public class PayDebitsPanel extends JPanel{
 	        add(btnPay);
 
 	        btnBack = new JButton("Voltar");
-	        btnBack.setBounds(351, 500, 89, 25);
+	        btnBack.setBounds(530, 125, 89, 25);
+	        Styles.styleButton(btnBack);
 	        btnBack.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
 	            	StudentPanel.refreshStudentTable();
