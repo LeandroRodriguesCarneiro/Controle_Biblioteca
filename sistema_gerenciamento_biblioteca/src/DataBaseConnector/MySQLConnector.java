@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 
 public class MySQLConnector {
@@ -74,7 +75,7 @@ public class MySQLConnector {
         return callableStatement;
     }
     
-    public int executeProcedure(String procedureName, Object... parameters) {
+    public int executeProcedure(String procedureName, Object... parameters) throws Exception {
         try (Connection connection = startConnection();
              CallableStatement callableStatement = prepareCallableStatement(connection, procedureName, parameters)) {
 
@@ -89,9 +90,15 @@ public class MySQLConnector {
             }
 
             return 0; 
+        }catch (SQLIntegrityConstraintViolationException e) {
+        	if(e.getErrorCode() == 1062) {
+        		throw new Exception("Entrada duplicada"); 
+        	}
+        	else {
+        		e.printStackTrace();
+        	}
         } catch (SQLException e) {
-            e.printStackTrace();
-
+            System.out.println(e.getMessage());
         }
 
         return -1;

@@ -11,24 +11,50 @@ import DataBaseConnector.MySQLConnector;
 public class StudentDAO {
 	public List<Student> listStudent = new ArrayList<>(); 
 
-	public void insertStudent(String name, long numberRegistration) {
-        MySQLConnector sql = new MySQLConnector();
-        sql.executeProcedure("SP_InsertStudent", name, numberRegistration);
+	public void insertStudent(String name, long numberRegistration) throws Exception {
+		try {
+			MySQLConnector sql = new MySQLConnector();
+	        sql.executeProcedure("SP_InsertStudent", name, numberRegistration);
+		}catch(Exception e) {
+			if(e.getMessage().equals("Entrada duplicada")) {
+        		throw new Exception("Esse ISBN ja está cadastrado em um livro");
+        	}
+		}
     }
     
-    public void deleteStudent(int id) {
-    	MySQLConnector sql = new MySQLConnector();
-    	 sql.executeProcedure("SP_DeleteStudent", id);
+    public void deleteStudent(int id) throws Exception {
+    	try {
+    		MySQLConnector sql = new MySQLConnector();
+       	 	sql.executeProcedure("SP_DeleteStudent", id);
+    	}catch(Exception e) {
+			if(e.getMessage().equals("Entrada duplicada")) {
+        		throw new Exception("Esse ISBN ja está cadastrado em um livro");
+        	}
+		}
     }
     
-    public void payDebits(int id,float pay) {
-    	MySQLConnector sql = new MySQLConnector();
-    	sql.executeProcedure("SP_PayDebits", id, pay);
+    public void payDebits(int id,float pay) throws Exception {
+    	try {
+    		MySQLConnector sql = new MySQLConnector();
+        	sql.executeProcedure("SP_PayDebits", id, pay);
+    	}catch(Exception e) {
+			if(e.getMessage().equals("Entrada duplicada")) {
+        		throw new Exception("Esse ISBN ja está cadastrado em um livro");
+        	}
+		}
+    	
     }
     
-    public void updateStudent(int id, String name, Long numberRegistration, int borrowedBooks, float debits) {
-		MySQLConnector sql = new MySQLConnector();
-        sql.executeProcedure("SP_UpdateStudent", id, name, numberRegistration, borrowedBooks, debits);
+    public void updateStudent(int id, String name, Long numberRegistration, int borrowedBooks, float debits) throws Exception {
+		try {
+			MySQLConnector sql = new MySQLConnector();
+	        sql.executeProcedure("SP_UpdateStudent", id, name, numberRegistration, borrowedBooks, debits);
+		}catch(Exception e) {
+			if(e.getMessage().equals("Entrada duplicada")) {
+        		throw new Exception("Esse ISBN ja está cadastrado em um livro");
+        	}
+		}
+    	
 	}
     
     public List<Student> selectAllStudent() {

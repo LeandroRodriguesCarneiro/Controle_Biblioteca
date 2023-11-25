@@ -183,9 +183,14 @@ public class BookPanel extends JPanel{
     	        int BookID = Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString());
 	    	    int dialogResult = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir?", "Confirmação", JOptionPane.YES_NO_OPTION);
 	    	    if (dialogResult == JOptionPane.YES_OPTION) {
-	    	    	BookDAO bookDAO = new BookDAO();
-		    	    bookDAO.deleteBook(BookID);
-		    	    refreshBookTable();
+	    	    	try {
+	    	    		BookDAO bookDAO = new BookDAO();
+			    	    bookDAO.deleteBook(BookID);
+			    	    refreshBookTable();
+	    	    	}catch(Exception ex) {
+	    	    		ex.printStackTrace();
+	    	    	}
+	    	    	
 	    	    } else {
 	    	        return;
 	    	    }

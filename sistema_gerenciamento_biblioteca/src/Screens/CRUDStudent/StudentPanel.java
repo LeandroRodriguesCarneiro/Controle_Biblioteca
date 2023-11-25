@@ -4,6 +4,9 @@ import java.awt.CardLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -14,10 +17,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
+import Screens.ConfigPanel.Styles;
 import Student.StudentDAO;
 import Student.Student;
 
@@ -25,20 +30,63 @@ public class StudentPanel extends JPanel{
 	private static final long serialVersionUID = -4843807817212241104L;
     private JTable table;
     private DefaultTableModel tableModel;
-    private JButton btnAdd, btnEdit, btnDelete, btnDebits;
+    private JButton btnAdd, btnEdit, btnDelete, btnDebits, btnAuthor, search;
     private CardLayout cardLayout;
     private JPanel cardPanel;
-    private StudentDAO studentDAO = new StudentDAO();
     private JButton backButton;
-    private JLabel lblStudents;
-    private List<Student> studentsList = new ArrayList<>();
-    private boolean loadStudentList = false;
-    
+    private JTextField txtTitle, txtISBN, txtYearPublication, txtPublisher,txtGenre, txtAuthor;
+    private JLabel lblBooks, lblTitle, lblISBN, lblPublisher, lblYearPublication, lblAuthor, lblgenres;
+    private List<Student> studentsList = new ArrayList<>();    
+    private StudentDAO studentDAO = new StudentDAO();
     public StudentPanel(CardLayout cardLayout, JPanel cardPanel) {
         this.cardPanel = cardPanel;
-
+        this.cardLayout = cardLayout;
         setLayout(null);
+        
+        lblBooks = new JLabel("Alunos");
+        Styles.styleTitleFont(lblBooks);
+        lblBooks.setBounds(142, 10, 150, 30);
+        add(lblBooks);
+        
+        backButton = new JButton("Voltar");
+        backButton.setBounds(992, 10, 80, 30);
+        Styles.styleButton(backButton);
+        add(backButton);
+        
+        lblTitle = new JLabel("Título:");
+        Styles.styleFont(lblTitle);
+        lblTitle.setBounds(142, 45, 80, 25);
+        add(lblTitle);
 
+        txtTitle = new JTextField();
+        txtTitle.setBounds(192, 45, 500, 25);
+        add(txtTitle);
+
+        lblISBN = new JLabel("ISBN:");
+        Styles.styleFont(lblISBN);
+        lblISBN.setBounds(702, 45, 80, 25);
+        add(lblISBN);
+
+        txtISBN = new JTextField();
+        txtISBN.setBounds(752, 45, 90, 25);
+        add(txtISBN);
+
+        search = new JButton("Pesquisar");
+        search.setBounds(932, 45, 140, 25);
+        Styles.styleButton(search);
+        add(search);
+        
+        btnAdd = new JButton("Adicionar Aluno");
+        btnAdd.setBounds(140, 90, 150, 30);
+        Styles.styleButton(btnAdd);
+        add(btnAdd);
+        
+        btnAdd.addActionListener(e -> {
+            AddStudentPanel addStudentPanel = new AddStudentPanel(cardLayout, cardPanel,this);
+            cardPanel.add(addStudentPanel, "AddStudentPanel");
+            cardLayout.show(cardPanel, "AddStudentPanel");
+        });
+        
         tableModel = new DefaultTableModel() {
             private static final long serialVersionUID = -9049266189071413309L;
 
@@ -50,14 +98,8 @@ public class StudentPanel extends JPanel{
         tableModel.addColumn("ID");
         tableModel.addColumn("Nome");
         tableModel.addColumn("Matrícula");
-        tableModel.addColumn("Livros emprestados");
+        tableModel.addColumn("Alunos emprestados");
         tableModel.addColumn("Débitos");
-       
-
-        lblStudents = new JLabel("Alunos");
-        lblStudents.setFont(new Font("Arial", Font.BOLD, 30));
-        lblStudents.setBounds(20, 10, 150, 30);
-        add(lblStudents);
 
         table = new JTable(tableModel);
         TableColumnModel columnModel = table.getColumnModel();
@@ -70,37 +112,27 @@ public class StudentPanel extends JPanel{
         columnModel.getColumn(3).setPreferredWidth(0);
         columnModel.getColumn(3).setWidth(0);
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBounds(20, 50, 930, 300);
+        scrollPane.setBounds(140, 135, 930, 300);
+        Styles.styleTable(table,scrollPane);
         add(scrollPane);
         
-        btnAdd = new JButton("Adicionar Aluno");
-        btnAdd.setBounds(180, 10, 150, 30);
-        add(btnAdd);
-
         btnEdit = new JButton("Editar Aluno");
-        btnEdit.setBounds(20, 360, 150, 30);
+        btnEdit.setBounds(140, 445, 150, 30);
+        Styles.styleButton(btnEdit);
         add(btnEdit);
 
         btnDelete = new JButton("Deletar Aluno");
-        btnDelete.setBounds(180, 360, 150, 30);
+        btnDelete.setBounds(300, 445, 150, 30);
+        Styles.styleButton(btnDelete);
         add(btnDelete);
 
-        backButton = new JButton("Voltar");
-        backButton.setBounds(870, 10, 80, 30);
-        add(backButton);
-        
         btnDebits = new JButton("Pagar Multa");
-        btnDebits.setBounds(340, 360, 150, 30);
+        btnDebits.setBounds(460, 445, 150, 30);
+        Styles.styleButton(btnDebits);
         add(btnDebits);
-
+        
         backButton.addActionListener(e -> cardLayout.show(cardPanel, "MainPanel"));
         refreshStudentTable();
-        btnAdd.addActionListener(e -> {
-        	loadStudentList = false;
-            AddStudentPanel addStudentPanel = new AddStudentPanel(tableModel, cardLayout, cardPanel,this);
-            cardPanel.add(addStudentPanel, "AddStudentPanel");
-            cardLayout.show(cardPanel, "AddStudentPanel");
-        });
         
         btnEdit.addActionListener(e ->{
         	int selectedRow = table.getSelectedRow();
@@ -110,10 +142,9 @@ public class StudentPanel extends JPanel{
     	    	    	Integer.parseInt(tableModel.getValueAt(selectedRow, 3).toString()),
     	    			tableModel.getValueAt(selectedRow, 1).toString(),
     	    	    	Long.parseLong(tableModel.getValueAt(selectedRow, 2).toString()),
-    	    	    	Float.parseFloat(tableModel.getValueAt(selectedRow, 4).toString())
+    	    	    	convertStringDecimal(tableModel.getValueAt(selectedRow, 4).toString())
     	    	    	);
-    	    	loadStudentList = false;
-    	    	UpdateStudentPanel updateStudentPanel = new UpdateStudentPanel(tableModel, cardLayout, cardPanel, this, student);
+    	    	UpdateStudentPanel updateStudentPanel = new UpdateStudentPanel(cardLayout, cardPanel, this, student);
     	    	cardPanel.add(updateStudentPanel, "updateStudentPanel");
     	    	cardLayout.show(cardPanel, "updateStudentPanel");
     	    }
@@ -126,14 +157,18 @@ public class StudentPanel extends JPanel{
 	    	    int dialogResult = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir?", "Confirmação", JOptionPane.YES_NO_OPTION);
 	    	    if (dialogResult == JOptionPane.YES_OPTION) {
 	    	    	StudentDAO studentDAO = new StudentDAO();
-		    	    studentDAO.deleteStudent(StudentID);
-		    	    loadStudentList = false;
-		    	    refreshStudentTable();
+	    	    	try {
+	    	    		studentDAO.deleteStudent(StudentID);
+			    	    refreshStudentTable();
+	    	    	}catch(Exception ex) {
+	    	    		JOptionPane.showMessageDialog(null, ex.getMessage());
+	    	    	}
+		    	    
 	    	    } else {
 	    	        return;
 	    	    }
     	    } else {
-    	        JOptionPane.showMessageDialog(null, "Por favor, selecione um livro na tabela.");
+    	        JOptionPane.showMessageDialog(null, "Por favor, selecione um Aluno na tabela.");
     	    }
         });
         
@@ -145,19 +180,17 @@ public class StudentPanel extends JPanel{
     	    	    	Integer.parseInt(tableModel.getValueAt(selectedRow, 3).toString()),
     	    			tableModel.getValueAt(selectedRow, 1).toString(),
     	    	    	Long.parseLong(tableModel.getValueAt(selectedRow, 2).toString()),
-    	    	    	(Float.parseFloat(tableModel.getValueAt(selectedRow, 4).toString()) * (-1))
+    	    	    	convertStringDecimal(tableModel.getValueAt(selectedRow, 4).toString()) * (-1)
     	    	    	);
     	    	if(student.getDebits()>=0) {
     	    		JOptionPane.showMessageDialog(null, "O aluno selecionado nao tem Multa a pagar!");
     	    	}else {
-    	    		loadStudentList = false;
-    	    		PayDebitsPanel PayDebitsPanel = new PayDebitsPanel(tableModel, cardLayout, cardPanel, this, student); 
+    	    		PayDebitsPanel PayDebitsPanel = new PayDebitsPanel(cardLayout, cardPanel, this, student); 
     	    		cardPanel.add(PayDebitsPanel, "PayDebitsPanel");
         	    	cardLayout.show(cardPanel, "PayDebitsPanel");
     	    	}
-    	    	
     	    } else {
-    	        JOptionPane.showMessageDialog(null, "Por favor, selecione um livro na tabela.");
+    	        JOptionPane.showMessageDialog(null, "Por favor, selecione um Aluno na tabela.");
     	    }
         });
     }
@@ -169,7 +202,6 @@ public class StudentPanel extends JPanel{
         tableModel.setRowCount(0);
         studentsList.clear();
         List<Student> updatedStudentList = studentDAO.selectAllStudent();
-        if(loadStudentList == false) {
         	if (updatedStudentList != null) {
                 updatedStudentList.sort(Comparator.comparingInt(Student::getId));
                 studentsList.addAll(updatedStudentList);
@@ -181,18 +213,35 @@ public class StudentPanel extends JPanel{
                                     student.getName(),
                                     student.getNumberRegistration(),
                                     student.getBorrowedBooks(),
-                                    student.getDebits() < 0 ? student.getDebits() * (-1) : student.getDebits()
+                                    student.getDebits() < 0 ? formatDecimal(student.getDebits() * (-1)) : formatDecimal(student.getDebits())
                             });
                         }
                     });
-                    loadStudentList = true;
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Erro ao carregar dados do Banco de dados.", "Erro",
                         JOptionPane.ERROR_MESSAGE);
             }
+    }
+    
+    public static String formatDecimal(Float numero) {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator(',');
+        symbols.setGroupingSeparator('.');
+        DecimalFormat df = new DecimalFormat("#,##0.00", symbols);
+        return df.format(numero);
+    }
+    
+    public static float convertStringDecimal(String numeroStr) {
+        // Substitui a vírgula pelo ponto antes de fazer a conversão
+        numeroStr = numeroStr.replace(",", ".");
+        
+        try {
+            return Float.parseFloat(numeroStr);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
         }
+        return 0;
     }
 
-    
 }

@@ -15,42 +15,63 @@ import DataBaseConnector.MySQLConnector;
 public class BookDAO {
 	public List<Book> booksList = new ArrayList<>();
 
-    public void insertBook(int id_publisher, String isbn, String title, Year year_publication, int quantity, List<Genres> genresList, List<Author> authorList) {
+    public void insertBook(int id_publisher, String isbn, String title, Year year_publication, int quantity, List<Genres> genresList, List<Author> authorList) throws Exception {
         MySQLConnector sql = new MySQLConnector();
-        int idBook = 0;
-        idBook = sql.executeProcedure("SP_InsertBook", id_publisher, isbn, title, year_publication.getValue(), quantity);
-        
-        for (Author author : authorList) {
-        	sql.executeProcedure("SP_InsertAuthorBook",idBook,author.getId());
-        }
-        for (Genres genres: genresList) {
-        	sql.executeProcedure("SP_InsertGenreBook",idBook,genres.getId());
-        }
-    }
-    
-    public void UpdateBook(int id, int id_publisher, String isbn, String title, Year year_publication, int quantity, List<Genres> genresList, List<Author> authorList) {
-        MySQLConnector sql = new MySQLConnector();
-        int idBook = 0;
-        idBook = sql.executeProcedure("SP_UpdateBook", id, id_publisher, isbn, title, year_publication.getValue(), quantity);
-        
-        if(!authorList.isEmpty()) {
-        	sql.executeProcedure("SP_DeleteAuthorBook", id);
-        	for (Author author : authorList) {
+        try {
+        	int idBook = 0;
+            idBook = sql.executeProcedure("SP_InsertBook", id_publisher, isbn, title, year_publication.getValue(), quantity);
+            
+            for (Author author : authorList) {
             	sql.executeProcedure("SP_InsertAuthorBook",idBook,author.getId());
             }
-        }
-        
-        if(!genresList.isEmpty()) {
-        	sql.executeProcedure("SP_DeleteGenreBook", id);
-        	for (Genres genres: genresList) {
+            for (Genres genres: genresList) {
             	sql.executeProcedure("SP_InsertGenreBook",idBook,genres.getId());
             }
+        }catch(Exception e){
+        	if(e.getMessage().equals("Entrada duplicada")) {
+        		throw new Exception("Esse ISBN ja está cadastrado em um livro");
+        	}
         }
+        
     }
     
-    public void deleteBook(int id) {
-    	MySQLConnector sql = new MySQLConnector();
-    	 sql.executeProcedure("SP_DeleteBook", id);
+    public void UpdateBook(int id, int id_publisher, String isbn, String title, Year year_publication, int quantity, List<Genres> genresList, List<Author> authorList) throws Exception {
+        MySQLConnector sql = new MySQLConnector();
+        int idBook = 0;
+        try {
+        	idBook = sql.executeProcedure("SP_UpdateBook", id, id_publisher, isbn, title, year_publication.getValue(), quantity);
+            
+            if(!authorList.isEmpty()) {
+            	sql.executeProcedure("SP_DeleteAuthorBook", id);
+            	for (Author author : authorList) {
+                	sql.executeProcedure("SP_InsertAuthorBook",idBook,author.getId());
+                }
+            }
+            
+            if(!genresList.isEmpty()) {
+            	sql.executeProcedure("SP_DeleteGenreBook", id);
+            	for (Genres genres: genresList) {
+                	sql.executeProcedure("SP_InsertGenreBook",idBook,genres.getId());
+                }
+            }
+        }catch(Exception e){
+        	if(e.getMessage().equals("Entrada duplicada")) {
+        		throw new Exception("Esse ISBN ja está cadastrado em um livro");
+        	}
+        }
+        
+    }
+    
+    public void deleteBook(int id) throws Exception {
+    	try {
+    		MySQLConnector sql = new MySQLConnector();
+       	 	sql.executeProcedure("SP_DeleteBook", id);
+    	}catch(Exception e){
+        	if(e.getMessage().equals("Entrada duplicada")) {
+        		throw new Exception("Esse ISBN ja está cadastrado em um livro");
+        	}
+        }
+    	
     }
 
     public List<Book> selectAllBooks() {

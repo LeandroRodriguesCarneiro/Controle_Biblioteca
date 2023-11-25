@@ -7,78 +7,82 @@ import java.awt.event.ActionListener;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import Screens.ConfigPanel.Styles;
+
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
 
 import Student.StudentDAO;
 import Student.Student;
 
 public class UpdateStudentPanel extends JPanel{
 	 private static final long serialVersionUID = -1723482129844832445L;
-	    private JTextField txtStudent, txtNumberRegistration, txtBorrowedBooks, txtDebits;
-	    private JLabel lblStudent;
+	    private JLabel lblBooks,lblName, lblRegisterNumber, lblBorrowedBooks, lblDebits;
+	    private JTextField txtName, txtRegisterNumber,txtBorrowedBooks, txtDebits;
 	    private JButton btnAdd;
-	    private DefaultTableModel tableModel;
 	    private JButton btnBack;
 	    private CardLayout cardLayout;
 	    private JPanel cardPanel;
 	    private StudentPanel StudentPanel;
 	    private Student student;
 
-	    public UpdateStudentPanel(DefaultTableModel tableModel, CardLayout cardLayout,
-	            JPanel cardPanel, StudentPanel StudentPanel, Student student) {
-	        
-	    	this.tableModel = tableModel;
+	    public UpdateStudentPanel(CardLayout cardLayout,JPanel cardPanel, StudentPanel StudentPanel, Student student) {
 	        this.cardLayout = cardLayout;
 	        this.cardPanel = cardPanel;
 	        this.StudentPanel = StudentPanel;
 	        this.student = student;
-	    	lblStudent = new JLabel("Atualizar Aluno");
-	        lblStudent.setFont(new Font("Arial", Font.BOLD, 30));
-	        lblStudent.setBounds(20, 10, 400, 30);
-	        add(lblStudent);
 	        
 	        setLayout(null);
-
-	        JLabel lblTtitle = new JLabel("Aluno:");
-	        lblTtitle.setBounds(10, 45, 80, 25);
-	        add(lblTtitle);
-
-	        txtStudent = new JTextField();
-	        txtStudent.setBounds(120, 45, 500, 25);
-	        txtStudent.setText(student.getName());
-	        add(txtStudent);
-
-	        JLabel lblnumberRegistration = new JLabel("Matricula:");
-	        lblnumberRegistration.setBounds(10, 80, 80, 25);
-	        add(lblnumberRegistration);
-
-	        txtNumberRegistration = new JTextField();
-	        txtNumberRegistration.setBounds(530, 80, 90, 25);
-	        txtNumberRegistration.setText(String.valueOf(student.getNumberRegistration()));
-	        add(txtNumberRegistration);	        
 	        
-	        JLabel lblBorrowedBooks = new JLabel("Quantidade de Livros Emprestados:");
-	        lblBorrowedBooks.setBounds(10, 115, 220, 25);
+	        lblBooks = new JLabel("Inserir Alunos");
+	    	lblBooks.setBounds(250, 10, 400, 30);
+	    	Styles.styleTitleFont(lblBooks);
+	        add(lblBooks);
+
+	        lblName = new JLabel("Nome:");
+	        lblName.setBounds(250, 45, 80, 25);
+	        Styles.styleFont(lblName);
+	        add(lblName);
+
+	        txtName = new JTextField();
+	        txtName.setBounds(380, 45, 500, 25);
+	        txtName.setText(student.getName());
+	        add(txtName);
+
+	        lblRegisterNumber = new JLabel("Número de Matricula:");
+	        Styles.styleFont(lblRegisterNumber);
+	        lblRegisterNumber.setBounds(250, 80, 150, 25);
+	        add(lblRegisterNumber);
+
+	        txtRegisterNumber = new JTextField();
+	        txtRegisterNumber.setBounds(790, 80, 90, 25);
+	        txtRegisterNumber.setText(String.valueOf(student.getNumberRegistration()));
+	        add(txtRegisterNumber);
+	        
+	        lblBorrowedBooks = new JLabel("Quantidade de Livros Emprestados:");
+	        lblBorrowedBooks.setBounds(250, 115, 250, 25);
+	        Styles.styleFont(lblBorrowedBooks);
 	        add(lblBorrowedBooks);
 	        
 	        txtBorrowedBooks = new JTextField();
-	        txtBorrowedBooks.setBounds(585, 115, 35, 25);
+	        txtBorrowedBooks.setBounds(845, 115, 35, 25);
 	        txtBorrowedBooks.setText(String.valueOf(student.getBorrowedBooks()));
 	        add(txtBorrowedBooks);
 	        
-	        JLabel lblDebits = new JLabel("Dividas:");
-	        lblDebits.setBounds(10, 150, 80, 25);
+	        lblDebits = new JLabel("Dividas:");
+	        lblDebits.setBounds(250, 150, 80, 25);
+	        Styles.styleFont(lblDebits);
 	        add(lblDebits);
 
 	        txtDebits = new JTextField();
-	        txtDebits.setBounds(585, 150, 35, 25);
+	        txtDebits.setBounds(845, 150, 35, 25);
 	        txtDebits.setText(String.valueOf(student.getDebits() < 0 ? student.getDebits() * (-1) : student.getDebits()));
 	        add(txtDebits);
 	        
 	        btnAdd = new JButton("Salvar");
-	        btnAdd.setBounds(10, 500, 255, 25);
+	        btnAdd.setBounds(250, 195, 255, 25);
+	        Styles.styleButton(btnAdd);
 	        btnAdd.addActionListener(new ActionListener() {
 				@Override
 	            public void actionPerformed(ActionEvent e) {
@@ -87,15 +91,15 @@ public class UpdateStudentPanel extends JPanel{
 					Integer  borrowedBooks = null;
 					Float debits = null;
 					try {
-					    if (txtStudent.getText().isEmpty()) {
+					    if (txtName.getText().isEmpty()) {
 					        JOptionPane.showMessageDialog(null, "Por favor, preencha o nome.");
 					        return;
 					    }
 
-					    if (txtNumberRegistration.getText().isEmpty()) {
+					    if (txtRegisterNumber.getText().isEmpty()) {
 					        JOptionPane.showMessageDialog(null, "Por favor, preencha o numero de matricula.");
 					        return;
-					    } else if (txtNumberRegistration.getText().length() != 10) {
+					    } else if (txtRegisterNumber.getText().length() != 10) {
 					        JOptionPane.showMessageDialog(null, "Por favor, o numero de matricula precisa ter 10 dígitos.");
 					        return;
 					    }
@@ -108,8 +112,8 @@ public class UpdateStudentPanel extends JPanel{
 					        return;
 					   }
 					   
-					    name = String.valueOf(txtStudent.getText());
-					    numberRegistration = Long.parseLong(txtNumberRegistration.getText());
+					    name = String.valueOf(txtName.getText());
+					    numberRegistration = Long.parseLong(txtRegisterNumber.getText());
 					    borrowedBooks = Integer.parseInt(txtBorrowedBooks.getText());
 					    debits = Float.parseFloat(txtDebits.getText()) * (-1);
 					} catch (NumberFormatException ex) {
@@ -129,7 +133,8 @@ public class UpdateStudentPanel extends JPanel{
 	        add(btnAdd);
 
 	        btnBack = new JButton("Voltar");
-	        btnBack.setBounds(351, 500, 89, 25);
+	        Styles.styleButton(btnBack);
+	        btnBack.setBounds(790, 195, 89, 25);
 	        btnBack.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
 	            	StudentPanel.refreshStudentTable();

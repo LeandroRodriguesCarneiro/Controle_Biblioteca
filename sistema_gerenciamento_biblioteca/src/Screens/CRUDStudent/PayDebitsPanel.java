@@ -8,50 +8,64 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.DefaultFormatterFactory;
+import javax.swing.text.NumberFormatter;
+
+import Screens.ConfigPanel.Styles;
 
 import java.lang.Math;
+import java.text.DecimalFormat;
 
 import Student.StudentDAO;
 import Student.Student;
 
 public class PayDebitsPanel extends JPanel{
 	 private static final long serialVersionUID = -1723482129844832445L;
-	    private JTextField txtPay;
-	    private JLabel lblStudent;
+	    private JFormattedTextField txtPay;
+	    private JLabel lblBooks, lblStudent,lblPay;
 	    private JButton btnPay;
-	    private DefaultTableModel tableModel;
 	    private JButton btnBack;
 	    private CardLayout cardLayout;
 	    private JPanel cardPanel;
 	    private StudentPanel StudentPanel;
 	    private Student student;
 
-	    public PayDebitsPanel(DefaultTableModel tableModel, CardLayout cardLayout,
-	            JPanel cardPanel, StudentPanel StudentPanel, Student student) {
+	    public PayDebitsPanel(CardLayout cardLayout, JPanel cardPanel, StudentPanel StudentPanel, Student student) {
 	        
-	    	this.tableModel = tableModel;
 	        this.cardLayout = cardLayout;
 	        this.cardPanel = cardPanel;
 	        this.StudentPanel = StudentPanel;
 	        this.student = student;
-	    	lblStudent = new JLabel("Inserir Aluno");
-	        lblStudent.setFont(new Font("Arial", Font.BOLD, 30));
-	        lblStudent.setBounds(20, 10, 400, 30);
+	    	
+	        setLayout(null);
+	        
+	        lblBooks = new JLabel("Inserir Alunos");
+	    	lblBooks.setBounds(250, 10, 400, 30);
+	    	Styles.styleTitleFont(lblBooks);
+	        add(lblBooks);
+	        
+	        lblStudent = new JLabel("Aluno: "+student.getName());
+	        lblStudent.setBounds(10, 45, 400, 25);
+	        Styles.styleFont(lblStudent);
 	        add(lblStudent);
 	        
-	        setLayout(null);
-
-	        JLabel lblTtitle = new JLabel("Aluno: "+student.getName());
-	        lblTtitle.setBounds(10, 45, 400, 25);
-	        add(lblTtitle);
-	        
-	        JLabel lblPay = new JLabel("O aluno deve: "+ (student.getDebits() * (-1) +" Informe o pagamento" ));
+	        lblPay = new JLabel("O aluno deve: "+ (student.getDebits() * (-1) +" Informe o pagamento" ));
 	        lblPay.setBounds(10, 80, 300, 25);
 	        add(lblPay);
-
-	        txtPay = new JTextField();
+	        
+	        DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
+	        NumberFormatter numberFormatter = new NumberFormatter(decimalFormat);
+	        numberFormatter.setValueClass(Double.class);
+	        numberFormatter.setMinimum(0.00);
+	        numberFormatter.setMaximum(999.99);
+	        numberFormatter.setAllowsInvalid(false);
+	        numberFormatter.setCommitsOnValidEdit(true);
+	        
+	        txtPay = new JFormattedTextField();
+	        txtPay.setFormatterFactory(new DefaultFormatterFactory(numberFormatter));
 	        txtPay.setBounds(585, 80, 35, 25);
 	        add(txtPay);
 	        

@@ -361,7 +361,7 @@ public class AddBookPanel extends JPanel{
 						bookDAO.insertBook(selectedPublisher, ISBN, title, yearPublication, quantity, allGenresList, allAuthorList);
 						JOptionPane.showMessageDialog(null, "Livro inserido com sucesso.");
 					}catch(Exception ex){
-						JOptionPane.showMessageDialog(null, "Este ISBN já está em uso. Por favor, insira um ISBN diferente.");
+						JOptionPane.showMessageDialog(null, ex.getMessage());
 						txtISBN.setText("");
 						txtISBN.requestFocus();
 						return;
