@@ -15,19 +15,26 @@ public class LoanDAO {
 
     public void insertLoan(int idStudent, LocalDate dateInit, LocalDate dateEnd, List<Book> listBooks) {
         MySQLConnector sql = new MySQLConnector();
-        
-        int idLoan = sql.executeProcedure("SP_InsertLoan", idStudent, dateInit, dateEnd);
-        for (Book book: listBooks) {
-        	sql.executeProcedure("SP_lendBook", idLoan, book.getId());
-        }
+        try {
+	        int idLoan = sql.executeProcedure("SP_InsertLoan", idStudent, dateInit, dateEnd);
+	        for (Book book: listBooks) {
+	        	sql.executeProcedure("SP_lendBook", idLoan, book.getId());
+	        }
+        }catch(Exception e) {
+    		e.printStackTrace();
+    	}
     }
 
     public void returBook(Loan loan, List <Book> listBooks, LocalDate deliveryDate) {
-    	MySQLConnector sql = new MySQLConnector();
-		for (Book book: listBooks) {
-			sql.executeProcedure("SP_returnBook", loan.getId(), book.getId(), deliveryDate);
-		}
-		sql.executeProcedure("SP_UpdateLoan", loan.getId(), loan.getIdStudent(), deliveryDate);
+    	try {
+	    	MySQLConnector sql = new MySQLConnector();
+			for (Book book: listBooks) {
+				sql.executeProcedure("SP_returnBook", loan.getId(), book.getId(), deliveryDate);
+			}
+			sql.executeProcedure("SP_UpdateLoan", loan.getId(), loan.getIdStudent(), deliveryDate);
+    	}catch(Exception e) {
+    		e.printStackTrace();
+    	}
     }
 
     public List<Loan> selectLoanBooks(Integer idStudent) {

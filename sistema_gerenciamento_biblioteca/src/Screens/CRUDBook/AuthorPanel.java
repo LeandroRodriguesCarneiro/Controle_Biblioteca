@@ -30,7 +30,7 @@ public class AuthorPanel extends JPanel{
     private AuthorDAO AuthorDAO = new AuthorDAO();
     private JButton backButton;
     private JLabel lblBooks,lblTitle;
-    private JTextField txtTitle;
+    private JTextField txtAuthor;
     private List<Author> AuthorList = new ArrayList<>();
     private AuthorDAO authorDAO = new AuthorDAO();
     private BookPanel BookPanel;
@@ -60,14 +60,18 @@ public class AuthorPanel extends JPanel{
         lblTitle.setBounds(142, 45, 80, 25);
         add(lblTitle);
 
-        txtTitle = new JTextField();
-        txtTitle.setBounds(210, 45, 500, 25);
-        add(txtTitle);
+        txtAuthor = new JTextField();
+        txtAuthor.setBounds(210, 45, 500, 25);
+        add(txtAuthor);
 
         search = new JButton("Pesquisar");
         search.setBounds(932, 45, 140, 25);
         Styles.styleButton(search);
         add(search);
+        
+        search.addActionListener(e ->{
+        	refreshAuthorTable();
+        });
         
         btnAdd = new JButton("Adicionar Autor");
         btnAdd.setBounds(140, 90, 150, 30);
@@ -155,7 +159,7 @@ public class AuthorPanel extends JPanel{
     public void loadAuthorIntoTable() {
         tableModel.setRowCount(0);
         AuthorList.clear();
-        List<Author> updatedAuthorList = AuthorDAO.selectAllAuthors();
+        List<Author> updatedAuthorList = AuthorDAO.selectAuthorsByName(txtAuthor.getText().trim());
     	if (updatedAuthorList != null) {
     		updatedAuthorList.sort(Comparator.comparingInt(Author::getId));
             AuthorList.addAll(updatedAuthorList);

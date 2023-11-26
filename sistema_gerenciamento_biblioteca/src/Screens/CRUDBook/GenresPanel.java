@@ -33,7 +33,7 @@ public class GenresPanel extends JPanel{
     private CardLayout cardLayout;
     private JPanel cardPanel;
     private JButton backButton;
-    private JTextField txtTitle;
+    private JTextField txtGenre;
     private JLabel lblBooks, lblTitle;
     private List<Genres> genresList = new ArrayList<>();
     private GenresDAO genresDAO = new GenresDAO();
@@ -64,14 +64,18 @@ public class GenresPanel extends JPanel{
         lblTitle.setBounds(142, 45, 80, 25);
         add(lblTitle);
 
-        txtTitle = new JTextField();
-        txtTitle.setBounds(210, 45, 500, 25);
-        add(txtTitle);
+        txtGenre = new JTextField();
+        txtGenre.setBounds(210, 45, 500, 25);
+        add(txtGenre);
 
         search = new JButton("Pesquisar");
         search.setBounds(932, 45, 140, 25);
         Styles.styleButton(search);
         add(search);
+        
+        search.addActionListener(e ->{
+        	refreshGesnresTable();
+        });
         
         btnAdd = new JButton("Adicionar Gênero");
         btnAdd.setBounds(140, 90, 150, 30);
@@ -160,7 +164,7 @@ public class GenresPanel extends JPanel{
     public void loadGenresIntoTable() {
         tableModel.setRowCount(0);
         genresList.clear();
-        List<Genres> updatedGenresList = genresDAO.selectAllGenres();
+        List<Genres> updatedGenresList = genresDAO.selectGenresByName(txtGenre.getText().trim());
         	if (updatedGenresList != null) {
         		updatedGenresList.sort(Comparator.comparingInt(Genres::getId));
                 genresList.addAll(updatedGenresList);

@@ -109,6 +109,10 @@ public class BookPanel extends JPanel{
         Styles.styleButton(search);
         add(search);
         
+        search.addActionListener(e ->{
+        	loadBooksIntoTable();
+        });
+        
         btnAdd = new JButton("Adicionar Livro");
         btnAdd.setBounds(140, 135, 137, 30);
         Styles.styleButton(btnAdd);
@@ -247,9 +251,45 @@ public class BookPanel extends JPanel{
     }
 
     public void loadBooksIntoTable() {
+        long ISBN;
+        Integer year;
+        try {
+        	if (txtISBN.getText().trim().length() == 13 && !txtISBN.getText().isEmpty()) {
+        		JOptionPane.showMessageDialog(this, "O ISBN precisa conter 13 digitos", "Erro",
+                        JOptionPane.ERROR_MESSAGE);
+        		txtISBN.setText("");
+        		txtISBN.requestFocus();
+        		return;
+        	}
+        	if(txtYearPublication.getText().trim().length() == 4 && !txtYearPublication.getText().isEmpty()) {
+        		JOptionPane.showMessageDialog(this, "O ano precisa conter 4 digitos", "Erro",
+                        JOptionPane.ERROR_MESSAGE);
+        		txtYearPublication.setText("");
+        		txtYearPublication.requestFocus();
+        		return;
+        	}
+        	ISBN = Long.valueOf(txtISBN.getText());
+        	year = Integer.valueOf(txtYearPublication.getText());
+        }catch(NumberFormatException e) {
+        	if(txtISBN.getText().length() > 0) {
+        		JOptionPane.showMessageDialog(this, "O ISBN precisa ser um número", "Erro",
+                        JOptionPane.ERROR_MESSAGE);
+            	return;
+        	}else {
+        		ISBN = 0;
+        	}
+        	if(txtYearPublication.getText().length()>0) {
+        		JOptionPane.showMessageDialog(this, "O ISBN precisa ser um número", "Erro",
+                        JOptionPane.ERROR_MESSAGE);
+            	return;
+        	}else {
+        		year = 0; 
+        	}
+        }
         tableModel.setRowCount(0);
         booksList.clear();
-        List<Book> updatedBooksList = bookDao.selectAllBooks();
+        List<Book> updatedBooksList = bookDao.selectBooksByfilter(txtTitle.getText().trim(),ISBN, txtPublisher.getText().trim(), 
+        		year, txtGenre.getText().trim(), txtAuthor.getText().trim());
     	if (updatedBooksList != null) {
             updatedBooksList.sort(Comparator.comparingInt(Book::getId));
             booksList.addAll(updatedBooksList);
@@ -269,7 +309,7 @@ public class BookPanel extends JPanel{
                     }
                 });
             } else {
-                JOptionPane.showMessageDialog(this, "Erro ao carregar dados do Banco de dados.", "Erro",
+                JOptionPane.showMessageDialog(this, "Não foi encontrado dados para esse filtro.", "Erro",
                         JOptionPane.ERROR_MESSAGE);
             }
         }

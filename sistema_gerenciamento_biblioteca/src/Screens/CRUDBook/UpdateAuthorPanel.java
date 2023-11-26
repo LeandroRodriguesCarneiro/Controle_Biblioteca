@@ -56,7 +56,7 @@ public class UpdateAuthorPanel extends JPanel{
 	            public void actionPerformed(ActionEvent e) {
 					String Author = null;
 					
-				    if (txtAuthor.getText().isEmpty()) {
+				    if (txtAuthor.getText().trim().isEmpty()) {
 				        JOptionPane.showMessageDialog(null, "Por favor, preencha o nome do Autor.");
 				        txtAuthor.requestFocus();
 				        return;

@@ -120,16 +120,23 @@ public class StudentDAO {
         return listStudent;
     }
     
-    public List<Student> selectStudentsMaximumNumberBooksBorrowed() {
+    public List<Student> selectStudentsMaximumNumberBooksBorrowed(String name) {
         MySQLConnector sql = new MySQLConnector();
-        ResultSet resultSet = sql.selectSQL("SELECT \r\n"
+        String query = "SELECT \r\n"
         		+ "	id,\r\n"
-        		+ "    number_registration AS Numero_matricula,\r\n"
-        		+ "    name AS Nome,\r\n"
-        		+ "    borrowed_books AS Livros_Emprestados,\r\n"
-        		+ "    DEBITS * (-1) AS dividas\r\n"
+        		+ "    number_registration,\r\n"
+        		+ "    name,\r\n"
+        		+ "    borrowed_books,\r\n"
+        		+ "    DEBITS * (-1) AS DEBITS\r\n"
         		+ "FROM student\r\n"
-        		+ "WHERE borrowed_books = 3");
+        		+ "WHERE borrowed_books = 3";
+        
+        if(name != null && !name.isEmpty()) {
+        	query+=" AND name LIKE '%"+name+"%'";
+        }
+        
+        ResultSet resultSet = sql.selectSQL(query);
+        
         listStudent.clear(); 
 
         if (resultSet != null) {
@@ -151,16 +158,20 @@ public class StudentDAO {
 
         return listStudent;
     }
-    public List<Student> selectStudentsDebt() {
+    public List<Student> selectStudentsDebt(float debits, String name) {
         MySQLConnector sql = new MySQLConnector();
-        ResultSet resultSet = sql.selectSQL("SELECT \r\n"
+        String query = "SELECT \r\n"
         		+ "	id,\r\n"
-        		+ "    number_registration AS Numero_matricula,\r\n"
-        		+ "    name AS Nome,\r\n"
-        		+ "    borrowed_books AS Livros_Emprestados,\r\n"
-        		+ "    DEBITS * (-1) AS dividas\r\n"
+        		+ "    number_registration,\r\n"
+        		+ "    name,\r\n"
+        		+ "    borrowed_books,\r\n"
+        		+ "    DEBITS \r\n"
         		+ "FROM student\r\n"
-        		+ "WHERE DEBITS < 0");
+        		+ "WHERE DEBITS < ("+debits+" * (-1))";
+        if(name != null && !name.isEmpty()) {
+        	query += " AND name LIKE '%"+name+"%'";
+        }
+        ResultSet resultSet = sql.selectSQL(query);
         listStudent.clear(); 
 
         if (resultSet != null) {

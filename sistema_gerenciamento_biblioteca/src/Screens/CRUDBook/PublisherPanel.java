@@ -36,7 +36,7 @@ public class PublisherPanel extends JPanel{
     private JButton backButton;
     private JLabel lblBooks,lblTitle;
     private List<Publisher> PublisherList = new ArrayList<>();
-    private JTextField txtTitle;
+    private JTextField txtPublisher;
     private BookPanel BookPanel;
     
     public PublisherPanel(CardLayout cardLayout, JPanel cardPanel, BookPanel BookPanel) {
@@ -64,9 +64,9 @@ public class PublisherPanel extends JPanel{
         lblTitle.setBounds(142, 45, 80, 25);
         add(lblTitle);
 
-        txtTitle = new JTextField();
-        txtTitle.setBounds(210, 45, 500, 25);
-        add(txtTitle);
+        txtPublisher = new JTextField();
+        txtPublisher.setBounds(210, 45, 500, 25);
+        add(txtPublisher);
 
         search = new JButton("Pesquisar");
         search.setBounds(932, 45, 140, 25);
@@ -159,7 +159,7 @@ public class PublisherPanel extends JPanel{
     public void loadPublisherIntoTable() {
         tableModel.setRowCount(0);
         PublisherList.clear();
-        List<Publisher> updatedPublisherList = PublisherDAO.selectAllPublisher();
+        List<Publisher> updatedPublisherList = PublisherDAO.selectPublisherByName(txtPublisher.getText().trim());
     	if (updatedPublisherList != null) {
     		updatedPublisherList.sort(Comparator.comparingInt(Publisher::getId));
             PublisherList.addAll(updatedPublisherList);

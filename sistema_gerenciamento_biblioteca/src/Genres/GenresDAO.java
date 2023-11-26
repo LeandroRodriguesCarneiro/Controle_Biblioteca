@@ -11,18 +11,30 @@ public class GenresDAO {
 	public List<Genres> genresList = new ArrayList<>();
 
     public void insertGenres(String name) {
-        MySQLConnector sql = new MySQLConnector();
-        sql.executeProcedure("SP_insertGenre", name);
+    	try {
+	        MySQLConnector sql = new MySQLConnector();
+	        sql.executeProcedure("SP_insertGenre", name);
+    	}catch(Exception e) {
+    		e.printStackTrace();
+    	}
     }
     
     public void deleteGenre(int id) {
-    	MySQLConnector sql = new MySQLConnector();
-    	 sql.executeProcedure("SP_DeleteGenre", id);
+    	try {
+	    	MySQLConnector sql = new MySQLConnector();
+	    	sql.executeProcedure("SP_DeleteGenre", id);
+    	}catch(Exception e) {
+    		e.printStackTrace();
+    	}
     }
     
     public void updateGenre(int id, String name) {
-    	MySQLConnector sql = new MySQLConnector();
-   	 	sql.executeProcedure("SP_UpdateGenre", id, name);
+    	try {
+	    	MySQLConnector sql = new MySQLConnector();
+	   	 	sql.executeProcedure("SP_UpdateGenre", id, name);
+    	}catch(Exception e) {
+    		e.printStackTrace();
+    	}
     }
     
     public List<Genres> selectAllGenres() {

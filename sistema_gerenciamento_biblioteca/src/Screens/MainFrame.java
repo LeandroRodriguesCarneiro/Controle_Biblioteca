@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import Screens.Menu.MainPanel;
 import Screens.Menu.TopMenuPanel;
+import Screens.Reports.ReportsPanel;
 import Screens.CRUDBook.BookPanel;
 import Screens.CRUDStudent.StudentPanel;
 import Screens.ConfigPanel.Styles;
@@ -44,6 +45,10 @@ public class MainFrame extends JFrame {
         LoanPanel loanPanel = new LoanPanel(cardLayout, cardPanel);
         loanPanel.setBackground(Styles.BACKGROUND_COLOR);
         cardPanel.add(loanPanel, "LoanPanel");
+        
+        ReportsPanel reportsPanel = new ReportsPanel(cardLayout, cardPanel);
+        studentPanel.setBackground(Styles.BACKGROUND_COLOR);
+        cardPanel.add(reportsPanel, "ReportsPanel");
 
         ReturnBookPanel returnBookPanel = new ReturnBookPanel(cardLayout, cardPanel);
         returnBookPanel.setBackground(Styles.BACKGROUND_COLOR);

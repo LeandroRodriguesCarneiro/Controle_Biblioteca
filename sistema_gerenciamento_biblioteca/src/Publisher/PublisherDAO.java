@@ -10,19 +10,31 @@ import DataBaseConnector.MySQLConnector;
 public class PublisherDAO {
 	public List<Publisher> publisherList = new ArrayList<>();
 
-    public int insertPublisher(String name) {
-        MySQLConnector sql = new MySQLConnector();
-        return sql.executeProcedure("SP_insertPublisher", name);
+    public void insertPublisher(String name) {
+    	try {
+	        MySQLConnector sql = new MySQLConnector();
+	        sql.executeProcedure("SP_insertPublisher", name);
+    	}catch(Exception e) {
+    		e.printStackTrace();
+    	}
     }
     
     public void updatePublisher(int id, String name) {
-		MySQLConnector sql = new MySQLConnector();
-    	sql.executeProcedure("SP_UpdatePublisher", id, name);
+    	try {
+			MySQLConnector sql = new MySQLConnector();
+	    	sql.executeProcedure("SP_UpdatePublisher", id, name);
+    	}catch(Exception e) {
+    		e.printStackTrace();
+    	}
 	}
     
     public void deletePublisher(int id) {
+    	try {
     	MySQLConnector sql = new MySQLConnector();
     	sql.executeProcedure("SP_DeletePublisher", id);
+    	}catch(Exception e) {
+    		e.printStackTrace();
+    	}
     }
 
     public List<Publisher> selectAllPublisher() {
@@ -103,21 +115,34 @@ public class PublisherDAO {
         return publisherList;
     }
     
-    public List<Publisher> selectPublisherByCountTitles() {
+    public List<Publisher> selectPublisherByCountTitles(String name, int qtd) {
         MySQLConnector sql = new MySQLConnector();
-        ResultSet resultSet = sql.selectSQL("SELECT \r\n"
-        		+ "	pub.id, \r\n"
+        String query = "SELECT \r\n"
+        		+ "	   pub.id, \r\n"
         		+ "    pub.name as publisher,\r\n"
         		+ "    COUNT(bok.id) as qtd_titles\r\n"
         		+ "FROM publisher AS pub \r\n"
-        		+ "LEFT JOIN book AS bok ON pub.id = bok.id_publisher \r\n"
-        		+ "GROUP BY pub.id, pub.name \r\n"
-        		+ "ORDER BY qtd_titles DESC");
+        		+ "LEFT JOIN book AS bok ON pub.id = bok.id_publisher \r\n";
+        
+        if(name != null && !name.isEmpty()) {
+        	query +="WHERE pub.name LIKE '%"+name+"%'";
+        }
+        		
+		query+= " GROUP BY pub.id, pub.name ";
+		
+		if(qtd>0) {
+			query+=" HAVING qtd_titles >="+qtd;
+		}
+		
+		query +=" ORDER BY qtd_titles DESC ";
+        ResultSet resultSet = sql.selectSQL(query);
         publisherList.clear();
         if (resultSet != null) {
             try {
                 while (resultSet.next()) {
-                	publisherList.add(new Publisher(resultSet.getInt("id"), resultSet.getString("publisher")));
+                	Publisher publisher = new Publisher(resultSet.getInt("id"), resultSet.getString("publisher"));
+                	publisher.setQtd_titles(resultSet.getInt("qtd_titles"));
+                	publisherList.add(publisher);
                 }
             } catch (SQLException e) {
                 e.printStackTrace();

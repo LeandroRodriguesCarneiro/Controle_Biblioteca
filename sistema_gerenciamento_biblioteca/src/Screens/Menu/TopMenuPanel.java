@@ -32,7 +32,7 @@ public class TopMenuPanel extends JPanel {
         addButton("Alunos", "StudentPanel", null); 
         addButton("Emprestimo", "LoanPanel", null);
         addButton("Devolução", "ReturnBookPanel", null);
-        addButton("Relatório", "", null);
+        addButton("Relatório", "ReportsPanel", null);
     }
 
     private void addButton(String buttonText, String panelName, Runnable additionalAction) {

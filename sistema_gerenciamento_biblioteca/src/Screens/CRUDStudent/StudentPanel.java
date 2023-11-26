@@ -233,7 +233,6 @@ public class StudentPanel extends JPanel{
     }
     
     public static float convertStringDecimal(String numeroStr) {
-        // Substitui a vírgula pelo ponto antes de fazer a conversão
         numeroStr = numeroStr.replace(",", ".");
         
         try {

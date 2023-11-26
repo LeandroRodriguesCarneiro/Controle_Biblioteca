@@ -54,7 +54,7 @@ public class AddGenrePanel extends JPanel{
 	            public void actionPerformed(ActionEvent e) {
 					String genre = null;
 					
-				    if (txtGenre.getText().isEmpty()) {
+				    if (txtGenre.getText().trim().isEmpty()) {
 				        JOptionPane.showMessageDialog(null, "Por favor, preencha o nome do gênero.");
 				        txtGenre.requestFocus();
 				        return;

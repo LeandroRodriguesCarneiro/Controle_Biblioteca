@@ -103,7 +103,7 @@ public class ReturnBookPanel extends JPanel{
         btnNumberRegistration.addActionListener(e -> {
         	Long NumberRegistration = null;
         	try {
-        		if(txtNumberRegistration.getText().isEmpty() || txtNumberRegistration.getText().length() != 10) {
+        		if(txtNumberRegistration.getText().trim().isEmpty() || txtNumberRegistration.getText().trim().length() != 10) {
             		JOptionPane.showMessageDialog(null, "Por favor!, digite um numero de matricula com 10 digitos");
             		txtNumberRegistration.setText("");
             		return;
@@ -157,11 +157,11 @@ public class ReturnBookPanel extends JPanel{
         add(btnAdd);
         
         btnAdd.addActionListener(e -> {
-        	if (txtISBN.getText().isEmpty()) {
+        	if (txtISBN.getText().trim().isEmpty()) {
 		        JOptionPane.showMessageDialog(null, "Por favor, preencha o ISBN.");
 		        return;
 		    } 
-		    if (txtISBN.getText().length() != 13 || !txtISBN.getText().matches("\\d+")) {
+		    if (txtISBN.getText().trim().length() != 13 || !txtISBN.getText().trim().matches("\\d+")) {
 		        JOptionPane.showMessageDialog(null, "Por favor, o ISBN precisa ter 13 dígitos.");
 		        return;
 		    }
@@ -367,7 +367,7 @@ public class ReturnBookPanel extends JPanel{
     }
     
     public void resetComponents() {
-//        setInvisible(); 
+        setInvisible(); 
     }
     
     public void refreshBookTable() {

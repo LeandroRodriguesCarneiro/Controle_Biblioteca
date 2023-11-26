@@ -83,7 +83,7 @@ public class LoanPanel extends JPanel{
         btnNumberRegistration.addActionListener(e -> {
         	Long NumberRegistration = null;
         	try {
-        		if(txtNumberRegistration.getText().isEmpty() || txtNumberRegistration.getText().length() != 10) {
+        		if(txtNumberRegistration.getText().trim().isEmpty() || txtNumberRegistration.getText().trim().length() != 10) {
             		JOptionPane.showMessageDialog(null, "Por favor!, digite um número de matrícula com 10 digitos");
             		txtNumberRegistration.setText("");
             		return;
@@ -137,11 +137,11 @@ public class LoanPanel extends JPanel{
         add(btnAdd);
         
         btnAdd.addActionListener(e -> {
-        	if (txtISBN.getText().isEmpty()) {
+        	if (txtISBN.getText().trim().isEmpty()) {
 		        JOptionPane.showMessageDialog(null, "Por favor, preencha o ISBN.");
 		        return;
 		    } 
-		    if (txtISBN.getText().length() != 13 || !txtISBN.getText().matches("\\d+")) {
+		    if (txtISBN.getText().trim().length() != 13 || !txtISBN.getText().trim().matches("\\d+")) {
 		        JOptionPane.showMessageDialog(null, "Por favor, o ISBN precisa ter 13 dígitos.");
 		        return;
 		    }
@@ -216,12 +216,12 @@ public class LoanPanel extends JPanel{
         			return;
         		}
         		if(booksList.size() == 1) {
-        			if(txtDays.getText().isEmpty()) {
+        			if(txtDays.getText().trim().isEmpty()) {
             			JOptionPane.showMessageDialog(null, "Por favor!, digite o número de dias que deseja emprestar o livro");
             			return;
             		}
         		}else {
-        			if(txtDays.getText().isEmpty()) {
+        			if(txtDays.getText().trim().isEmpty()) {
             			JOptionPane.showMessageDialog(null, "Por favor!, digite o número de dias que deseja emprestar os livros");
             			return;
             		}

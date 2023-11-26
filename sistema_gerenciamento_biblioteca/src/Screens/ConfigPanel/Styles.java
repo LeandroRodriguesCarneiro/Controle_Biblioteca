@@ -27,6 +27,7 @@ public class Styles {
 
     public static final Font DEFAULT_FONT = new Font("Times New Roman", Font.PLAIN, 16);
     public static final Font DEFAULT_FONT_TITLE = new Font("Times New Roman", Font.BOLD, 36);
+    public static final Font DEFAULT_FONT_SUBTITLE = new Font("Times New Roman", Font.BOLD, 30);
     
     public static void styleButtonMenu(JButton button) {
         button.setFont(DEFAULT_FONT);
@@ -42,6 +43,11 @@ public class Styles {
     
     public static void styleTitleFont(JLabel label) {
     	label.setFont(DEFAULT_FONT_TITLE);
+        label.setForeground(LABEL_COLOR_TITLE);
+    }
+    
+    public static void styleSubtitleFont(JLabel label) {
+    	label.setFont(DEFAULT_FONT_SUBTITLE);
         label.setForeground(LABEL_COLOR_TITLE);
     }
     

@@ -91,23 +91,23 @@ public class UpdateStudentPanel extends JPanel{
 					Integer  borrowedBooks = null;
 					Float debits = null;
 					try {
-					    if (txtName.getText().isEmpty()) {
+					    if (txtName.getText().trim().isEmpty()) {
 					        JOptionPane.showMessageDialog(null, "Por favor, preencha o nome.");
 					        return;
 					    }
 
-					    if (txtRegisterNumber.getText().isEmpty()) {
+					    if (txtRegisterNumber.getText().trim().isEmpty()) {
 					        JOptionPane.showMessageDialog(null, "Por favor, preencha o numero de matricula.");
 					        return;
-					    } else if (txtRegisterNumber.getText().length() != 10) {
+					    } else if (txtRegisterNumber.getText().trim().length() != 10) {
 					        JOptionPane.showMessageDialog(null, "Por favor, o numero de matricula precisa ter 10 dígitos.");
 					        return;
 					    }
-					   if(txtBorrowedBooks.getText().isEmpty()) {
+					   if(txtBorrowedBooks.getText().trim().isEmpty()) {
 						   JOptionPane.showMessageDialog(null, "Por favor, preencha a quantidade de livros emprestados.");
 					        return;
 					   }
-					   if(txtDebits.getText().isEmpty()) {
+					   if(txtDebits.getText().trim().isEmpty()) {
 						   JOptionPane.showMessageDialog(null, "Por favor, preencha a divida do aluno");
 					        return;
 					   }

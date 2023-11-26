@@ -323,23 +323,23 @@ public class UpdateBookPanel extends JPanel{
 					List<Author> authorList = new ArrayList<>();
 					List<Genres> genresList = new ArrayList<>();
 					try {
-					    if (txtTitle.getText().isEmpty()) {
+					    if (txtTitle.getText().trim().isEmpty()) {
 					        JOptionPane.showMessageDialog(null, "Por favor, preencha o título.");
 					        txtTitle.requestFocus();
 					        return;
 					    }
 
-					    if (txtISBN.getText().isEmpty()) {
+					    if (txtISBN.getText().trim().isEmpty()) {
 					        JOptionPane.showMessageDialog(null, "Por favor, preencha o ISBN.");
 					        txtISBN.requestFocus();
 					        return;
-					    } else if (txtISBN.getText().length() != 13) {
+					    } else if (txtISBN.getText().trim().length() != 13) {
 					        JOptionPane.showMessageDialog(null, "Por favor, o ISBN precisa ter 13 dígitos.");
 					        txtISBN.requestFocus();
 					        return;
 					    }
 
-					    if (txtYearPublication.getText().length() != 4) {
+					    if (txtYearPublication.getText().trim().length() != 4) {
 					        JOptionPane.showMessageDialog(null, "Por favor, o ano precisa ter 4 digitos.");
 					        txtYearPublication.requestFocus();
 					        return;

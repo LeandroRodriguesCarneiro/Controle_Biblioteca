@@ -292,34 +292,34 @@ public class AddBookPanel extends JPanel{
 					Year yearPublication = null;
 					Integer quantity = null;
 					try {
-					    if (txtTitle.getText().isEmpty()) {
+					    if (txtTitle.getText().trim().isEmpty()) {
 					        JOptionPane.showMessageDialog(null, "Por favor, preencha o título.");
 					        txtTitle.requestFocus();
 					        return;
 					    }
 
-					    if (txtISBN.getText().isEmpty()) {
+					    if (txtISBN.getText().trim().isEmpty()) {
 					        JOptionPane.showMessageDialog(null, "Por favor, preencha o ISBN.");
 					        txtISBN.requestFocus();
 					        return;
-					    } else if (txtISBN.getText().length() != 13) {
+					    } else if (txtISBN.getText().trim().length() != 13) {
 					        JOptionPane.showMessageDialog(null, "Por favor, o ISBN precisa ter 13 dígitos.");
 					        txtISBN.requestFocus();
 					        return;
 					    }
 
-					    if (txtYearPublication.getText().length() != 4) {
+					    if (txtYearPublication.getText().trim().length() != 4) {
 					        JOptionPane.showMessageDialog(null, "Por favor, o ano precisa ter 4 digitos.");
 					        txtYearPublication.requestFocus();
 					        return;
-					    }else if(Year.of(Integer.valueOf(txtYearPublication.getText())).compareTo(Year.of(LocalDate.now().getYear()))>0) {
+					    }else if(Year.of(Integer.valueOf(txtYearPublication.getText().trim())).compareTo(Year.of(LocalDate.now().getYear()))>0) {
 					    	txtYearPublication.setText("");
 					    	txtYearPublication.requestFocus();
 					    	JOptionPane.showMessageDialog(null, "Por Favor, Digite um ano valido");
 					    	return;
 					    }
 					    
-					    if(txtQuantity.getText().isEmpty()) {
+					    if(txtQuantity.getText().trim().isEmpty()) {
 					    	JOptionPane.showMessageDialog(null, "Por favor, Digite a quantidade");
 					    	txtQuantity.requestFocus();
 					        return;

@@ -62,17 +62,17 @@ public class AddStudentPanel extends JPanel{
 				String name = null;
 				Long numberRegistration = null;
 				try {
-				    if (txtStudent.getText().isEmpty()) {
+				    if (txtStudent.getText().trim().isEmpty()) {
 				        JOptionPane.showMessageDialog(null, "Por favor, preencha o nome.");
 				        txtStudent.requestFocus();
 				        return;
 				    }
 
-				    if (txtnumberRegistration.getText().isEmpty()) {
+				    if (txtnumberRegistration.getText().trim().isEmpty()) {
 				        JOptionPane.showMessageDialog(null, "Por favor, preencha o número de matricula.");
 				        txtnumberRegistration.requestFocus();
 				        return;
-				    } else if (txtnumberRegistration.getText().length() != 10) {
+				    } else if (txtnumberRegistration.getText().trim().length() != 10) {
 				        JOptionPane.showMessageDialog(null, "Por favor, o número de matricula precisa ter 10 dígitos.");
 				        txtnumberRegistration.setText("");
 				        txtnumberRegistration.requestFocus();

@@ -53,7 +53,7 @@ public class AddPublisherPanel extends JPanel{
 	            public void actionPerformed(ActionEvent e) {
 					String Publisher = null;
 					
-				    if (txtPublisher.getText().isEmpty()) {
+				    if (txtPublisher.getText().trim().isEmpty()) {
 				        JOptionPane.showMessageDialog(null, "Por favor, preencha o nome da Editora.");
 				        txtPublisher.requestFocus();
 				        return;

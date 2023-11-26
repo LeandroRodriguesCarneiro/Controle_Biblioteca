@@ -11,18 +11,32 @@ public class AuthorDAO {
     public List<Author> authorList = new ArrayList<>();
 
     public void insertAuthor(String name) {
-        MySQLConnector sql = new MySQLConnector();
-        sql.executeProcedure("SP_InsertAuthor", name);
+    	try {
+    		MySQLConnector sql = new MySQLConnector();
+            sql.executeProcedure("SP_InsertAuthor", name);
+    	}catch(Exception e) {
+    		e.printStackTrace();
+    	}
+        
     }
     
     public void updateAuthor(int id, String name) {
-		MySQLConnector sql = new MySQLConnector();
-    	sql.executeProcedure("SP_UpdateAuthor", id, name);
+		try {
+			MySQLConnector sql = new MySQLConnector();
+	    	sql.executeProcedure("SP_UpdateAuthor", id, name);	
+		}catch(Exception e) {
+    		e.printStackTrace();
+    	}
+    	
 	}
     
     public void deleteAuthor(int id) {
-    	MySQLConnector sql = new MySQLConnector();
-    	sql.executeProcedure("SP_DeleteAuthor", id);
+    	try{
+    		MySQLConnector sql = new MySQLConnector();
+    		sql.executeProcedure("SP_DeleteAuthor", id);
+    	}catch(Exception e) {
+    		e.printStackTrace();
+    	}
     }
 
     public List<Author> selectAllAuthors() {
@@ -51,7 +65,11 @@ public class AuthorDAO {
 
     public List<Author> selectAuthorsByName(String nameSearch) {
         MySQLConnector sql = new MySQLConnector();
-        ResultSet resultSet = sql.selectSQL("SELECT id, name FROM author WHERE name LIKE '%" + nameSearch + "%'");
+        String query = "SELECT id, name FROM author";
+        if(nameSearch != null && !nameSearch.isEmpty()) {
+        	query+=" WHERE name LIKE '%" +nameSearch+ "%'";
+        }
+        ResultSet resultSet = sql.selectSQL(query);
         authorList.clear();
         if (resultSet != null) {
             try {
