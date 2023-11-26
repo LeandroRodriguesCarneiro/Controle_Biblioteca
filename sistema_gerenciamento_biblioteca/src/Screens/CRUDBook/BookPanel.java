@@ -129,7 +129,7 @@ public class BookPanel extends JPanel{
         tableModel.addColumn("Ano de publicação");
         tableModel.addColumn("Quantidade");
         tableModel.addColumn("Autores");
-        tableModel.addColumn("Genêros");
+        tableModel.addColumn("Gêneros");
 
         table = new JTable(tableModel);
         TableColumnModel columnModel = table.getColumnModel();
@@ -152,7 +152,7 @@ public class BookPanel extends JPanel{
         Styles.styleButton(btnDelete);
         add(btnDelete);
 
-        btnGenres = new JButton("Generos");
+        btnGenres = new JButton("Gêneros");
         btnGenres.setBounds(460, 490, 150, 30);
         Styles.styleButton(btnGenres);
         add(btnGenres);

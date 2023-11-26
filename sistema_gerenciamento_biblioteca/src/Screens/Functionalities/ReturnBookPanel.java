@@ -28,6 +28,7 @@ import Student.Student;
 import Student.StudentDAO;
 import Loan.Loan;
 import Loan.LoanDAO;
+import Screens.ConfigPanel.Styles;
 
 public class ReturnBookPanel extends JPanel{
 	private JTable table, tableBorrowed;
@@ -50,17 +51,19 @@ public class ReturnBookPanel extends JPanel{
         this.cardPanel = cardPanel;
         setLayout(null);
         
-        lblTitlePage = new JLabel("Devolucao");
-        lblTitlePage.setFont(new Font("Arial", Font.BOLD, 30));
-        lblTitlePage.setBounds(20, 10, 400, 30);
+        lblTitlePage = new JLabel("Devolução");
+        lblTitlePage.setBounds(142, 10, 250, 30);
+        Styles.styleTitleFont(lblTitlePage);
         add(lblTitlePage);
         
         backButton = new JButton("Voltar");
-        backButton.setBounds(870, 10, 80, 30);
+        backButton.setBounds(600, 100, 125, 25);
+        Styles.styleButton(backButton);
         add(backButton);
         
         lblchkReNew = new JLabel("Renovar?");
         lblchkReNew.setBounds(675, 80, 60, 25);
+        Styles.styleFont(lblchkReNew);
         add(lblchkReNew);
         
         chkReNew = new JCheckBox();
@@ -74,24 +77,27 @@ public class ReturnBookPanel extends JPanel{
             componentReNew = !componentReNew;
         });
         
-        lblDays = new JLabel("Dias de emprestimo (1 - 15): ");
+        lblDays = new JLabel("Dias de empréstimo (1 - 15): ");
         lblDays.setBounds(660, 115, 160, 25);
+        Styles.styleFont(lblDays);
         add(lblDays);
         
         txtDays = new JTextField();
         txtDays.setBounds(830, 115, 40, 25);
         add(txtDays);
         
-        lblNumberRegistration = new JLabel("Insira o numero de matricula:");
-        lblNumberRegistration.setBounds(10,	 45, 200, 25);
+        lblNumberRegistration = new JLabel("Insira o número de matrícula:");
+        lblNumberRegistration.setBounds(142, 60, 200, 25);
+        Styles.styleFont(lblNumberRegistration);
         add(lblNumberRegistration);
         
         txtNumberRegistration = new JTextField();
-        txtNumberRegistration.setBounds(265, 45, 90, 25);
+        txtNumberRegistration.setBounds(325, 60, 90, 25);
         add(txtNumberRegistration);
         
         btnNumberRegistration = new JButton("Buscar Aluno");
-        btnNumberRegistration.setBounds(530, 45, 125, 25);
+        btnNumberRegistration.setBounds(430, 100, 125, 25);
+        Styles.styleButtonMenu(btnNumberRegistration);
         add(btnNumberRegistration);
         
         btnNumberRegistration.addActionListener(e -> {
@@ -104,7 +110,7 @@ public class ReturnBookPanel extends JPanel{
             	}
         		NumberRegistration = Long.parseLong(txtNumberRegistration.getText());
         	}catch(NumberFormatException ex) {
-        		JOptionPane.showMessageDialog(null, "Por favor!, digite um numero com 10 digitos");
+        		JOptionPane.showMessageDialog(null, "Por favor!, digite um número com 10 digitos");
         		txtNumberRegistration.setText("");
         		return;
         	}
@@ -112,21 +118,21 @@ public class ReturnBookPanel extends JPanel{
         	StudentDAO studentDAO = new StudentDAO();
         	List<Student> studentsList = studentDAO.selectStudentByNumerRegistration(NumberRegistration);
         	if(studentsList.isEmpty()) {
-        		JOptionPane.showMessageDialog(null, "Numero de matricula nao encontrado");
+        		JOptionPane.showMessageDialog(null, "Número de matrícula não encontrado");
         		txtNumberRegistration.setText("");
         		return;
         	}
         	student = studentsList.get(0);
         	List<Loan> loansList = loanDAO.selectLoanBooks(student.getId());
         	if(loansList.isEmpty()) {
-        		JOptionPane.showMessageDialog(null, "Este aluno nao possui emprestimos");
+        		JOptionPane.showMessageDialog(null, "Este aluno não possui empréstimos");
         		txtNumberRegistration.setText("");
         		return;
         	}
         	loan = loanDAO.selectLoanBooks(student.getId()).get(0);
-        	lblStudent.setText("Aluno: "+student.getName()+", Numero de matricula: "+student.getNumberRegistration());
+        	lblStudent.setText("Aluno: "+student.getName()+", Número de matrícula: "+student.getNumberRegistration());
         	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        	lblStatus.setText("Data de Emprestimo: "+loan.getDateInit().format(formatter)+", Data de devolucao: "+loan.getDateEnd().format(formatter));
+        	lblStatus.setText("Data de Empréstimo: "+loan.getDateInit().format(formatter)+", Data de devolução: "+loan.getDateEnd().format(formatter));
         	if(LocalDate.now().isBefore(loan.getDateEnd()) || loan.getDateEnd().isEqual(LocalDate.now())){
                 lblchkReNew.setVisible(true);
             	chkReNew.setVisible(true);
@@ -138,6 +144,7 @@ public class ReturnBookPanel extends JPanel{
         
         lblISBN = new JLabel("Insira o ISBN do Livro: ");
         lblISBN.setBounds(10, 80, 200, 25);
+        Styles.styleFont(lblISBN);
         add(lblISBN);
         
         txtISBN = new JTextField();
@@ -146,6 +153,7 @@ public class ReturnBookPanel extends JPanel{
         
         btnAdd = new JButton("Buscar Livro");
         btnAdd.setBounds(530, 80, 125, 25);
+        Styles.styleButton(btnAdd);
         add(btnAdd);
         
         btnAdd.addActionListener(e -> {
@@ -160,7 +168,7 @@ public class ReturnBookPanel extends JPanel{
 		    bookDAO = new BookDAO();
 		    List<Book> booksSelectedList = bookDAO.selectBooksByISBN(txtISBN.getText());
 		    if (booksSelectedList.isEmpty()) {
-		    	JOptionPane.showMessageDialog(null, "ISBN nao encontrado");
+		    	JOptionPane.showMessageDialog(null, "ISBN não encontrado");
         		return;
 		    }
 		    for (Book book: booksList) {
@@ -238,10 +246,10 @@ public class ReturnBookPanel extends JPanel{
         tableModelBorrowed.addColumn("Titulo");
         tableModelBorrowed.addColumn("ISBN");
         tableModelBorrowed.addColumn("Editora");
-        tableModelBorrowed.addColumn("Ano de publicacao");
+        tableModelBorrowed.addColumn("Ano de publicação");
         tableModelBorrowed.addColumn("Quantidade");
         tableModelBorrowed.addColumn("Autores");
-        tableModelBorrowed.addColumn("Generos");
+        tableModelBorrowed.addColumn("Gêneros");
                 
         lblBorrowedTable = new JLabel("Livros Emprestados:");
         lblBorrowedTable.setBounds(10, 375, 200, 25);
@@ -263,6 +271,7 @@ public class ReturnBookPanel extends JPanel{
         
         btnLoan = new JButton("Devolver");
         btnLoan.setBounds(10, 305, 125, 25);
+        Styles.styleButton(btnLoan);
         add(btnLoan);
         btnLoan.addActionListener(e ->{
     		if(booksList.isEmpty()) {
@@ -272,7 +281,7 @@ public class ReturnBookPanel extends JPanel{
         	try {
         		loanDAO.returBook(loan, booksList, LocalDate.now());
             	setInvisible();
-            	JOptionPane.showMessageDialog(null, "Emprestimo realizado com sucesso!");
+            	JOptionPane.showMessageDialog(null, "Empréstimo realizado com sucesso!");
         	}catch(Exception ex) {
         		JOptionPane.showMessageDialog(null, "Houve um problema");
         		return;
@@ -282,6 +291,7 @@ public class ReturnBookPanel extends JPanel{
         
         btnRemove = new JButton("Remover");
         btnRemove.setBounds(150, 305, 125, 25);
+        Styles.styleButton(btnRemove);
         add(btnRemove);
         btnRemove.addActionListener(e -> {
             int selectedRow = table.getSelectedRow();
@@ -305,6 +315,7 @@ public class ReturnBookPanel extends JPanel{
         
         btnView = new JButton("Visualizar");
         btnView.setBounds(290, 305, 125, 25);
+        Styles.styleButton(btnView);
         add(btnView);
         btnView.addActionListener(e ->{
             lblStatus.setVisible(!componentsVisible);
@@ -315,6 +326,7 @@ public class ReturnBookPanel extends JPanel{
         
         btnReNew = new JButton("Renovar");
         btnReNew.setBounds(430, 305, 125, 25);
+        Styles.styleButton(btnReNew);
         add(btnReNew);
         setInvisible();
     }
@@ -355,7 +367,7 @@ public class ReturnBookPanel extends JPanel{
     }
     
     public void resetComponents() {
-        setInvisible(); 
+//        setInvisible(); 
     }
     
     public void refreshBookTable() {
