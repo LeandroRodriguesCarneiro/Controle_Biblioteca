@@ -54,6 +54,10 @@ public class TopMenuPanel extends JPanel {
                                 Screens.Functionalities.ReturnBookPanel returnBookPanel = (Screens.Functionalities.ReturnBookPanel) comp;
                                 returnBookPanel.setInvisible();
                             }
+                            if (comp instanceof Screens.CRUDStudent.StudentPanel) {
+                            	Screens.CRUDStudent.StudentPanel studentPanel = (Screens.CRUDStudent.StudentPanel) comp;
+                            	studentPanel.refreshStudentTable();
+                            }
                             if (comp instanceof Screens.Functionalities.LoanPanel) {
                                 Screens.Functionalities.LoanPanel LoanPanel = (Screens.Functionalities.LoanPanel) comp;
                                 LoanPanel.setInvisible();

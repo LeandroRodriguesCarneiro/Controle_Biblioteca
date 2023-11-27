@@ -135,7 +135,7 @@ public class PublisherDAO {
         		+ " WHERE 1=1 ";
         
         if(name != null && !name.isEmpty()) {
-        	query +=" pub.name LIKE '%"+name+"%'";
+        	query +=" AND pub.name LIKE '%"+name+"%'";
         }
         
 		query+= " GROUP BY pub.id, pub.name ";

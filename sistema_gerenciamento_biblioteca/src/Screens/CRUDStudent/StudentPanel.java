@@ -162,7 +162,6 @@ public class StudentPanel extends JPanel{
         add(btnDebits);
         
         backButton.addActionListener(e -> cardLayout.show(cardPanel, "MainPanel"));
-        refreshStudentTable();
         
         btnEdit.addActionListener(e ->{
         	int selectedRow = table.getSelectedRow();

@@ -33,8 +33,8 @@ public class PublisherByCountTitles extends JPanel{
 	
 	public PublisherByCountTitles() {
 		setLayout(null);
-		lblSubtitle = new JLabel("Livros fora de estoque");
-		lblSubtitle.setBounds(140,0, 300, 35);
+		lblSubtitle = new JLabel("Editoras com mais títulos");
+		lblSubtitle.setBounds(140,0, 500, 35);
 		Styles.styleSubtitleFont(lblSubtitle);
 		add(lblSubtitle);
 		

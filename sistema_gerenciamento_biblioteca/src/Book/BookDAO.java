@@ -188,11 +188,11 @@ public class BookDAO {
 
 
         		if(genre != null && !genre.isEmpty()) {
-        			query += " vbk.genre LIKE '%"+genre+"%'  \r\n";
+        			query += " AND vbk.genre LIKE '%"+genre+"%'  \r\n";
         		}
         		
         		if(publisher != null && !publisher.isEmpty()) {
-        			query += " vbk.publisher LIKE '%"+publisher+"%'";
+        			query += " AND vbk.publisher LIKE '%"+publisher+"%'";
         		}
         		
         		query += " GROUP BY vbk.id\r\n";
