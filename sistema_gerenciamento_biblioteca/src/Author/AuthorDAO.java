@@ -10,32 +10,32 @@ import DataBaseConnector.MySQLConnector;
 public class AuthorDAO {
     public List<Author> authorList = new ArrayList<>();
 
-    public void insertAuthor(String name) {
+    public void insertAuthor(String name) throws Exception {
     	try {
     		MySQLConnector sql = new MySQLConnector();
             sql.executeProcedure("SP_InsertAuthor", name);
     	}catch(Exception e) {
-    		e.printStackTrace();
+    		throw new Exception("Este autor já foi adicionado");
     	}
         
     }
     
-    public void updateAuthor(int id, String name) {
+    public void updateAuthor(int id, String name) throws Exception {
 		try {
 			MySQLConnector sql = new MySQLConnector();
 	    	sql.executeProcedure("SP_UpdateAuthor", id, name);	
 		}catch(Exception e) {
-    		e.printStackTrace();
+    		throw new Exception("Este autor já foi adicionado");
     	}
     	
 	}
     
-    public void deleteAuthor(int id) {
+    public void deleteAuthor(int id) throws Exception {
     	try{
     		MySQLConnector sql = new MySQLConnector();
     		sql.executeProcedure("SP_DeleteAuthor", id);
     	}catch(Exception e) {
-    		e.printStackTrace();
+    		throw new Exception ("Esta autor possui livros registrados no sistema");
     	}
     }
 

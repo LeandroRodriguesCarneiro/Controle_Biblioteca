@@ -16,14 +16,13 @@ import Student.StudentDAO;
 
 public class AddStudentPanel extends JPanel{
 	private static final long serialVersionUID = -1723482129844832445L;
-    private JTextField txtStudent, txtnumberRegistration;
+    private JTextField txtName, txtnumberRegistration;
     private JButton btnAdd;
     private JButton btnBack;
     private CardLayout cardLayout;
     private JPanel cardPanel;
     private StudentPanel StudentPanel;
     private JLabel lblBooks,lblName, lblRegisterNumber;
-    private JTextField txtName, txtRegisterNumber;
     public AddStudentPanel(CardLayout cardLayout, JPanel cardPanel, StudentPanel StudentPanel) {
     	this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
@@ -49,9 +48,9 @@ public class AddStudentPanel extends JPanel{
         lblRegisterNumber.setBounds(250, 80, 150, 25);
         add(lblRegisterNumber);
 
-        txtRegisterNumber = new JTextField();
-        txtRegisterNumber.setBounds(790, 80, 90, 25);
-        add(txtRegisterNumber);
+        txtnumberRegistration = new JTextField();
+        txtnumberRegistration.setBounds(790, 80, 90, 25);
+        add(txtnumberRegistration);
 
         btnAdd = new JButton("Adicionar Aluno");
         btnAdd.setBounds(250, 115, 255, 25);
@@ -62,9 +61,9 @@ public class AddStudentPanel extends JPanel{
 				String name = null;
 				Long numberRegistration = null;
 				try {
-				    if (txtStudent.getText().trim().isEmpty()) {
+				    if (txtName.getText().trim().isEmpty()) {
 				        JOptionPane.showMessageDialog(null, "Por favor, preencha o nome.");
-				        txtStudent.requestFocus();
+				        txtName.requestFocus();
 				        return;
 				    }
 
@@ -79,7 +78,7 @@ public class AddStudentPanel extends JPanel{
 				        return;
 				    }
 				   
-				    name = String.valueOf(txtStudent.getText());
+				    name = String.valueOf(txtName.getText());
 				    numberRegistration = Long.parseLong(txtnumberRegistration.getText());
 				} catch (NumberFormatException ex) {
 				    JOptionPane.showMessageDialog(null, "Certifique-se de inserir números válidos para número de matricula.");
@@ -91,9 +90,9 @@ public class AddStudentPanel extends JPanel{
 					StudentDAO StudentDAO = new StudentDAO();
 					StudentDAO.insertStudent(name,numberRegistration);
 				}catch(Exception ex){
-					JOptionPane.showMessageDialog(null, "Este número de matricula já está em uso. Por favor, insira um número de matricula diferente.");
+					JOptionPane.showMessageDialog(null, ex.getMessage());
 				}
-				txtStudent.setText("");
+				txtName.setText("");
 				txtnumberRegistration.setText("");
             }
             

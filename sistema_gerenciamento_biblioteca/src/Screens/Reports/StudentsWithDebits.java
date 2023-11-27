@@ -132,11 +132,6 @@ public class StudentsWithDebits extends JPanel{
                         });
                     }
                 });
-            } else {
-                JOptionPane.showMessageDialog(this, "Não foi encontrado registros com esse filtro.", "Erro",
-                        JOptionPane.ERROR_MESSAGE);
-                txtName.setText("");
-                txtName.requestFocus();
             }
         }
     }

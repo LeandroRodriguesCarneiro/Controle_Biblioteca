@@ -129,8 +129,13 @@ public class GenresPanel extends JPanel{
     	        int GenreID = Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString());
 	    	    int dialogResult = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir?", "Confirmação", JOptionPane.YES_NO_OPTION);
 	    	    if (dialogResult == JOptionPane.YES_OPTION) {
-	    	    	genresDAO.deleteGenre(GenreID);
-		    	    refreshGesnresTable();
+	    	    	try{
+	    	    		genresDAO.deleteGenre(GenreID);
+	    	    		refreshGesnresTable();
+	    	    	}catch(Exception ex) {
+	    	    		JOptionPane.showMessageDialog(null, ex.getMessage());
+	    	    	}
+		    	    
 	    	    } else {
 	    	        return;
 	    	    }

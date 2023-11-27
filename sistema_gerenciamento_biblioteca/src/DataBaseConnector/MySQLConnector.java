@@ -98,7 +98,11 @@ public class MySQLConnector {
         		e.printStackTrace();
         	}
         } catch (SQLException e) {
+            if(e.getErrorCode() == 1644) {
+            	throw new Exception("Erro de Exclusao");
+            }
             System.out.println(e.getMessage());
+            System.out.println(e.getErrorCode());
         }
 
         return -1;

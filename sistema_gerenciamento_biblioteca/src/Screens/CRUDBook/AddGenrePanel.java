@@ -65,7 +65,7 @@ public class AddGenrePanel extends JPanel{
 						genresDAO.insertGenres(genre);
 						JOptionPane.showMessageDialog(null, "Gênero adicionado com sucesso!");
 					}catch(Exception ex){
-						JOptionPane.showMessageDialog(null, "Este gênero já existe. Por favor, insira um genero diferente.");
+						JOptionPane.showMessageDialog(null, ex.getMessage());
 						txtGenre.setText("");
 						txtGenre.requestFocus();
 					}

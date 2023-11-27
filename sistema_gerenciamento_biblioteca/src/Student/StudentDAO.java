@@ -16,9 +16,7 @@ public class StudentDAO {
 			MySQLConnector sql = new MySQLConnector();
 	        sql.executeProcedure("SP_InsertStudent", name, numberRegistration);
 		}catch(Exception e) {
-			if(e.getMessage().equals("Entrada duplicada")) {
-        		throw new Exception("Esse ISBN ja está cadastrado em um livro");
-        	}
+        	throw new Exception("Esse Número de matricula ja está cadastrado em um aluno.");
 		}
     }
     
@@ -27,10 +25,8 @@ public class StudentDAO {
     		MySQLConnector sql = new MySQLConnector();
        	 	sql.executeProcedure("SP_DeleteStudent", id);
     	}catch(Exception e) {
-			if(e.getMessage().equals("Entrada duplicada")) {
-        		throw new Exception("Esse ISBN ja está cadastrado em um livro");
-        	}
-		}
+    		throw new Exception("Este aluno não pode ser excluido pois possui emprestimos.");
+    	}
     }
     
     public void payDebits(int id,float pay) throws Exception {
@@ -38,9 +34,7 @@ public class StudentDAO {
     		MySQLConnector sql = new MySQLConnector();
         	sql.executeProcedure("SP_PayDebits", id, pay);
     	}catch(Exception e) {
-			if(e.getMessage().equals("Entrada duplicada")) {
-        		throw new Exception("Esse ISBN ja está cadastrado em um livro");
-        	}
+        	e.printStackTrace();
 		}
     	
     }
@@ -50,9 +44,7 @@ public class StudentDAO {
 			MySQLConnector sql = new MySQLConnector();
 	        sql.executeProcedure("SP_UpdateStudent", id, name, numberRegistration, borrowedBooks, debits);
 		}catch(Exception e) {
-			if(e.getMessage().equals("Entrada duplicada")) {
-        		throw new Exception("Esse ISBN ja está cadastrado em um livro");
-        	}
+			throw new Exception("Esse Número de matricula ja está cadastrado em um aluno.");
 		}
     	
 	}
@@ -66,6 +58,46 @@ public class StudentDAO {
         		+ "    borrowed_books, \r\n"
         		+ "    DEBITS \r\n"
         		+ "    FROM student ");
+        listStudent.clear(); 
+
+        if (resultSet != null) {
+            try {
+                while (resultSet.next()) {
+                	listStudent.add(new Student(resultSet.getInt("id"),resultSet.getInt("borrowed_books"),resultSet.getString("name"),resultSet.getLong("number_registration"),
+                			resultSet.getFloat("DEBITS")));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return listStudent;
+    }
+
+    public List<Student> selectStudentByFilter(String name, Long numberRegistration) {
+        MySQLConnector sql = new MySQLConnector();
+        String query = "SELECT \r\n"
+        		+ "	   id, \r\n"
+        		+ "    number_registration, \r\n"
+        		+ "    name, \r\n"
+        		+ "    borrowed_books, \r\n"
+        		+ "    DEBITS \r\n"
+        		+ "    FROM student WHERE 1=1";
+        
+        if(name != null && !name.isEmpty()) {
+        	query+= " AND name LIKE '%"+name+"%'";
+        }
+        
+        if(numberRegistration>0) {
+        	query +=" AND number_registration = "+numberRegistration;
+        }
+        ResultSet resultSet = sql.selectSQL(query);
         listStudent.clear(); 
 
         if (resultSet != null) {

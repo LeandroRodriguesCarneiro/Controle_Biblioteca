@@ -4,13 +4,18 @@ import java.awt.CardLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.text.DefaultFormatterFactory;
+import javax.swing.text.NumberFormatter;
 
 import Screens.ConfigPanel.Styles;
 
 import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
 
 import Student.StudentDAO;
@@ -19,13 +24,15 @@ import Student.Student;
 public class UpdateStudentPanel extends JPanel{
 	 private static final long serialVersionUID = -1723482129844832445L;
 	    private JLabel lblBooks,lblName, lblRegisterNumber, lblBorrowedBooks, lblDebits;
-	    private JTextField txtName, txtRegisterNumber,txtBorrowedBooks, txtDebits;
+	    private JTextField txtName, txtRegisterNumber,txtBorrowedBooks;
+	    private JFormattedTextField txtDebits;
 	    private JButton btnAdd;
 	    private JButton btnBack;
 	    private CardLayout cardLayout;
 	    private JPanel cardPanel;
 	    private StudentPanel StudentPanel;
 	    private Student student;
+	    private StudentDAO studentDAO= new StudentDAO();
 
 	    public UpdateStudentPanel(CardLayout cardLayout,JPanel cardPanel, StudentPanel StudentPanel, Student student) {
 	        this.cardLayout = cardLayout;
@@ -35,7 +42,7 @@ public class UpdateStudentPanel extends JPanel{
 	        
 	        setLayout(null);
 	        
-	        lblBooks = new JLabel("Inserir Alunos");
+	        lblBooks = new JLabel("Atulizar Alunos");
 	    	lblBooks.setBounds(250, 10, 400, 30);
 	    	Styles.styleTitleFont(lblBooks);
 	        add(lblBooks);
@@ -57,7 +64,8 @@ public class UpdateStudentPanel extends JPanel{
 
 	        txtRegisterNumber = new JTextField();
 	        txtRegisterNumber.setBounds(790, 80, 90, 25);
-	        txtRegisterNumber.setText(String.valueOf(student.getNumberRegistration()));
+	        String formattedRegistration = String.format("%010d", student.getNumberRegistration());
+	        txtRegisterNumber.setText(formattedRegistration);
 	        add(txtRegisterNumber);
 	        
 	        lblBorrowedBooks = new JLabel("Quantidade de Livros Emprestados:");
@@ -75,11 +83,22 @@ public class UpdateStudentPanel extends JPanel{
 	        Styles.styleFont(lblDebits);
 	        add(lblDebits);
 
-	        txtDebits = new JTextField();
-	        txtDebits.setBounds(845, 150, 35, 25);
-	        txtDebits.setText(String.valueOf(student.getDebits() < 0 ? student.getDebits() * (-1) : student.getDebits()));
-	        add(txtDebits);
+
+    	    DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
+	        NumberFormatter numberFormatter = new NumberFormatter(decimalFormat);
+	        numberFormatter.setValueClass(Double.class);
+	        numberFormatter.setMinimum(0.00);
+	        numberFormatter.setMaximum(999.99);
+	        numberFormatter.setAllowsInvalid(false);
+	        numberFormatter.setCommitsOnValidEdit(true);
 	        
+	        txtDebits = new JFormattedTextField();
+	        txtDebits.setFormatterFactory(new DefaultFormatterFactory(numberFormatter));
+	        txtDebits.setBounds(845, 150, 35, 25);
+	        txtDebits.setValue(student.getDebits() < 0 ? student.getDebits() * (-1) : student.getDebits());
+	        add(txtDebits);
+
+	       
 	        btnAdd = new JButton("Salvar");
 	        btnAdd.setBounds(250, 195, 255, 25);
 	        Styles.styleButton(btnAdd);
@@ -115,18 +134,24 @@ public class UpdateStudentPanel extends JPanel{
 					    name = String.valueOf(txtName.getText());
 					    numberRegistration = Long.parseLong(txtRegisterNumber.getText());
 					    borrowedBooks = Integer.parseInt(txtBorrowedBooks.getText());
-					    debits = Float.parseFloat(txtDebits.getText()) * (-1);
+					    debits = Screens.CRUDStudent.StudentPanel.convertStringDecimal(txtDebits.getText()) * (-1);
 					} catch (NumberFormatException ex) {
-					    JOptionPane.showMessageDialog(null, "Certifique-se de inserir números válidos para numero de matricula.");
+					    JOptionPane.showMessageDialog(null, "Certifique-se de inserir números válidos para número de matricula.");
 						
 					}
-					try {
-						StudentDAO StudentDAO = new StudentDAO();
-						StudentDAO.updateStudent(student.getId(),name, numberRegistration, borrowedBooks, debits);
-					}catch(Exception ex){
-						JOptionPane.showMessageDialog(null, "Este Numero de matricula já está em uso. Por favor, insira um Numero de matricula diferente.");
-						
-					}
+					int dialogResult = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja salvar?", "Confirmação", JOptionPane.YES_NO_OPTION);
+		    	    if (dialogResult == JOptionPane.YES_OPTION) {
+		    	    	try {
+							studentDAO.updateStudent(student.getId(),name, numberRegistration, borrowedBooks, debits);
+							StudentPanel.refreshStudentTable();
+			                cardLayout.show(cardPanel, "StudentPanel");
+		    	    	}catch(Exception ex) {
+		    	    		JOptionPane.showMessageDialog(null, ex.getMessage());
+		    	    	}
+			    	    
+		    	    } else {
+		    	        return;
+		    	    }
 	            }
 	            
 	        }); 

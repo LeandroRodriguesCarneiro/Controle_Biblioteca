@@ -28,9 +28,7 @@ public class BookDAO {
             	sql.executeProcedure("SP_InsertGenreBook",idBook,genres.getId());
             }
         }catch(Exception e){
-        	if(e.getMessage().equals("Entrada duplicada")) {
-        		throw new Exception("Esse ISBN ja está cadastrado em um livro");
-        	}
+        	throw new Exception("Esse ISBN ja está cadastrado em um livro");
         }
         
     }
@@ -55,9 +53,7 @@ public class BookDAO {
                 }
             }
         }catch(Exception e){
-        	if(e.getMessage().equals("Entrada duplicada")) {
-        		throw new Exception("Esse ISBN ja está cadastrado em um livro");
-        	}
+        	throw new Exception("Esse ISBN ja está cadastrado em um livro");
         }
         
     }
@@ -67,9 +63,8 @@ public class BookDAO {
     		MySQLConnector sql = new MySQLConnector();
        	 	sql.executeProcedure("SP_DeleteBook", id);
     	}catch(Exception e){
-        	if(e.getMessage().equals("Entrada duplicada")) {
-        		throw new Exception("Esse ISBN ja está cadastrado em um livro");
-        	}
+        	throw new Exception("Este livro não pode ser excluido pois possui empréstimos registrados");
+        	
         }
     	
     }

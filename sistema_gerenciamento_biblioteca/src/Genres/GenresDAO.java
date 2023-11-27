@@ -10,30 +10,30 @@ import DataBaseConnector.MySQLConnector;
 public class GenresDAO {
 	public List<Genres> genresList = new ArrayList<>();
 
-    public void insertGenres(String name) {
+    public void insertGenres(String name) throws Exception {
     	try {
 	        MySQLConnector sql = new MySQLConnector();
 	        sql.executeProcedure("SP_insertGenre", name);
     	}catch(Exception e) {
-    		e.printStackTrace();
+    		throw new Exception("Este gênero ja foi adicionado");
     	}
     }
     
-    public void deleteGenre(int id) {
+    public void deleteGenre(int id) throws Exception {
     	try {
 	    	MySQLConnector sql = new MySQLConnector();
 	    	sql.executeProcedure("SP_DeleteGenre", id);
     	}catch(Exception e) {
-    		e.printStackTrace();
+    		throw new Exception("Este gênero possui livros associados");
     	}
     }
     
-    public void updateGenre(int id, String name) {
+    public void updateGenre(int id, String name) throws Exception {
     	try {
 	    	MySQLConnector sql = new MySQLConnector();
 	   	 	sql.executeProcedure("SP_UpdateGenre", id, name);
     	}catch(Exception e) {
-    		e.printStackTrace();
+    		throw new Exception("Este gênero ja foi adicionado");
     	}
     }
     

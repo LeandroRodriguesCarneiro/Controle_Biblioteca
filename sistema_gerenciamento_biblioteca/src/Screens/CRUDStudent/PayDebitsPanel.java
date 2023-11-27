@@ -1,24 +1,18 @@
 package Screens.CRUDStudent;
 //-*- coding: utf-8 -*-
 import java.awt.CardLayout;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.NumberFormatter;
 
 import Screens.ConfigPanel.Styles;
-
-import java.lang.Math;
 import java.text.DecimalFormat;
-
 import Student.StudentDAO;
 import Student.Student;
 
@@ -32,6 +26,7 @@ public class PayDebitsPanel extends JPanel{
 	    private JPanel cardPanel;
 	    private StudentPanel StudentPanel;
 	    private Student student;
+	    private StudentDAO studentDAO = new StudentDAO();
 
 	    public PayDebitsPanel(CardLayout cardLayout, JPanel cardPanel, StudentPanel StudentPanel, Student student) {
 	        
@@ -71,14 +66,14 @@ public class PayDebitsPanel extends JPanel{
 	        add(txtPay);
 	        
 	        lblReturnPay = new JLabel();
-	        lblReturnPay.setBounds(10,115,400,25);
+	        lblReturnPay.setBounds(250,115,600,25);
+	        Styles.styleFont(lblReturnPay);
 	        add(lblReturnPay);
 	        
 	        btnPay = new JButton("Pagar");
-	        btnPay.setBounds(250, 125, 255, 25);
+	        btnPay.setBounds(250, 160, 255, 25);
 	        Styles.styleButton(btnPay);
 	        btnPay.addActionListener(new ActionListener() {
-				@Override
 	            public void actionPerformed(ActionEvent e) {
 					Float pay = null;
 					try {
@@ -86,37 +81,23 @@ public class PayDebitsPanel extends JPanel{
 						   JOptionPane.showMessageDialog(null, "Por favor, preencha o valor do pagamento do aluno");
 					        return;
 					   }
-					    pay = Float.parseFloat(txtPay.getText());
+					    pay = Screens.CRUDStudent.StudentPanel.convertStringDecimal(txtPay.getText());
 					    if(pay<=0) {
 					    	JOptionPane.showMessageDialog(null, "Por favor, Digite um valor valido");
 					        return;
 					    }
 					} catch (NumberFormatException ex) {
-					    JOptionPane.showMessageDialog(null, "Certifique-se de inserir números válidos para numero de matricula.");
+					    JOptionPane.showMessageDialog(null, "Certifique-se de inserir números válidos para pagamento.");
 						
 					}
-					try {
-						StudentDAO studentDAO = new StudentDAO();
-						if (pay >= (student.getDebits()*(-1))) {
-			                studentDAO.payDebits(student.getId(), (student.getDebits() * (-1)));
-			                lblReturnPay.setText("Troco: " + Math.round((pay + student.getDebits()) * 100)/100);
-			     
-			            } else {
-			                studentDAO.payDebits(student.getId(), pay);
-			                lblReturnPay.setText("O pagamento não é suficiente para quitar a dívida. A dívida é de: " + ((student.getDebits()*(-1)) - pay));
-			            }
-						
-					}catch(Exception ex){
-						JOptionPane.showMessageDialog(null, "Falha ao processar o pagamento");
-						
-					}
+					processesPay(pay);
 	            }
 	            
 	        }); 
 	        add(btnPay);
 
 	        btnBack = new JButton("Voltar");
-	        btnBack.setBounds(530, 125, 89, 25);
+	        btnBack.setBounds(530, 160, 89, 25);
 	        Styles.styleButton(btnBack);
 	        btnBack.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
@@ -126,4 +107,34 @@ public class PayDebitsPanel extends JPanel{
 	        });
 	        add(btnBack);
 	    }
-}
+	    
+	    private void processesPay(float pay) {
+	    	try {
+				if (pay >= (student.getDebits()*(-1))) {
+	                studentDAO.payDebits(student.getId(), (student.getDebits() * (-1)));
+	                if(pay > (student.getDebits()*(-1))){
+	                	lblReturnPay.setText("Troco: " + (pay + student.getDebits()));
+	                }
+	                JOptionPane.showMessageDialog(null, "Pagamento realizado com sucesso.");
+	                deactivateBtnPay();
+	            } else {
+	                studentDAO.payDebits(student.getId(), pay);
+	                JOptionPane.showMessageDialog(null, "O pagamento não é suficiente para quitar a dívida.");
+	            	this.student = studentDAO.selectStudentByNumerRegistration(student.getNumberRegistration()).get(0);
+	    	    	lblPay.setText("O aluno deve: "+ (Screens.CRUDStudent.StudentPanel.formatDecimal(student.getDebits() * (-1)) +" Informe o pagamento" ));
+	            }
+			}catch(Exception ex){
+				JOptionPane.showMessageDialog(null, "Falha ao processar o pagamento");
+				
+			}	    	
+	    }
+	    
+	    private void deactivateBtnPay() {
+	    	btnPay.setEnabled(false);
+	    }
+	    
+	    public void activateBtnPay() {
+	    	btnPay.setEnabled(true);
+	    }
+}		
+

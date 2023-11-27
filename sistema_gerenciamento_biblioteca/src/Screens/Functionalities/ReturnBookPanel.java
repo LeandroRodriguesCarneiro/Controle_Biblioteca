@@ -57,17 +57,17 @@ public class ReturnBookPanel extends JPanel{
         add(lblTitlePage);
         
         backButton = new JButton("Voltar");
-        backButton.setBounds(600, 100, 125, 25);
+        backButton.setBounds(992, 10, 80, 30);
         Styles.styleButton(backButton);
         add(backButton);
         
         lblchkReNew = new JLabel("Renovar?");
-        lblchkReNew.setBounds(675, 80, 60, 25);
+        lblchkReNew.setBounds(675, 100, 80, 25);
         Styles.styleFont(lblchkReNew);
         add(lblchkReNew);
         
         chkReNew = new JCheckBox();
-        chkReNew.setBounds(740, 72, 40, 40);
+        chkReNew.setBounds(740, 92, 40, 40);
         add(chkReNew);
         
         chkReNew.addActionListener(e -> {
@@ -78,25 +78,25 @@ public class ReturnBookPanel extends JPanel{
         });
         
         lblDays = new JLabel("Dias de empréstimo (1 - 15): ");
-        lblDays.setBounds(660, 115, 160, 25);
-        Styles.styleFont(lblDays);
+        lblDays.setBounds(142, 140, 200, 25);
+        Styles.styleFont (lblDays);
         add(lblDays);
         
         txtDays = new JTextField();
-        txtDays.setBounds(830, 115, 40, 25);
+        txtDays.setBounds(340, 140, 40, 25);
         add(txtDays);
         
         lblNumberRegistration = new JLabel("Insira o número de matrícula:");
         lblNumberRegistration.setBounds(142, 60, 200, 25);
-        Styles.styleFont(lblNumberRegistration);
+        Styles.styleFont (lblNumberRegistration);
         add(lblNumberRegistration);
         
         txtNumberRegistration = new JTextField();
-        txtNumberRegistration.setBounds(325, 60, 90, 25);
+        txtNumberRegistration.setBounds(340, 60, 90, 25);
         add(txtNumberRegistration);
         
         btnNumberRegistration = new JButton("Buscar Aluno");
-        btnNumberRegistration.setBounds(430, 100, 125, 25);
+        btnNumberRegistration.setBounds(460, 60, 125, 25);
         Styles.styleButtonMenu(btnNumberRegistration);
         add(btnNumberRegistration);
         
@@ -143,16 +143,16 @@ public class ReturnBookPanel extends JPanel{
         });
         
         lblISBN = new JLabel("Insira o ISBN do Livro: ");
-        lblISBN.setBounds(10, 80, 200, 25);
-        Styles.styleFont(lblISBN);
+        lblISBN.setBounds(142, 100, 200, 25);
+        Styles.styleFont (lblISBN);
         add(lblISBN);
         
         txtISBN = new JTextField();
-        txtISBN.setBounds(265, 80, 90, 25);
+        txtISBN.setBounds(340, 100, 90, 25);
         add(txtISBN);
         
         btnAdd = new JButton("Buscar Livro");
-        btnAdd.setBounds(530, 80, 125, 25);
+        btnAdd.setBounds(460, 100, 125, 25);
         Styles.styleButton(btnAdd);
         add(btnAdd);
         
@@ -199,7 +199,8 @@ public class ReturnBookPanel extends JPanel{
         });
         
         lblStudent = new JLabel();
-        lblStudent.setBounds(10, 115, 600, 25);
+        lblStudent.setBounds(460, 140, 500, 25);
+        Styles.styleFont(lblStudent);
         add(lblStudent);
         
         backButton.addActionListener(e -> {
@@ -231,7 +232,8 @@ public class ReturnBookPanel extends JPanel{
         columnModel.getColumn(0).setPreferredWidth(0);
         columnModel.getColumn(0).setWidth(0);
         scrollPane = new JScrollPane(table);
-        scrollPane.setBounds(10, 150, 930, 150);
+        scrollPane.setBounds(140, 180, 930, 150);
+        Styles.styleTable(table, scrollPane);
         add(scrollPane);
         
         tableModelBorrowed = new DefaultTableModel() {
@@ -252,11 +254,13 @@ public class ReturnBookPanel extends JPanel{
         tableModelBorrowed.addColumn("Gêneros");
                 
         lblBorrowedTable = new JLabel("Livros Emprestados:");
-        lblBorrowedTable.setBounds(10, 375, 200, 25);
+        lblBorrowedTable.setBounds(140, 400, 200, 25);
+        Styles.styleFont(lblBorrowedTable);
         add(lblBorrowedTable);
         
         lblStatus = new JLabel();
-        lblStatus.setBounds(10, 345, 500, 25);
+        lblStatus.setBounds(140, 375, 500, 25);
+        Styles.styleFont(lblStatus);
         add(lblStatus);
         
         tableBorrowed = new JTable(tableModelBorrowed);
@@ -266,11 +270,13 @@ public class ReturnBookPanel extends JPanel{
         columnModelBorroed.getColumn(0).setPreferredWidth(0);
         columnModelBorroed.getColumn(0).setWidth(0);
         scrollPaneBorrowed = new JScrollPane(tableBorrowed);
-        scrollPaneBorrowed.setBounds(10, 400, 930, 71);
+        Styles.styleTable(tableBorrowed, scrollPaneBorrowed);
+        scrollPaneBorrowed.setBounds(140, 445, 930, 135);
+        
         add(scrollPaneBorrowed);
         
         btnLoan = new JButton("Devolver");
-        btnLoan.setBounds(10, 305, 125, 25);
+        btnLoan.setBounds(140, 340, 125, 25);
         Styles.styleButton(btnLoan);
         add(btnLoan);
         btnLoan.addActionListener(e ->{
@@ -290,7 +296,7 @@ public class ReturnBookPanel extends JPanel{
         });
         
         btnRemove = new JButton("Remover");
-        btnRemove.setBounds(150, 305, 125, 25);
+        btnRemove.setBounds(300, 340, 125, 25);
         Styles.styleButton(btnRemove);
         add(btnRemove);
         btnRemove.addActionListener(e -> {
@@ -314,7 +320,7 @@ public class ReturnBookPanel extends JPanel{
         });
         
         btnView = new JButton("Visualizar");
-        btnView.setBounds(290, 305, 125, 25);
+        btnView.setBounds(460, 340, 125, 25);
         Styles.styleButton(btnView);
         add(btnView);
         btnView.addActionListener(e ->{

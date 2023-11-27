@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -21,6 +22,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
+import javax.swing.text.DefaultFormatterFactory;
+import javax.swing.text.NumberFormatter;
 
 import Screens.ConfigPanel.Styles;
 import Student.StudentDAO;
@@ -30,12 +33,12 @@ public class StudentPanel extends JPanel{
 	private static final long serialVersionUID = -4843807817212241104L;
     private JTable table;
     private DefaultTableModel tableModel;
-    private JButton btnAdd, btnEdit, btnDelete, btnDebits, btnAuthor, search;
+    private JButton btnAdd, btnEdit, btnDelete, btnDebits, search;
     private CardLayout cardLayout;
     private JPanel cardPanel;
     private JButton backButton;
-    private JTextField txtTitle, txtISBN, txtYearPublication, txtPublisher,txtGenre, txtAuthor;
-    private JLabel lblBooks, lblTitle, lblISBN, lblPublisher, lblYearPublication, lblAuthor, lblgenres;
+    private JTextField txtName, txtNumberRegistration, txtYearPublication, txtPublisher,txtGenre, txtAuthor;
+    private JLabel lblBooks, lnlName, lblNumberRegistration, lblPublisher, lblYearPublication, lblAuthor, lblgenres;
     private List<Student> studentsList = new ArrayList<>();    
     private StudentDAO studentDAO = new StudentDAO();
     public StudentPanel(CardLayout cardLayout, JPanel cardPanel) {
@@ -53,28 +56,32 @@ public class StudentPanel extends JPanel{
         Styles.styleButton(backButton);
         add(backButton);
         
-        lblTitle = new JLabel("Título:");
-        Styles.styleFont(lblTitle);
-        lblTitle.setBounds(142, 45, 80, 25);
-        add(lblTitle);
+        lnlName = new JLabel("Nome:");
+        Styles.styleFont(lnlName);
+        lnlName.setBounds(142, 45, 80, 25);
+        add(lnlName);
 
-        txtTitle = new JTextField();
-        txtTitle.setBounds(192, 45, 500, 25);
-        add(txtTitle);
+        txtName = new JTextField();
+        txtName.setBounds(200, 45, 500, 25);
+        add(txtName);
 
-        lblISBN = new JLabel("ISBN:");
-        Styles.styleFont(lblISBN);
-        lblISBN.setBounds(702, 45, 80, 25);
-        add(lblISBN);
+        lblNumberRegistration = new JLabel("Matricula:");
+        Styles.styleFont(lblNumberRegistration);
+        lblNumberRegistration.setBounds(720, 45, 150, 25);
+        add(lblNumberRegistration);
 
-        txtISBN = new JTextField();
-        txtISBN.setBounds(752, 45, 90, 25);
-        add(txtISBN);
+        txtNumberRegistration = new JTextField();
+        txtNumberRegistration.setBounds(800, 45, 90, 25);
+        add(txtNumberRegistration);
 
         search = new JButton("Pesquisar");
         search.setBounds(932, 45, 140, 25);
         Styles.styleButton(search);
         add(search);
+        
+        search.addActionListener(e ->{
+        	refreshStudentTable();
+        });
         
         btnAdd = new JButton("Adicionar Aluno");
         btnAdd.setBounds(140, 90, 150, 30);
@@ -147,6 +154,8 @@ public class StudentPanel extends JPanel{
     	    	UpdateStudentPanel updateStudentPanel = new UpdateStudentPanel(cardLayout, cardPanel, this, student);
     	    	cardPanel.add(updateStudentPanel, "updateStudentPanel");
     	    	cardLayout.show(cardPanel, "updateStudentPanel");
+    	    } else {
+    	        JOptionPane.showMessageDialog(null, "Por favor, selecione um Aluno na tabela.");
     	    }
         });
         
@@ -185,7 +194,8 @@ public class StudentPanel extends JPanel{
     	    	if(student.getDebits()>=0) {
     	    		JOptionPane.showMessageDialog(null, "O aluno selecionado nao tem Multa a pagar!");
     	    	}else {
-    	    		PayDebitsPanel PayDebitsPanel = new PayDebitsPanel(cardLayout, cardPanel, this, student); 
+    	    		PayDebitsPanel PayDebitsPanel = new PayDebitsPanel(cardLayout, cardPanel, this, student);
+    	    		PayDebitsPanel.activateBtnPay();
     	    		cardPanel.add(PayDebitsPanel, "PayDebitsPanel");
         	    	cardLayout.show(cardPanel, "PayDebitsPanel");
     	    	}
@@ -199,19 +209,38 @@ public class StudentPanel extends JPanel{
     }
 
     public void loadStudentsIntoTable() {
-        tableModel.setRowCount(0);
+    	Long numberRegistration = (long) 0;
+    	try {
+    		if(txtNumberRegistration.getText().trim().length() == 10 && txtNumberRegistration.getText().trim().isEmpty()) {
+    			txtNumberRegistration.setText("");
+    			txtNumberRegistration.requestFocus();
+    			JOptionPane.showMessageDialog(this, "O número de matricula precisa conter 10 digitos", "Erro",
+                        JOptionPane.ERROR_MESSAGE);
+    			return;
+    		}
+    		numberRegistration = Long.parseLong(txtNumberRegistration.getText());
+    	}catch(NumberFormatException e) {
+    		if(txtNumberRegistration.getText().trim().length()>0) {
+    			JOptionPane.showMessageDialog(null, "O número de matricula precisa ser um número");
+    			txtNumberRegistration.setText("");
+    			txtNumberRegistration.requestFocus();
+    			return;
+    		}
+    	}
+    	tableModel.setRowCount(0);
         studentsList.clear();
-        List<Student> updatedStudentList = studentDAO.selectAllStudent();
+        List<Student> updatedStudentList = studentDAO.selectStudentByFilter(txtName.getText(), numberRegistration);
         	if (updatedStudentList != null) {
                 updatedStudentList.sort(Comparator.comparingInt(Student::getId));
                 studentsList.addAll(updatedStudentList);
                 if (!studentsList.isEmpty()) {
                     SwingUtilities.invokeLater(() -> {
                         for (Student student : studentsList) {
+                        	String formattedRegistration = String.format("%010d", student.getNumberRegistration());
                             tableModel.addRow(new Object[]{
                                     student.getId(),
                                     student.getName(),
-                                    student.getNumberRegistration(),
+                                    formattedRegistration,
                                     student.getBorrowedBooks(),
                                     student.getDebits() < 0 ? formatDecimal(student.getDebits() * (-1)) : formatDecimal(student.getDebits())
                             });

@@ -192,7 +192,7 @@ public class BookPanel extends JPanel{
 			    	    bookDAO.deleteBook(BookID);
 			    	    refreshBookTable();
 	    	    	}catch(Exception ex) {
-	    	    		ex.printStackTrace();
+	    	    		JOptionPane.showMessageDialog(null, ex.getMessage());
 	    	    	}
 	    	    	
 	    	    } else {
@@ -271,17 +271,21 @@ public class BookPanel extends JPanel{
         	ISBN = Long.valueOf(txtISBN.getText());
         	year = Integer.valueOf(txtYearPublication.getText());
         }catch(NumberFormatException e) {
-        	if(txtISBN.getText().length() > 0) {
+        	if(txtISBN.getText().trim().length() > 0) {
         		JOptionPane.showMessageDialog(this, "O ISBN precisa ser um número", "Erro",
                         JOptionPane.ERROR_MESSAGE);
+        		txtISBN.setText("");
+        		txtISBN.requestFocus();
             	return;
         	}else {
         		ISBN = 0;
         	}
         	if(txtYearPublication.getText().length()>0) {
-        		JOptionPane.showMessageDialog(this, "O ISBN precisa ser um número", "Erro",
+        		JOptionPane.showMessageDialog(this, "O ano precisa ser um número", "Erro",
                         JOptionPane.ERROR_MESSAGE);
-            	return;
+        		txtYearPublication.setText("");
+        		txtYearPublication.requestFocus();
+        		return;
         	}else {
         		year = 0; 
         	}

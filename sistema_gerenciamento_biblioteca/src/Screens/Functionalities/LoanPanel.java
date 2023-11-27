@@ -62,7 +62,7 @@ public class LoanPanel extends JPanel{
         add(lblDays);
         
         txtDays = new JTextField();
-        txtDays.setBounds(325, 140, 40, 25);
+        txtDays.setBounds(340, 140, 40, 25);
         add(txtDays);
         
         lblNumberRegistration = new JLabel("Insira o número de matrícula:");
@@ -71,7 +71,7 @@ public class LoanPanel extends JPanel{
         add(lblNumberRegistration);
         
         txtNumberRegistration = new JTextField();
-        txtNumberRegistration.setBounds(325, 60, 90, 25);
+        txtNumberRegistration.setBounds(340, 60, 90, 25);
         add(txtNumberRegistration);
         
         btnNumberRegistration = new JButton("Buscar Aluno");
@@ -117,7 +117,7 @@ public class LoanPanel extends JPanel{
         	}
         	
         	lblStudent.setText("Aluno: "+student.getName()+", Número de matrícula: "+student.getNumberRegistration());
-        	setVisilble();
+        	setVisible();
         	Styles.styleFont(lblStudent);
         	txtNumberRegistration.setText("");
         });
@@ -128,7 +128,7 @@ public class LoanPanel extends JPanel{
         add(lblISBN);
         
         txtISBN = new JTextField();
-        txtISBN.setBounds(325, 100, 90, 25);
+        txtISBN.setBounds(340, 100, 90, 25);
         add(txtISBN);
         
         btnAdd = new JButton("Buscar Livro");
@@ -137,34 +137,43 @@ public class LoanPanel extends JPanel{
         add(btnAdd);
         
         btnAdd.addActionListener(e -> {
-        	if (txtISBN.getText().trim().isEmpty()) {
-		        JOptionPane.showMessageDialog(null, "Por favor, preencha o ISBN.");
-		        return;
-		    } 
-		    if (txtISBN.getText().trim().length() != 13 || !txtISBN.getText().trim().matches("\\d+")) {
-		        JOptionPane.showMessageDialog(null, "Por favor, o ISBN precisa ter 13 dígitos.");
-		        return;
-		    }
-		    bookDAO = new BookDAO();
-		    List<Book> booksSelectedList = bookDAO.selectBooksByISBN(txtISBN.getText());
-		    if (booksSelectedList.isEmpty()) {
-		    	JOptionPane.showMessageDialog(null, "ISBN não encontrado");
-        		return;
-		    }
-		    for (Book book : booksList) {
-		        if (book.getId() == booksSelectedList.get(0).getId()) {
-		            JOptionPane.showMessageDialog(null, "Este livro já foi adicionado.");
-		            return;
-		        }
-		    }
-		    if (booksList.size() < 3) {
-		        booksList.add(booksSelectedList.get(0));
-		        refreshBookTable();
-		        txtISBN.setText("");
-		    } else {
-		        JOptionPane.showMessageDialog(null, "Você só pode emprestar até 3 livros.");
-		    }
+            if (txtISBN.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Por favor, preencha o ISBN.");
+                return;
+            } 
+            if (txtISBN.getText().trim().length() != 13 || !txtISBN.getText().trim().matches("\\d+")) {
+                JOptionPane.showMessageDialog(null, "Por favor, o ISBN precisa ter 13 dígitos.");
+                return;
+            }
+            bookDAO = new BookDAO();
+            List<Book> booksSelectedList = bookDAO.selectBooksByISBN(txtISBN.getText());
+            if (booksSelectedList.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "ISBN não encontrado");
+                return;
+            }
+            
+            Book selectedBook = booksSelectedList.get(0);
+            for (Book book : booksList) {
+                if (book.getId() == selectedBook.getId()) {
+                    JOptionPane.showMessageDialog(null, "Este livro já foi adicionado.");
+                    return;
+                }
+            }
+            
+            if (selectedBook.getQuantity() <= 0) {
+                JOptionPane.showMessageDialog(null, "Todos os exemplares deste livro estão emprestados");
+                return;
+            }
+
+            if (booksList.size() < 3) {
+                booksList.add(selectedBook);
+                refreshBookTable();
+                txtISBN.setText("");
+            } else {
+                JOptionPane.showMessageDialog(null, "Você só pode emprestar até 3 livros.");
+            }
         });
+
         
         lblStudent = new JLabel();
         lblStudent.setBounds(460, 140, 500, 25);
@@ -290,21 +299,22 @@ public class LoanPanel extends JPanel{
     	txtDays.setVisible(false);
     }
     
-    public void setVisilble() {
-    	lblISBN.setVisible(true);
-    	txtISBN.setVisible(true);
-    	btnAdd.setVisible(true);
-    	lblStudent.setVisible(true);
-    	lblStudent.setVisible(true);
-    	scrollPane.setVisible(true);
-    	btnLoan.setVisible(true);
-    	btnRemove.setVisible(true);
-    	lblDays.setVisible(true);
+    public void setVisible() {
+        lblISBN.setVisible(true);
+        txtISBN.setVisible(true);
+        btnAdd.setVisible(true);
+        lblStudent.setVisible(true);
+        lblStudent.setVisible(true);
+        scrollPane.setVisible(true);
+        btnLoan.setVisible(true);
+        btnRemove.setVisible(true);
+        lblDays.setVisible(true);
         txtDays.setVisible(true);
     }
+
     
     public void resetComponents() {
- //       setInvisible(); 
+        setInvisible(); 
     }
 
     
