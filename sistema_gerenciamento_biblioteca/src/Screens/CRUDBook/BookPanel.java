@@ -254,7 +254,7 @@ public class BookPanel extends JPanel{
         long ISBN;
         Integer year;
         try {
-        	if (txtISBN.getText().trim().length() == 13 && !txtISBN.getText().isEmpty()) {
+        	if (txtISBN.getText().trim().length() != 13 && !txtISBN.getText().isEmpty()) {
         		JOptionPane.showMessageDialog(this, "O ISBN precisa conter 13 digitos", "Erro",
                         JOptionPane.ERROR_MESSAGE);
         		txtISBN.setText("");

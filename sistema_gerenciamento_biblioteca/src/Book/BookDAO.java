@@ -310,9 +310,10 @@ public class BookDAO {
                 + "LEFT JOIN authors_books abk ON bok.id = abk.id_books "
                 + "LEFT JOIN author atr ON abk.id_author = atr.id "
                 + "LEFT JOIN genres_books gbk ON bok.id = gbk.id_books "
-                + "LEFT JOIN genre gen ON gbk.id_genre = gen.id";
+                + "LEFT JOIN genre gen ON gbk.id_genre = gen.id"
+                + "WHERE 1=1";
         if(authorName != null && !authorName.isEmpty()) {
-        	query +=" WHERE atr.name LIKE '%"+authorName+"%'";
+        	query +=" AND atr.name LIKE '%"+authorName+"%'";
         }
         
         if (title != null && !title.isEmpty()) {

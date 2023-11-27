@@ -10,30 +10,30 @@ import DataBaseConnector.MySQLConnector;
 public class PublisherDAO {
 	public List<Publisher> publisherList = new ArrayList<>();
 
-    public void insertPublisher(String name) {
+    public void insertPublisher(String name) throws Exception {
     	try {
 	        MySQLConnector sql = new MySQLConnector();
 	        sql.executeProcedure("SP_insertPublisher", name);
     	}catch(Exception e) {
-    		e.printStackTrace();
+    		throw new Exception("Está editora já foi adicionada");
     	}
     }
     
-    public void updatePublisher(int id, String name) {
+    public void updatePublisher(int id, String name) throws Exception {
     	try {
 			MySQLConnector sql = new MySQLConnector();
 	    	sql.executeProcedure("SP_UpdatePublisher", id, name);
     	}catch(Exception e) {
-    		e.printStackTrace();
+    		throw new Exception("Está editora já foi adicionada");
     	}
 	}
     
-    public void deletePublisher(int id) {
+    public void deletePublisher(int id) throws Exception {
     	try {
     	MySQLConnector sql = new MySQLConnector();
     	sql.executeProcedure("SP_DeletePublisher", id);
     	}catch(Exception e) {
-    		e.printStackTrace();
+    		throw new Exception("Está editora possui livros associados");
     	}
     }
 

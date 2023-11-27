@@ -73,6 +73,10 @@ public class PublisherPanel extends JPanel{
         Styles.styleButton(search);
         add(search);
         
+        search.addActionListener(e -> {
+        	refreshPublisherTable();
+        	});
+        
         btnAdd = new JButton("Adicionar Editora");
         btnAdd.setBounds(140, 90, 150, 30);
         Styles.styleButton(btnAdd);
@@ -125,8 +129,13 @@ public class PublisherPanel extends JPanel{
     	        int PublisherID = Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString());
 	    	    int dialogResult = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir?", "Confirmação", JOptionPane.YES_NO_OPTION);
 	    	    if (dialogResult == JOptionPane.YES_OPTION) {
-	    	    	PublisherDAO.deletePublisher(PublisherID);
-		    	    refreshPublisherTable();
+	    	    	try {
+	    	    		PublisherDAO.deletePublisher(PublisherID);
+			    	    refreshPublisherTable();
+	    	    	}catch(Exception ex) {
+	    	    		JOptionPane.showMessageDialog(null, ex.getMessage());
+	    	    	}
+	    	    	
 	    	    } else {
 	    	        return;
 	    	    }

@@ -120,8 +120,9 @@ public class BooksTimesBorrowed extends JPanel{
                                 book.getId(),
                                 book.getTitle(),
                                 book.getIsbn(),
-                                book.getTimesBorrowed(),
-                                String.join(",", book.getGenre())
+                                String.join(",", book.getGenre()),
+                                book.getTimesBorrowed()
+                                
                         });
                     }
                 });

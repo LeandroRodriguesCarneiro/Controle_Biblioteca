@@ -199,7 +199,7 @@ public class StudentDAO {
         		+ "    borrowed_books,\r\n"
         		+ "    DEBITS \r\n"
         		+ "FROM student\r\n"
-        		+ "WHERE DEBITS < ("+debits+" * (-1))";
+        		+ "WHERE DEBITS <= ("+debits+" * (-1))";
         if(name != null && !name.isEmpty()) {
         	query += " AND name LIKE '%"+name+"%'";
         }

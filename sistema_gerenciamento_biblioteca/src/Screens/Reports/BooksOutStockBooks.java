@@ -117,11 +117,6 @@ public class BooksOutStockBooks extends JPanel{
     }
 
     public void loadBooksIntoTable() {
-        if(!txtPublisher.getText().matches("\\d+") && !txtPublisher.getText().isBlank()) {
-        	JOptionPane.showMessageDialog(null, "Por Favor! Digite apenas números inteiros para quantidade.");
-        	txtPublisher.setText("");
-        	txtPublisher.requestFocus();
-        }
         tableModel.setRowCount(0);
         booksList.clear();
         List<Book> updatedBooksList = bookDAO.selectBooksOutStockBooks(lowQuantity, txtPublisher.getText(), txtGenre.getText());

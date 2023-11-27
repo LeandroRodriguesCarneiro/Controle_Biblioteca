@@ -74,7 +74,7 @@ public class UpdatePublisherPanel extends JPanel{
 			    	        return;
 			    	    }
 					}catch(Exception ex){
-						JOptionPane.showMessageDialog(null, "Este Editora já existe. Por favor, insira uma Editora diferente.");
+						JOptionPane.showMessageDialog(null, ex.getMessage());
 						txtPublisher.setText("");
 						txtPublisher.requestFocus();
 						return;

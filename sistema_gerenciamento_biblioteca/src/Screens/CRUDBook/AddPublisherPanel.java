@@ -64,7 +64,7 @@ public class AddPublisherPanel extends JPanel{
 						PublisherDAO.insertPublisher(Publisher);
 						JOptionPane.showMessageDialog(null, "Editora adicionada com sucesso.");
 					}catch(Exception ex){
-						JOptionPane.showMessageDialog(null, "Este Editora já existe. Por favor, insira uma Editora diferente.");
+						JOptionPane.showMessageDialog(null, ex.getMessage());
 						txtPublisher.setText("");
 						txtPublisher.requestFocus();
 						return;

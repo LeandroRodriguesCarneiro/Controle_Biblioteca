@@ -35,7 +35,7 @@ public class AuthorDAO {
     		MySQLConnector sql = new MySQLConnector();
     		sql.executeProcedure("SP_DeleteAuthor", id);
     	}catch(Exception e) {
-    		throw new Exception ("Esta autor possui livros registrados no sistema");
+    		throw new Exception ("Este autor possui livros registrados no sistema");
     	}
     }
 
