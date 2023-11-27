@@ -324,6 +324,9 @@ public class BookPanel extends JPanel{
                 JOptionPane.showMessageDialog(this, "Não foi encontrado dados para esse filtro.", "Erro",
                         JOptionPane.ERROR_MESSAGE);
             }
+        }else {
+        	JOptionPane.showMessageDialog(this, "Erro ao carregar dados do Banco de dados.", "Erro",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 }

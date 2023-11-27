@@ -302,7 +302,7 @@ public class AddBookPanel extends JPanel{
 					        JOptionPane.showMessageDialog(null, "Por favor, preencha o ISBN.");
 					        txtISBN.requestFocus();
 					        return;
-					    } else if (txtISBN.getText().trim().length() != 13 && txtISBN.getText().trim().matches("[0-9]+")) {
+					    } else if (txtISBN.getText().trim().length() != 13 || txtISBN.getText().trim().matches("[0-9]+")) {
 					        JOptionPane.showMessageDialog(null, "Por favor, o ISBN precisa ter 13 dígitos.");
 					        txtISBN.requestFocus();
 					        return;

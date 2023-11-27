@@ -126,6 +126,11 @@ public class UpdateStudentPanel extends JPanel{
 						   JOptionPane.showMessageDialog(null, "Por favor, preencha a quantidade de livros emprestados.");
 					        return;
 					   }
+					   borrowedBooks = Integer.parseInt(txtBorrowedBooks.getText());
+					   if(borrowedBooks<0 || borrowedBooks>3) {
+						   JOptionPane.showMessageDialog(null, "Por favor, a quantidade de livros emprestados deve estar entre 0 e 3");
+					        return;
+					   }
 					   if(txtDebits.getText().trim().isEmpty()) {
 						   JOptionPane.showMessageDialog(null, "Por favor, preencha a divida do aluno");
 					        return;
@@ -133,7 +138,6 @@ public class UpdateStudentPanel extends JPanel{
 					   
 					    name = String.valueOf(txtName.getText());
 					    numberRegistration = Long.parseLong(txtRegisterNumber.getText());
-					    borrowedBooks = Integer.parseInt(txtBorrowedBooks.getText());
 					    debits = Screens.CRUDStudent.StudentPanel.convertStringDecimal(txtDebits.getText()) * (-1);
 					} catch (NumberFormatException ex) {
 					    JOptionPane.showMessageDialog(null, "Certifique-se de inserir números válidos para número de matricula.");
