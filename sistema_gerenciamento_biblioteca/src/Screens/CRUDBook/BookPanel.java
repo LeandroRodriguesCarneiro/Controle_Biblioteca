@@ -252,7 +252,7 @@ public class BookPanel extends JPanel{
 
     public void loadBooksIntoTable() {
         long ISBN;
-        Integer year;
+        Integer year = 0;
         try {
         	if (txtISBN.getText().trim().length() != 13 && !txtISBN.getText().isEmpty()) {
         		JOptionPane.showMessageDialog(this, "O ISBN precisa conter 13 digitos", "Erro",
@@ -261,15 +261,9 @@ public class BookPanel extends JPanel{
         		txtISBN.requestFocus();
         		return;
         	}
-        	if(txtYearPublication.getText().trim().length() == 4 && !txtYearPublication.getText().isEmpty()) {
-        		JOptionPane.showMessageDialog(this, "O ano precisa conter 4 digitos", "Erro",
-                        JOptionPane.ERROR_MESSAGE);
-        		txtYearPublication.setText("");
-        		txtYearPublication.requestFocus();
-        		return;
-        	}
+        	
         	ISBN = Long.valueOf(txtISBN.getText());
-        	year = Integer.valueOf(txtYearPublication.getText());
+        	
         }catch(NumberFormatException e) {
         	if(txtISBN.getText().trim().length() > 0) {
         		JOptionPane.showMessageDialog(this, "O ISBN precisa ser um número", "Erro",
@@ -280,16 +274,30 @@ public class BookPanel extends JPanel{
         	}else {
         		ISBN = 0;
         	}
+        }
+        
+        try {
+        	if(txtYearPublication.getText().trim().length() != 4 && !txtYearPublication.getText().isEmpty()) {
+        		JOptionPane.showMessageDialog(this, "O ano precisa conter 4 digitos", "Erro",
+                        JOptionPane.ERROR_MESSAGE);
+        		txtYearPublication.setText("");
+        		txtYearPublication.requestFocus();
+        		return;
+        	}
+        	if(!txtYearPublication.getText().trim().isEmpty()) {
+        		year = Integer.valueOf(txtYearPublication.getText());
+        	}
+        	
+        }catch(NumberFormatException e){
         	if(txtYearPublication.getText().length()>0) {
         		JOptionPane.showMessageDialog(this, "O ano precisa ser um número", "Erro",
                         JOptionPane.ERROR_MESSAGE);
         		txtYearPublication.setText("");
         		txtYearPublication.requestFocus();
         		return;
-        	}else {
-        		year = 0; 
         	}
         }
+        
         tableModel.setRowCount(0);
         booksList.clear();
         List<Book> updatedBooksList = bookDao.selectBooksByfilter(txtTitle.getText().trim(),ISBN, txtPublisher.getText().trim(), 
