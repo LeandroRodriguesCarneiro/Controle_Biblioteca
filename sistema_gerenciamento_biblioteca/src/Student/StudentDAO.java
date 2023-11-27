@@ -203,6 +203,7 @@ public class StudentDAO {
         if(name != null && !name.isEmpty()) {
         	query += " AND name LIKE '%"+name+"%'";
         }
+        
         ResultSet resultSet = sql.selectSQL(query);
         listStudent.clear(); 
 
@@ -222,7 +223,6 @@ public class StudentDAO {
                 }
             }
         }
-
         return listStudent;
     }
 }
