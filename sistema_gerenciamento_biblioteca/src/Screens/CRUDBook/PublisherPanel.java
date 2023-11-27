@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -34,10 +35,12 @@ public class PublisherPanel extends JPanel{
     private JPanel cardPanel;
     private PublisherDAO PublisherDAO = new PublisherDAO();
     private JButton backButton;
-    private JLabel lblBooks,lblTitle;
+    private JLabel lblBooks,lblTitle, lblActive;
+    private JCheckBox chkActive;
     private List<Publisher> PublisherList = new ArrayList<>();
     private JTextField txtPublisher;
     private BookPanel BookPanel;
+    private boolean active = true;
     
     public PublisherPanel(CardLayout cardLayout, JPanel cardPanel, BookPanel BookPanel) {
     	this.cardPanel = cardPanel;
@@ -58,6 +61,20 @@ public class PublisherPanel extends JPanel{
                 cardLayout.show(cardPanel, "BookPanel");
         });
         add(backButton);
+        
+        lblActive = new JLabel("Ativo?");
+        lblActive.setBounds(840,90, 150,30);
+        Styles.styleFont(lblActive);
+        add(lblActive);
+        
+        chkActive = new JCheckBox();
+        chkActive.setBounds(900,90,90,30);
+        chkActive.setSelected(this.active);
+        add(chkActive);
+        
+        chkActive.addActionListener(e ->{
+        	this.active = !this.active;
+        });
         
         lblTitle = new JLabel("Editora:");
         Styles.styleFont(lblTitle);
@@ -92,6 +109,7 @@ public class PublisherPanel extends JPanel{
         };
         tableModel.addColumn("ID");
         tableModel.addColumn("Editoras");
+        tableModel.addColumn("Active");
 
         table = new JTable(tableModel);
         TableColumnModel columnModel = table.getColumnModel();
@@ -99,6 +117,10 @@ public class PublisherPanel extends JPanel{
         columnModel.getColumn(0).setMinWidth(0);
         columnModel.getColumn(0).setPreferredWidth(0);
         columnModel.getColumn(0).setWidth(0);
+        columnModel.getColumn(2).setMaxWidth(0);
+        columnModel.getColumn(2).setMinWidth(0);
+        columnModel.getColumn(2).setPreferredWidth(0);
+        columnModel.getColumn(2).setWidth(0);
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBounds(140, 135, 930, 300);
         Styles.styleTable(table,scrollPane);
@@ -149,7 +171,8 @@ public class PublisherPanel extends JPanel{
     	    if (selectedRow != -1) {
     	    	Publisher Publisher = new Publisher(
     	    			Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString()),
-    	    	    	tableModel.getValueAt(selectedRow, 1).toString()
+    	    	    	tableModel.getValueAt(selectedRow, 1).toString(),
+    	    	    	Boolean.valueOf(tableModel.getValueAt(selectedRow, 2).toString())
     	    		);
     	    	UpdatePublisherPanel updatePublisherPanel = new UpdatePublisherPanel(cardLayout, cardPanel, this, Publisher);
     	    	cardPanel.add(updatePublisherPanel, "UpdateBookPanel");
@@ -168,7 +191,7 @@ public class PublisherPanel extends JPanel{
     public void loadPublisherIntoTable() {
         tableModel.setRowCount(0);
         PublisherList.clear();
-        List<Publisher> updatedPublisherList = PublisherDAO.selectPublisherByName(txtPublisher.getText().trim());
+        List<Publisher> updatedPublisherList = PublisherDAO.selectPublisherByName(txtPublisher.getText().trim(), this.active);
     	if (updatedPublisherList != null) {
     		updatedPublisherList.sort(Comparator.comparingInt(Publisher::getId));
             PublisherList.addAll(updatedPublisherList);
@@ -177,7 +200,8 @@ public class PublisherPanel extends JPanel{
                     for (Publisher Publisher : PublisherList) {
                         tableModel.addRow(new Object[]{
                                 Publisher.getId(),
-                                Publisher.getName()
+                                Publisher.getName(),
+                                Publisher.isActive()
                         });
                     }
                 });

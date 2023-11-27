@@ -52,7 +52,7 @@ public class LoanDAO {
                 	}
                 	loanList.get(0).addListBooks(new BooksBorrowed(resultSet.getInt("book_id"),resultSet.getString("book_title"),resultSet.getString("book_isbn"),resultSet.getInt("book_year"),
                 			resultSet.getInt("book_quantity"),resultSet.getString("book_publisher"),resultSet.getString("book_author"),resultSet.getString("book_genre"),
-                			resultSet.getString("borrowed_books_status")));
+                			resultSet.getString("borrowed_books_status"), resultSet.getBoolean("active")));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();

@@ -36,7 +36,7 @@ import Screens.ConfigPanel.Styles;
 
 public class AddBookPanel extends JPanel{
 	 private static final long serialVersionUID = -1723482129844832445L;
-	    private JTextField txtTitle, txtISBN, txtYearPublication, txtQuantity;
+	    private JTextField txtTitle, txtISBN, txtYearPublication, txtQuantity, txtSearchGenre, txtSearchAuthor;
 	    private List<Genres> allGenresList;
 	    private JList<Genres> availableGenresList,selectedGenresList;
 	    private DefaultListModel<Genres> availableGenresModel,selectedGenresModel;
@@ -46,7 +46,7 @@ public class AddBookPanel extends JPanel{
 	    private JLabel lblBooks,lblTtitle, lblISBN, lblYearPublication, lblQuantity, lblPublisher, lblAuthor, lblGenre;
 	    private JComboBox<Publisher>cbbPublisher;
 	    private JScrollPane availableAuthorPane, selectedAuthorPane, availableGenrePane, selectedGenrePane;
-	    private JButton btnAdd,btnBack, addAuthor,removeAuthor,AddGenre,removeGenre;
+	    private JButton btnAdd,btnBack, addAuthor,removeAuthor,AddGenre,removeGenre, btnSearchGenre, btnSearchAuthor;
 	    private CardLayout cardLayout;
 	    private JPanel cardPanel;
 	    private BookPanel BookPanel;
@@ -65,43 +65,43 @@ public class AddBookPanel extends JPanel{
 	        add(lblBooks);
 
 	        lblTtitle = new JLabel("Título:");
-	        lblTtitle.setBounds(250, 45, 80, 25);
+	        lblTtitle.setBounds(250, 70, 80, 25);
 	        Styles.styleFont(lblTtitle);
 	        add(lblTtitle);
 
 	        txtTitle = new JTextField();
-	        txtTitle.setBounds(380, 45, 500, 25);
+	        txtTitle.setBounds(380, 70, 500, 25);
 	        add(txtTitle);
 
 	        lblISBN = new JLabel("ISBN:");
 	        Styles.styleFont(lblISBN);
-	        lblISBN.setBounds(250, 80, 80, 25);
+	        lblISBN.setBounds(250, 110, 80, 25);
 	        add(lblISBN);
 
 	        txtISBN = new JTextField();
-	        txtISBN.setBounds(790, 80, 90, 25);
+	        txtISBN.setBounds(790, 110, 90, 25);
 	        add(txtISBN);
 
 	        lblYearPublication = new JLabel("Ano de publicação:");
-	        lblYearPublication.setBounds(250, 115, 150, 25);
+	        lblYearPublication.setBounds(250, 150, 150, 25);
 	        Styles.styleFont(lblYearPublication);
 	        add(lblYearPublication);
 
 	        txtYearPublication = new JTextField();
-	        txtYearPublication.setBounds(845, 115, 35, 25);
+	        txtYearPublication.setBounds(845, 150, 35, 25);
 	        add(txtYearPublication);
 	        
 	        lblQuantity = new JLabel("Quantidade:");
 	        Styles.styleFont(lblQuantity);
-	        lblQuantity.setBounds(250, 150, 80, 25);
+	        lblQuantity.setBounds(250, 195, 80, 25);
 	        add(lblQuantity);
 
 	        txtQuantity = new JTextField();
-	        txtQuantity.setBounds(845, 150, 35, 25);
+	        txtQuantity.setBounds(845, 195, 35, 25);
 	        add(txtQuantity);
 	        
 	        lblPublisher = new JLabel("Editora:");
-	        lblPublisher.setBounds(250, 185, 80, 25);
+	        lblPublisher.setBounds(250, 245, 80, 25);
 	        Styles.styleFont(lblPublisher);
 	        add(lblPublisher);
 	        
@@ -121,17 +121,39 @@ public class AddBookPanel extends JPanel{
 	            }
 	        });
 	        cbbPublisher.setSelectedIndex(-1);
-	        cbbPublisher.setBounds(715, 185, 165, 25);
+	        cbbPublisher.setBounds(715, 245, 165, 25);
 	        Styles.styleComboBox(cbbPublisher);
 	        add(cbbPublisher);
 	        
 	        lblAuthor = new JLabel("Autor:");
 	        Styles.styleFont(lblAuthor);
-	        lblAuthor.setBounds(250, 230, 80, 25); 
+	        lblAuthor.setBounds(250, 280, 80, 25); 
 	        add(lblAuthor);
+	        
+	        txtSearchAuthor = new JTextField();
+	        txtSearchAuthor.setBounds(250, 305, 180, 25);
+	        add(txtSearchAuthor);
+	        
+	        btnSearchAuthor = new JButton("Buscar");
+	        btnSearchAuthor.setBounds(515, 305, 100, 25);
+	        Styles.styleButton(btnSearchAuthor);
+	        add(btnSearchAuthor);
+	        
+	        btnSearchAuthor.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+	                AuthorDAO authorDAO = new AuthorDAO();
+	                List<Author> filteredAuthors = authorDAO.selectAuthorsByName(txtSearchAuthor.getText(), true);
 
+	                availableAuthorModel.clear(); 
+	                for (Author author : filteredAuthors) {
+	                    availableAuthorModel.addElement(author); 
+	                }
+	            }
+	        });
+
+	        
 	        AuthorDAO authorDAO = new AuthorDAO();
-	        allAuthorList = authorDAO.selectAllAuthors();
+	        allAuthorList = authorDAO.selectAuthorsByName("", true);
 	        availableAuthorModel = new DefaultListModel<>();
 	        for (Author author : allAuthorList) {
 	            availableAuthorModel.addElement(author);
@@ -150,7 +172,7 @@ public class AddBookPanel extends JPanel{
 	            }
 	        });
 	        availableAuthorPane = new JScrollPane(availableAuthorList);
-	        availableAuthorPane.setBounds(250, 255, 180, 95);
+	        availableAuthorPane.setBounds(250, 340, 180, 95);
 	        Styles.styleJScrollPane(availableAuthorPane);
 	        add(availableAuthorPane);
 
@@ -168,12 +190,12 @@ public class AddBookPanel extends JPanel{
 	            }
 	        });
 	        selectedAuthorPane = new JScrollPane (selectedAuthorList);
-	        selectedAuthorPane.setBounds(705, 255, 180, 95);
+	        selectedAuthorPane.setBounds(705, 340, 180, 95);
 	        Styles.styleJScrollPane(selectedAuthorPane);
 	        add(selectedAuthorPane);
 
 	        addAuthor = new JButton("Adicionar");
-	        addAuthor.setBounds(515, 275, 100, 25);
+	        addAuthor.setBounds(515, 360, 100, 25);
 	        Styles.styleButton(addAuthor);
 	        addAuthor.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
@@ -189,7 +211,7 @@ public class AddBookPanel extends JPanel{
 	        add(addAuthor);
 
 	        removeAuthor = new JButton("Remover");
-	        removeAuthor.setBounds(515, 305, 100, 25);
+	        removeAuthor.setBounds(515, 390, 100, 25);
 	        Styles.styleButton(removeAuthor);
 	        removeAuthor.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
@@ -202,13 +224,33 @@ public class AddBookPanel extends JPanel{
 	        add(removeAuthor);
 	        
 	        lblGenre = new JLabel("Gênero:");
-	        lblGenre.setBounds(250, 350, 80, 25);
+	        lblGenre.setBounds(250, 435, 80, 25);
 	        Styles.styleFont(lblGenre);
 	        add(lblGenre);
 	        
-	        	        
+	        txtSearchGenre = new JTextField();
+	        txtSearchGenre.setBounds(250, 465, 180, 25);
+	        add(txtSearchGenre);
+	        
+	        btnSearchGenre = new JButton("Buscar");
+	        btnSearchGenre.setBounds(515, 465, 100, 25);
+	        Styles.styleButton(btnSearchGenre);
+	        add(btnSearchGenre);
+	        
+	        btnSearchGenre.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+	                GenresDAO genresDAO = new GenresDAO();
+	                List<Genres> filteredGenres = genresDAO.selectGenresByName(txtSearchGenre.getText(), true);
+
+	                availableGenresModel.clear(); 
+	                for (Genres genre : filteredGenres) {
+	                	availableGenresModel.addElement(genre); 
+	                }
+	            }
+	        });
+	        
 	        GenresDAO genresDAO = new GenresDAO();
-	        allGenresList = genresDAO.selectAllGenres();
+	        allGenresList = genresDAO.selectGenresByName("", true);
 	        availableGenresModel = new DefaultListModel<>();
 	        for (Genres genre : allGenresList) {
 	            availableGenresModel.addElement(genre);
@@ -228,7 +270,7 @@ public class AddBookPanel extends JPanel{
 	        });
 	        
 	        availableGenrePane = new JScrollPane(availableGenresList);
-	        availableGenrePane.setBounds(250, 375, 180, 95);
+	        availableGenrePane.setBounds(250, 500, 180, 95);
 	        Styles.styleJScrollPane(availableGenrePane);
 	        add(availableGenrePane);
 	        
@@ -246,12 +288,12 @@ public class AddBookPanel extends JPanel{
 	            }
 	        });
 	        selectedGenrePane = new JScrollPane (selectedGenresList);
-	        selectedGenrePane.setBounds(705, 375, 180, 95);
+	        selectedGenrePane.setBounds(705, 500, 180, 95);
 	        Styles.styleJScrollPane(selectedGenrePane);
 	        add(selectedGenrePane);
 	        
 	        AddGenre = new JButton("Adicionar");
-	        AddGenre.setBounds(515, 395, 100, 25);
+	        AddGenre.setBounds(515, 515, 100, 25);
 	        Styles.styleButton(AddGenre);
 	        AddGenre.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
@@ -269,7 +311,7 @@ public class AddBookPanel extends JPanel{
 	        add(AddGenre);
 
 	        removeGenre = new JButton("Remover");
-	        removeGenre.setBounds(515, 425, 100, 25);
+	        removeGenre.setBounds(515, 545, 100, 25);
 	        Styles.styleButton(removeGenre);
 	        removeGenre.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
@@ -282,7 +324,7 @@ public class AddBookPanel extends JPanel{
 	        add(removeGenre);
 	        
 	        btnAdd = new JButton("Adicionar Livro");
-	        btnAdd.setBounds(250, 500, 255, 25);
+	        btnAdd.setBounds(250, 635, 255, 25);
 	        Styles.styleButton(btnAdd);
 	        btnAdd.addActionListener(new ActionListener() {
 				@Override
@@ -399,7 +441,7 @@ public class AddBookPanel extends JPanel{
 
 	        btnBack = new JButton("Voltar");
 	        Styles.styleButton(btnBack);
-	        btnBack.setBounds(790, 500, 89, 25);
+	        btnBack.setBounds(790, 635, 89, 25);
 	        btnBack.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
 	            	BookPanel.refreshBookTable();

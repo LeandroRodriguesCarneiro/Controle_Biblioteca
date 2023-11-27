@@ -116,7 +116,7 @@ public class ReturnBookPanel extends JPanel{
         	}
         	
         	StudentDAO studentDAO = new StudentDAO();
-        	List<Student> studentsList = studentDAO.selectStudentByNumerRegistration(NumberRegistration);
+        	List<Student> studentsList = studentDAO.selectStudentByNumerRegistration(NumberRegistration, true);
         	if(studentsList.isEmpty()) {
         		JOptionPane.showMessageDialog(null, "Número de matrícula não encontrado");
         		txtNumberRegistration.setText("");
@@ -166,7 +166,7 @@ public class ReturnBookPanel extends JPanel{
 		        return;
 		    }
 		    bookDAO = new BookDAO();
-		    List<Book> booksSelectedList = bookDAO.selectBooksByISBN(txtISBN.getText());
+		    List<Book> booksSelectedList = bookDAO.selectBooksByISBN(txtISBN.getText(), true);
 		    if (booksSelectedList.isEmpty()) {
 		    	JOptionPane.showMessageDialog(null, "ISBN não encontrado");
         		return;

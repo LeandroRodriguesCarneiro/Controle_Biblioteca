@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -29,11 +30,13 @@ public class AuthorPanel extends JPanel{
     private JPanel cardPanel;
     private AuthorDAO AuthorDAO = new AuthorDAO();
     private JButton backButton;
-    private JLabel lblBooks,lblTitle;
+    private JCheckBox chkActive;
+    private JLabel lblBooks,lblTitle, lblActive;
     private JTextField txtAuthor;
     private List<Author> AuthorList = new ArrayList<>();
     private AuthorDAO authorDAO = new AuthorDAO();
     private BookPanel BookPanel;
+    private boolean active = true;
     
     public AuthorPanel(CardLayout cardLayout, JPanel cardPanel, BookPanel BookPanel) {
     	this.cardPanel = cardPanel;
@@ -45,6 +48,20 @@ public class AuthorPanel extends JPanel{
         Styles.styleTitleFont(lblBooks);
         lblBooks.setBounds(142, 10, 150, 30);
         add(lblBooks);
+        
+        lblActive = new JLabel("Ativo?");
+        lblActive.setBounds(840,90, 150,30);
+        Styles.styleFont(lblActive);
+        add(lblActive);
+        
+        chkActive = new JCheckBox();
+        chkActive.setBounds(900,90,90,30);
+        chkActive.setSelected(this.active);
+        add(chkActive);
+        
+        chkActive.addActionListener(e ->{
+        	this.active = !this.active;
+        });
         
         backButton = new JButton("Voltar");
         backButton.setBounds(992, 10, 80, 30);
@@ -88,6 +105,7 @@ public class AuthorPanel extends JPanel{
         };
         tableModel.addColumn("ID");
         tableModel.addColumn("Autores");
+        tableModel.addColumn("active");
 
         table = new JTable(tableModel);
         TableColumnModel columnModel = table.getColumnModel();
@@ -95,6 +113,10 @@ public class AuthorPanel extends JPanel{
         columnModel.getColumn(0).setMinWidth(0);
         columnModel.getColumn(0).setPreferredWidth(0);
         columnModel.getColumn(0).setWidth(0);
+        columnModel.getColumn(2).setMaxWidth(0);
+        columnModel.getColumn(2).setMinWidth(0);
+        columnModel.getColumn(2).setPreferredWidth(0);
+        columnModel.getColumn(2).setWidth(0);
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBounds(140, 135, 930, 300);
         Styles.styleTable(table,scrollPane);
@@ -145,7 +167,8 @@ public class AuthorPanel extends JPanel{
     	    if (selectedRow != -1) {
     	    	Author author = new Author(
     	    			Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString()),
-    	    	    	tableModel.getValueAt(selectedRow, 1).toString()
+    	    	    	tableModel.getValueAt(selectedRow, 1).toString(),
+    	    	    	Boolean.valueOf(tableModel.getValueAt(selectedRow, 2).toString())
     	    		);
     	    	UpdateAuthorPanel updateAuthorPanel = new UpdateAuthorPanel(cardLayout, cardPanel, this, author);
     	    	cardPanel.add(updateAuthorPanel, "UpdateBookPanel");
@@ -164,7 +187,7 @@ public class AuthorPanel extends JPanel{
     public void loadAuthorIntoTable() {
         tableModel.setRowCount(0);
         AuthorList.clear();
-        List<Author> updatedAuthorList = AuthorDAO.selectAuthorsByName(txtAuthor.getText().trim());
+        List<Author> updatedAuthorList = AuthorDAO.selectAuthorsByName(txtAuthor.getText().trim(), this.active);
     	if (updatedAuthorList != null) {
     		updatedAuthorList.sort(Comparator.comparingInt(Author::getId));
             AuthorList.addAll(updatedAuthorList);
@@ -173,7 +196,8 @@ public class AuthorPanel extends JPanel{
                     for (Author Author : AuthorList) {
                         tableModel.addRow(new Object[]{
                                 Author.getId(),
-                                Author.getName()
+                                Author.getName(),
+                                Author.isActive()
                         });
                     }
                 });

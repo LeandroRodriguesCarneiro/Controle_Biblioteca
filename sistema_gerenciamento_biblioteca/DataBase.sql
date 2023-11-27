@@ -1,5 +1,5 @@
 -- criacao do banco de dados
-CREATE DATABASE IF NOT EXISTS biblioteca;
+CREATE DATABASE IF NOT EXISTS biblioteca2;
 
 -- acessar banco de dados
 USE biblioteca;
@@ -8,6 +8,7 @@ USE biblioteca;
 CREATE TABLE IF NOT EXISTS genre(
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
+    active TINYINT NOT NULL,
     
     CONSTRAINT UK_GENRE_NAME UNIQUE (name)
     );
@@ -15,6 +16,7 @@ CREATE TABLE IF NOT EXISTS genre(
 CREATE TABLE IF NOT EXISTS author(
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
+    active TINYINT NOT NULL,
     
     CONSTRAINT UK_AUTHOR_NAME UNIQUE (name)
     );
@@ -22,6 +24,7 @@ CREATE TABLE IF NOT EXISTS author(
 CREATE TABLE IF NOT EXISTS publisher(
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
+    active TINYINT NOT NULL,
     
     CONSTRAINT UK_PUBLISHER_NAME UNIQUE (name)
 );
@@ -33,6 +36,7 @@ CREATE TABLE IF NOT EXISTS book(
     title varchar(50) NOT NULL,
     year_publication YEAR NOT NULL,
     quantity int NOT NULL,
+    active TINYINT NOT NULL,
     
     CONSTRAINT UK_BOOK_ISBN UNIQUE (isbn),
     CONSTRAINT FK_BOOKS_PUBLISHER FOREIGN KEY (id_publisher ) REFERENCES publisher(id)
@@ -62,6 +66,7 @@ CREATE TABLE IF NOT EXISTS student(
     name VARCHAR(100) NOT NULL,
     borrowed_books INT  NOT NULL,
     DEBITS FLOAT(4,2) NOT NULL,
+    active TINYINT NOT NULL,
 
     CONSTRAINT UK_STUDENT_NUMBER_REGISTRATION UNIQUE (number_registration)
     );
@@ -72,6 +77,7 @@ CREATE TABLE IF NOT EXISTS loan(
     date_init DATE NOT NULL,
     date_end DATE NOT NULL,
     status VARCHAR(10) NOT NULL,
+    
     CONSTRAINT FK_LOAN_STUDENT FOREIGN KEY (id_student) REFERENCES student(id)
     );
 
@@ -80,6 +86,7 @@ CREATE TABLE IF NOT EXISTS borrowed_books(
     id_loan INT NOT NULL,
     id_book INT NOT NULL,
     status VARCHAR(10) NOT NULL,
+    
     CONSTRAINT FK_BORROWEDBOOKS_LOAN FOREIGN KEY (id_loan) REFERENCES loan(id),
     CONSTRAINT FK_BORROWEDBOOKS_BOOKS FOREIGN KEY (id_book) REFERENCES book(id)
     );
@@ -94,7 +101,8 @@ SELECT
     bok.quantity AS quantity,
     pub.name AS publisher,
     GROUP_CONCAT(DISTINCT atr.name) AS author,
-    GROUP_CONCAT(DISTINCT gen.name) AS genre
+    GROUP_CONCAT(DISTINCT gen.name) AS genre,
+    bok.active as active
 FROM book AS bok
 JOIN publisher AS pub ON bok.id_publisher = pub.id
 LEFT JOIN authors_books AS abk ON bok.id = abk.id_books
@@ -115,6 +123,7 @@ SELECT
     bok.isbn AS book_isbn,
     bok.year_publication AS book_year,
     bok.quantity AS book_quantity,
+    bok.active AS active,
     pub.name AS book_publisher,
     GROUP_CONCAT(DISTINCT atr.name) AS book_author,
     GROUP_CONCAT(DISTINCT gen.name) AS book_genre,
@@ -264,7 +273,7 @@ CREATE PROCEDURE SP_InsertBook(
     IN p_quantity INT
 )
 BEGIN
-    INSERT INTO book (id_publisher, isbn, title, year_publication, quantity) VALUES (p_id_publisher, p_isbn, p_title, p_year_publication, p_quantity);
+    INSERT INTO book (id_publisher, isbn, title, year_publication, quantity,active) VALUES (p_id_publisher, p_isbn, p_title, p_year_publication, p_quantity,1);
     
     SELECT LAST_INSERT_ID();
 END//
@@ -274,7 +283,7 @@ CREATE PROCEDURE SP_InsertGenreBook(
     IN p_id_genre INT
 )
 BEGIN
-    INSERT INTO genres_books (id_books, id_genre) VALUES (p_id_book, p_id_genre);
+    INSERT INTO genres_books (id_books, id_genre, active) VALUES (p_id_book, p_id_genre, 1);
 END//
 
 CREATE PROCEDURE SP_InsertAuthorBook(
@@ -282,7 +291,7 @@ CREATE PROCEDURE SP_InsertAuthorBook(
     IN p_id_author INT
 )
 BEGIN
-	INSERT INTO authors_books (id_books,id_author) VALUES (p_id_book,p_id_author);
+	INSERT INTO authors_books (id_books,id_author, active) VALUES (p_id_book,p_id_author, 1);
 END//
 
 CREATE PROCEDURE SP_InsertStudent(
@@ -290,7 +299,7 @@ CREATE PROCEDURE SP_InsertStudent(
 	IN p_numberRegistration LONG
 )
 BEGIN
-    INSERT INTO student(number_registration, name, borrowed_books, DEBITS) VALUES (p_numberRegistration,p_name, 0, 0);
+    INSERT INTO student(number_registration, name, borrowed_books, DEBITS, active) VALUES (p_numberRegistration,p_name, 0, 0, 1);
 END//
 
 CREATE PROCEDURE SP_InsertLoan(
@@ -305,26 +314,29 @@ END//
 
 CREATE PROCEDURE SP_UpdateAuthor(
     IN p_author_id INT,
-    IN p_author_name VARCHAR(50)
+    IN p_author_name VARCHAR(50),
+    IN p_active TINYINT
 )
 BEGIN
-    UPDATE author SET name = p_author_name WHERE id = p_author_id;
+    UPDATE author SET name = p_author_name, active = p_active WHERE id = p_author_id;
 END//
 
 CREATE PROCEDURE SP_UpdateGenre(
     IN p_genre_id INT,
-    IN p_genre_name VARCHAR(50)
+    IN p_genre_name VARCHAR(50),
+    IN p_active TINYINT
 )
 BEGIN
-    UPDATE genre SET name = p_genre_name WHERE id = p_genre_id;
+    UPDATE genre SET name = p_genre_name, active = p_active WHERE id = p_genre_id;
 END//
 
 CREATE PROCEDURE SP_UpdatePublisher(
     IN p_publisher_id INT,
-    IN p_publisher_name VARCHAR(50)
+    IN p_publisher_name VARCHAR(50),
+    IN p_active TINYINT
 )
 BEGIN
-    UPDATE publisher SET name = p_publisher_name WHERE id = p_publisher_id;
+    UPDATE publisher SET name = p_publisher_name, active = p_active WHERE id = p_publisher_id;
 END//
 
 CREATE PROCEDURE SP_UpdateBook(
@@ -333,7 +345,8 @@ CREATE PROCEDURE SP_UpdateBook(
     IN p_isbn VARCHAR(13),
     IN p_title VARCHAR(50),
     IN p_year_publication YEAR,
-    IN p_quantity INT
+    IN p_quantity INT,
+    IN p_active TINYINT
 )
 BEGIN
     DECLARE set_added BOOLEAN;
@@ -365,6 +378,11 @@ BEGIN
         SET @query = CONCAT(@query, 'quantity = ', p_quantity, ',  ');
         SET set_added = TRUE;
     END IF;
+    
+    IF p_active IS NOT NULL THEN
+		SET @query = CONCAT(@query, 'active =', p_active, ',  ');
+        SET set_added = TRUE;
+	END IF;
 
     IF set_added THEN
         SET @query = SUBSTRING(@query, 1, LENGTH(@query) - 3);
@@ -383,7 +401,8 @@ CREATE PROCEDURE SP_UpdateStudent(
     IN p_name VARCHAR(50),
 	IN p_numberRegistration LONG,
     IN p_borrowed_books INT,
-    IN p_DEBITS FLOAT
+    IN p_DEBITS FLOAT,
+    IN p_active TINYINT
 )
 BEGIN
     DECLARE set_added BOOLEAN;
@@ -410,7 +429,12 @@ BEGIN
         SET @query = CONCAT(@query, 'DEBITS = ', p_DEBITS, ',  ');
         SET set_added = TRUE;
     END IF;
-
+	
+    IF p_active IS NOT NULL THEN
+		SET @query = CONCAT(@query, 'active = ', p_active, ',  ');
+        SET set_added = TRUE;
+	END IF;
+    
     IF set_added THEN
         SET @query = SUBSTRING(@query, 1, LENGTH(@query) - 3);
 
@@ -477,6 +501,15 @@ CREATE PROCEDURE SP_lendBook(
 )
 BEGIN
     INSERT INTO borrowed_books (id_loan,id_book,status) VALUES (p_id_loan,p_id_book,'Emprestimo');
+END//
+
+CREATE PROCEDURE SP_ReNew(
+	IN p_id_loan INT,
+    IN p_date_init DATE,
+    IN p_date_end DATE
+)
+BEGIN 
+	UPDATE loan SET date_init = p_date_init, date_end = p_date_end WHERE id = p_id_loan;
 END//
 
 CREATE PROCEDURE SP_PayDebits(

@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -29,15 +30,17 @@ public class GenresPanel extends JPanel{
 	private static final long serialVersionUID = -4843807817212241104L;
     private JTable table;
     private DefaultTableModel tableModel;
-    private JButton btnAdd, btnEdit, btnDelete,search,btnBack;
+    private JButton btnAdd, btnEdit, btnDelete,search;
     private CardLayout cardLayout;
     private JPanel cardPanel;
     private JButton backButton;
     private JTextField txtGenre;
-    private JLabel lblBooks, lblTitle;
+    private JCheckBox chkActive;
+    private JLabel lblBooks, lblTitle, lblActive;
     private List<Genres> genresList = new ArrayList<>();
     private GenresDAO genresDAO = new GenresDAO();
     private BookPanel BookPanel;
+    private boolean active = true;
     
     public GenresPanel(CardLayout cardLayout, JPanel cardPanel, BookPanel BookPanel) {
     	this.cardPanel = cardPanel;
@@ -58,6 +61,20 @@ public class GenresPanel extends JPanel{
                 cardLayout.show(cardPanel, "BookPanel");
         });
         add(backButton);
+        
+        lblActive = new JLabel("Ativo?");
+        lblActive.setBounds(840,90, 150,30);
+        Styles.styleFont(lblActive);
+        add(lblActive);
+        
+        chkActive = new JCheckBox();
+        chkActive.setBounds(900,90,90,30);
+        chkActive.setSelected(this.active);
+        add(chkActive);
+        
+        chkActive.addActionListener(e ->{
+        	this.active = !this.active;
+        });
         
         lblTitle = new JLabel("Gênero:");
         Styles.styleFont(lblTitle);
@@ -92,6 +109,7 @@ public class GenresPanel extends JPanel{
         };
         tableModel.addColumn("ID");
         tableModel.addColumn("Genêros");
+        tableModel.addColumn("active");
 
         table = new JTable(tableModel);
         TableColumnModel columnModel = table.getColumnModel();
@@ -99,6 +117,11 @@ public class GenresPanel extends JPanel{
         columnModel.getColumn(0).setMinWidth(0);
         columnModel.getColumn(0).setPreferredWidth(0);
         columnModel.getColumn(0).setWidth(0);
+        columnModel.getColumn(2).setMaxWidth(0);
+        columnModel.getColumn(2).setMinWidth(0);
+        columnModel.getColumn(2).setPreferredWidth(0);
+        columnModel.getColumn(2).setWidth(0);
+        
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBounds(140, 135, 930, 300);
         Styles.styleTable(table,scrollPane);
@@ -149,7 +172,8 @@ public class GenresPanel extends JPanel{
     	    if (selectedRow != -1) {
     	    	Genres genre = new Genres(
     	    			Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString()),
-    	    	    	tableModel.getValueAt(selectedRow, 1).toString()
+    	    	    	tableModel.getValueAt(selectedRow, 1).toString(),
+    	    	    	Boolean.valueOf(tableModel.getValueAt(selectedRow, 2).toString())
     	    		);
     	    	UpdateGenrePanel updateGenrePanel = new UpdateGenrePanel(cardLayout, cardPanel, this, genre);
     	    	cardPanel.add(updateGenrePanel, "UpdateBookPanel");
@@ -169,7 +193,7 @@ public class GenresPanel extends JPanel{
     public void loadGenresIntoTable() {
         tableModel.setRowCount(0);
         genresList.clear();
-        List<Genres> updatedGenresList = genresDAO.selectGenresByName(txtGenre.getText().trim());
+        List<Genres> updatedGenresList = genresDAO.selectGenresByName(txtGenre.getText().trim(), this.active);
         	if (updatedGenresList != null) {
         		updatedGenresList.sort(Comparator.comparingInt(Genres::getId));
                 genresList.addAll(updatedGenresList);
@@ -178,7 +202,8 @@ public class GenresPanel extends JPanel{
                         for (Genres genres : genresList) {
                             tableModel.addRow(new Object[]{
                                     genres.getId(),
-                                    genres.getName()
+                                    genres.getName(),
+                                    genres.isActive()
                             });
                         }
                     });

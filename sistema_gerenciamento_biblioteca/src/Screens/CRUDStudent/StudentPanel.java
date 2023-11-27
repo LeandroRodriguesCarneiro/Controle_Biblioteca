@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -37,10 +38,13 @@ public class StudentPanel extends JPanel{
     private CardLayout cardLayout;
     private JPanel cardPanel;
     private JButton backButton;
-    private JTextField txtName, txtNumberRegistration, txtYearPublication, txtPublisher,txtGenre, txtAuthor;
-    private JLabel lblBooks, lnlName, lblNumberRegistration, lblPublisher, lblYearPublication, lblAuthor, lblgenres;
+    private JTextField txtName, txtNumberRegistration;
+    private JLabel lblBooks, lnlName, lblNumberRegistration, lblActive;
+    private JCheckBox chkActive;
     private List<Student> studentsList = new ArrayList<>();    
     private StudentDAO studentDAO = new StudentDAO();
+    private boolean active = true;
+    
     public StudentPanel(CardLayout cardLayout, JPanel cardPanel) {
         this.cardPanel = cardPanel;
         this.cardLayout = cardLayout;
@@ -50,6 +54,20 @@ public class StudentPanel extends JPanel{
         Styles.styleTitleFont(lblBooks);
         lblBooks.setBounds(142, 10, 150, 30);
         add(lblBooks);
+        
+        lblActive = new JLabel("Ativo?");
+        lblActive.setBounds(840,90, 150,30);
+        Styles.styleFont(lblActive);
+        add(lblActive);
+        
+        chkActive = new JCheckBox();
+        chkActive.setBounds(900,90,90,30);
+        chkActive.setSelected(this.active);
+        add(chkActive);
+        
+        chkActive.addActionListener(e ->{
+        	this.active = !this.active;
+        });
         
         backButton = new JButton("Voltar");
         backButton.setBounds(992, 10, 80, 30);
@@ -118,6 +136,10 @@ public class StudentPanel extends JPanel{
         columnModel.getColumn(3).setMinWidth(0);
         columnModel.getColumn(3).setPreferredWidth(0);
         columnModel.getColumn(3).setWidth(0);
+        columnModel.getColumn(4).setMaxWidth(0);
+        columnModel.getColumn(4).setMinWidth(0);
+        columnModel.getColumn(4).setPreferredWidth(0);
+        columnModel.getColumn(4).setWidth(0);
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBounds(140, 135, 930, 300);
         Styles.styleTable(table,scrollPane);
@@ -149,7 +171,8 @@ public class StudentPanel extends JPanel{
     	    	    	Integer.parseInt(tableModel.getValueAt(selectedRow, 3).toString()),
     	    			tableModel.getValueAt(selectedRow, 1).toString(),
     	    	    	Long.parseLong(tableModel.getValueAt(selectedRow, 2).toString()),
-    	    	    	convertStringDecimal(tableModel.getValueAt(selectedRow, 4).toString())
+    	    	    	convertStringDecimal(tableModel.getValueAt(selectedRow, 4).toString()),
+    	    	    	Boolean.valueOf(tableModel.getValueAt(selectedRow, 5).toString())
     	    	    	);
     	    	UpdateStudentPanel updateStudentPanel = new UpdateStudentPanel(cardLayout, cardPanel, this, student);
     	    	cardPanel.add(updateStudentPanel, "updateStudentPanel");
@@ -189,7 +212,8 @@ public class StudentPanel extends JPanel{
     	    	    	Integer.parseInt(tableModel.getValueAt(selectedRow, 3).toString()),
     	    			tableModel.getValueAt(selectedRow, 1).toString(),
     	    	    	Long.parseLong(tableModel.getValueAt(selectedRow, 2).toString()),
-    	    	    	convertStringDecimal(tableModel.getValueAt(selectedRow, 4).toString()) * (-1)
+    	    	    	convertStringDecimal(tableModel.getValueAt(selectedRow, 4).toString()) * (-1),
+    	    	    	Boolean.valueOf(tableModel.getValueAt(selectedRow, 5).toString())
     	    	    	);
     	    	if(student.getDebits()>=0) {
     	    		JOptionPane.showMessageDialog(null, "O aluno selecionado nao tem Multa a pagar!");
@@ -229,7 +253,7 @@ public class StudentPanel extends JPanel{
     	}
     	tableModel.setRowCount(0);
         studentsList.clear();
-        List<Student> updatedStudentList = studentDAO.selectStudentByFilter(txtName.getText(), numberRegistration);
+        List<Student> updatedStudentList = studentDAO.selectStudentByFilter(txtName.getText(), numberRegistration, true);
         	if (updatedStudentList != null) {
                 updatedStudentList.sort(Comparator.comparingInt(Student::getId));
                 studentsList.addAll(updatedStudentList);
@@ -242,7 +266,8 @@ public class StudentPanel extends JPanel{
                                     student.getName(),
                                     formattedRegistration,
                                     student.getBorrowedBooks(),
-                                    student.getDebits() < 0 ? formatDecimal(student.getDebits() * (-1)) : formatDecimal(student.getDebits())
+                                    student.getDebits() < 0 ? formatDecimal(student.getDebits() * (-1)) : formatDecimal(student.getDebits()),
+                                    student.isActive()
                             });
                         }
                     });

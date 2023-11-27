@@ -23,8 +23,8 @@ import Book.BookDAO;
 
 public class BooksTimesBorrowed extends JPanel{
 	private static final long serialVersionUID = -6757445173507348372L;
-	private JLabel lblSubtitle, lblGenre, lblminTimesBorrowed;
-	private JTextField txtGenre, txtminTimesBorrowed;
+	private JLabel lblSubtitle, lblGenre, lblminTimesBorrowed, lblPublisher;
+	private JTextField txtGenre, txtminTimesBorrowed, txtPublisher;
 	private JButton search;
 	private JTable table;
 	private DefaultTableModel tableModel;
@@ -48,15 +48,24 @@ public class BooksTimesBorrowed extends JPanel{
         txtGenre.setBounds(200, 45, 150, 25);
         add(txtGenre);
         
-        lblminTimesBorrowed = new JLabel("Número mínimo de emprestimos:");
+        lblminTimesBorrowed = new JLabel("Emprestimos mínimos:");
         lblminTimesBorrowed.setBounds(400, 45, 250, 25);
         Styles.styleFont(lblminTimesBorrowed);
         add(lblminTimesBorrowed);
         
         txtminTimesBorrowed = new JTextField();
-        txtminTimesBorrowed.setBounds(620, 45, 60, 25);
+        txtminTimesBorrowed.setBounds(550, 45, 60, 25);
         txtminTimesBorrowed.setText("1");
         add(txtminTimesBorrowed);
+        
+        lblPublisher = new JLabel("Editora: ");
+        lblPublisher.setBounds(650, 45, 80, 30);
+		Styles.styleFont(lblPublisher);
+		add(lblPublisher);
+		
+		txtPublisher  = new JTextField();
+		txtPublisher.setBounds(720, 45, 150, 25);
+        add(txtPublisher);
         
         search = new JButton("Pesquisar");
         search.setBounds(932, 45, 140, 25);
@@ -110,7 +119,7 @@ public class BooksTimesBorrowed extends JPanel{
         tableModel.setRowCount(0);
         booksList.clear();
         int TimesBorrowed = StringToInteger(txtminTimesBorrowed.getText());
-        List<Book> updatedBooksList = bookDAO.selectBooksTimesBorrowed(txtGenre.getText(), TimesBorrowed);
+        List<Book> updatedBooksList = bookDAO.selectBooksTimesBorrowed(txtGenre.getText().trim(), TimesBorrowed, txtPublisher.getText().trim());
     	if (updatedBooksList != null) {
             booksList.addAll(updatedBooksList);
             if (!booksList.isEmpty()) {

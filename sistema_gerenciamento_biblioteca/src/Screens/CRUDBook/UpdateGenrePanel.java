@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -20,7 +21,8 @@ import Screens.ConfigPanel.Styles;
 public class UpdateGenrePanel extends JPanel{
 		private static final long serialVersionUID = 8876543210123456789L;
 	    private JTextField txtGenre;
-	    private JLabel lblBooks,lblGenre;
+	    private JLabel lblBooks,lblGenre, lblActive;
+	    private JCheckBox chkActive;
 	    private JButton btnAdd;
 	    private DefaultTableModel tableModel;
 	    private JButton btnBack;
@@ -28,10 +30,17 @@ public class UpdateGenrePanel extends JPanel{
 	    private JPanel cardPanel;
 	    private GenresPanel GenresPanel;
 	    private Genres genre;
+	    private boolean active;
 
 	    public UpdateGenrePanel(CardLayout cardLayout,
 	        JPanel cardPanel, GenresPanel GenresPanel, Genres genre) {
 	        
+	    	this.cardLayout = cardLayout;
+		    this.cardPanel = cardPanel;
+		    this.GenresPanel = GenresPanel;
+		    this.genre = genre;
+		    this.active = genre.isActive();
+		    
 	    	lblBooks = new JLabel("Editar Gêneros");
 	        lblBooks.setBounds(140, 10, 400, 30);
 	        Styles.styleTitleFont(lblBooks);
@@ -51,7 +60,21 @@ public class UpdateGenrePanel extends JPanel{
 	        txtGenre.setBounds(292, 45, 150, 30);
 	        txtGenre.setText(genre.getName());
 	        add(txtGenre);
-
+	        
+	        lblActive = new JLabel("Ativo?");
+	        lblActive.setBounds(140,90, 150,30);
+	        Styles.styleFont(lblActive);
+	        add(lblActive);
+	        
+	        chkActive = new JCheckBox();
+	        chkActive.setBounds(292,90,90,30);
+	        chkActive.setSelected(this.active);
+	        add(chkActive);
+	        
+	        chkActive.addActionListener(e ->{
+	        	this.active = !this.active;
+	        });
+	        
 	        btnAdd = new JButton("Salvar");
 	        btnAdd.setBounds(140, 135, 150, 30);
 	        Styles.styleButton(btnAdd);
@@ -69,7 +92,7 @@ public class UpdateGenrePanel extends JPanel{
 						int dialogResult = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja salvar?", "Confirmação", JOptionPane.YES_NO_OPTION);
 			    	    if (dialogResult == JOptionPane.YES_OPTION) {
 			    	    	GenresDAO GenresDAO = new GenresDAO();
-							GenresDAO.updateGenre(genre.getId(),genreName);
+							GenresDAO.updateGenre(genre.getId(),genreName, active);
 							GenresPanel.refreshGesnresTable();
 			                cardLayout.show(cardPanel, "GenresPanel");
 			    	    } else {

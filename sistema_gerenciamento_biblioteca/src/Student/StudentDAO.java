@@ -56,7 +56,8 @@ public class StudentDAO {
         		+ "    number_registration, \r\n"
         		+ "    name, \r\n"
         		+ "    borrowed_books, \r\n"
-        		+ "    DEBITS \r\n"
+        		+ "    DEBITS, \r\n"
+        		+ "	   active"
         		+ "    FROM student ");
         listStudent.clear(); 
 
@@ -64,7 +65,7 @@ public class StudentDAO {
             try {
                 while (resultSet.next()) {
                 	listStudent.add(new Student(resultSet.getInt("id"),resultSet.getInt("borrowed_books"),resultSet.getString("name"),resultSet.getLong("number_registration"),
-                			resultSet.getFloat("DEBITS")));
+                			resultSet.getFloat("DEBITS"), resultSet.getBoolean("active")));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -80,14 +81,15 @@ public class StudentDAO {
         return listStudent;
     }
 
-    public List<Student> selectStudentByFilter(String name, Long numberRegistration) {
+    public List<Student> selectStudentByFilter(String name, Long numberRegistration, boolean active) {
         MySQLConnector sql = new MySQLConnector();
         String query = "SELECT \r\n"
         		+ "	   id, \r\n"
         		+ "    number_registration, \r\n"
         		+ "    name, \r\n"
         		+ "    borrowed_books, \r\n"
-        		+ "    DEBITS \r\n"
+        		+ "    DEBITS, \r\n"
+        		+ "		active"
         		+ "    FROM student WHERE 1=1";
         
         if(name != null && !name.isEmpty()) {
@@ -97,6 +99,11 @@ public class StudentDAO {
         if(numberRegistration>0) {
         	query +=" AND number_registration = "+numberRegistration;
         }
+        
+        if(active) {
+        	query+= " AND active = 1";
+        }
+        
         ResultSet resultSet = sql.selectSQL(query);
         listStudent.clear(); 
 
@@ -104,7 +111,7 @@ public class StudentDAO {
             try {
                 while (resultSet.next()) {
                 	listStudent.add(new Student(resultSet.getInt("id"),resultSet.getInt("borrowed_books"),resultSet.getString("name"),resultSet.getLong("number_registration"),
-                			resultSet.getFloat("DEBITS")));
+                			resultSet.getFloat("DEBITS"), resultSet.getBoolean("active")));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -120,23 +127,30 @@ public class StudentDAO {
         return listStudent;
     }
     
-    public List<Student> selectStudentByNumerRegistration(long numberRegistration) {
+    public List<Student> selectStudentByNumerRegistration(long numberRegistration, boolean active) {
         MySQLConnector sql = new MySQLConnector();
-        ResultSet resultSet = sql.selectSQL("SELECT \r\n"
+        String query = "SELECT \r\n"
         		+ "	   id, \r\n"
         		+ "    number_registration, \r\n"
         		+ "    name, \r\n"
         		+ "    borrowed_books, \r\n"
-        		+ "    DEBITS \r\n"
+        		+ "    DEBITS, \r\n"
+        		+ "		active"
         		+ "    FROM student "
-        		+ " WHERE number_registration = "+numberRegistration);
+        		+ " WHERE number_registration = "+numberRegistration;
+        
+        if(active) {
+        	query+= " AND active = 1";
+        }
+        
+        ResultSet resultSet = sql.selectSQL(query);
         listStudent.clear(); 
 
         if (resultSet != null) {
             try {
                 while (resultSet.next()) {
                 	listStudent.add(new Student(resultSet.getInt("id"),resultSet.getInt("borrowed_books"),resultSet.getString("name"),resultSet.getLong("number_registration"),
-                			resultSet.getFloat("DEBITS")));
+                			resultSet.getFloat("DEBITS"), resultSet.getBoolean("active")));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -155,13 +169,14 @@ public class StudentDAO {
     public List<Student> selectStudentsMaximumNumberBooksBorrowed(String name) {
         MySQLConnector sql = new MySQLConnector();
         String query = "SELECT \r\n"
-        		+ "	id,\r\n"
+        		+ "    id,\r\n"
         		+ "    number_registration,\r\n"
         		+ "    name,\r\n"
         		+ "    borrowed_books,\r\n"
-        		+ "    DEBITS * (-1) AS DEBITS\r\n"
+        		+ "    DEBITS * (-1) AS DEBITS,\r\n"
+        		+ "    active\r\n"
         		+ "FROM student\r\n"
-        		+ "WHERE borrowed_books = 3";
+        		+ "WHERE borrowed_books >= 3 ";
         
         if(name != null && !name.isEmpty()) {
         	query+=" AND name LIKE '%"+name+"%'";
@@ -175,7 +190,7 @@ public class StudentDAO {
             try {
                 while (resultSet.next()) {
                 	listStudent.add(new Student(resultSet.getInt("id"),resultSet.getInt("borrowed_books"),resultSet.getString("name"),resultSet.getLong("number_registration"),
-                			resultSet.getFloat("DEBITS")));
+                			resultSet.getFloat("DEBITS"), resultSet.getBoolean("active")));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -193,16 +208,19 @@ public class StudentDAO {
     public List<Student> selectStudentsDebt(float debits, String name) {
         MySQLConnector sql = new MySQLConnector();
         String query = "SELECT \r\n"
-        		+ "	id,\r\n"
-        		+ "    number_registration,\r\n"
-        		+ "    name,\r\n"
-        		+ "    borrowed_books,\r\n"
-        		+ "    DEBITS \r\n"
-        		+ "FROM student\r\n"
-        		+ "WHERE DEBITS <= ("+debits+" * (-1))";
-        if(name != null && !name.isEmpty()) {
-        	query += " AND name LIKE '%"+name+"%'";
-        }
+        	    + "    id,\r\n"
+        	    + "    number_registration,\r\n"
+        	    + "    name,\r\n"
+        	    + "    borrowed_books,\r\n"
+        	    + "    DEBITS, \r\n"
+        	    + "    active\r\n"
+        	    + "FROM student\r\n"
+        	    + "WHERE DEBITS <= (" + debits + " * (-1))"; 
+
+        	if (name != null && !name.isEmpty()) {
+        	    query += " AND name LIKE '%" + name + "%'";
+        	}
+
         
         ResultSet resultSet = sql.selectSQL(query);
         listStudent.clear(); 
@@ -211,7 +229,7 @@ public class StudentDAO {
             try {
                 while (resultSet.next()) {
                 	listStudent.add(new Student(resultSet.getInt("id"),resultSet.getInt("borrowed_books"),resultSet.getString("name"),resultSet.getLong("number_registration"),
-                			resultSet.getFloat("DEBITS")));
+                			resultSet.getFloat("DEBITS"), resultSet.getBoolean("active")));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();

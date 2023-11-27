@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -31,8 +32,10 @@ public class BookPanel extends JPanel{
     private JPanel cardPanel;
     private BookDAO bookDao = new BookDAO();
     private JButton backButton;
+    private JCheckBox chkActive;
     private JTextField txtTitle, txtISBN, txtYearPublication, txtPublisher,txtGenre, txtAuthor;
-    private JLabel lblBooks, lblTitle, lblISBN, lblPublisher, lblYearPublication, lblAuthor, lblgenres;
+    private JLabel lblBooks, lblTitle, lblISBN, lblPublisher, lblYearPublication, lblAuthor, lblgenres, lblActive;
+    private boolean active;
     private List<Book> booksList = new ArrayList<>();
     
     public BookPanel(CardLayout cardLayout, JPanel cardPanel) {
@@ -44,6 +47,20 @@ public class BookPanel extends JPanel{
         Styles.styleTitleFont(lblBooks);
         lblBooks.setBounds(142, 10, 150, 30);
         add(lblBooks);
+        
+        lblActive = new JLabel("Ativo?");
+        lblActive.setBounds(840, 135, 150,30);
+        Styles.styleFont(lblActive);
+        add(lblActive);
+        
+        chkActive = new JCheckBox();
+        chkActive.setBounds(900,135,90,30);
+        chkActive.setSelected(this.active);
+        add(chkActive);
+        
+        chkActive.addActionListener(e ->{
+        	this.active = !this.active;
+        });
         
         backButton = new JButton("Voltar");
         backButton.setBounds(992, 10, 80, 30);
@@ -134,6 +151,7 @@ public class BookPanel extends JPanel{
         tableModel.addColumn("Quantidade");
         tableModel.addColumn("Autores");
         tableModel.addColumn("Gêneros");
+        tableModel.addColumn("Active");
 
         table = new JTable(tableModel);
         TableColumnModel columnModel = table.getColumnModel();
@@ -141,6 +159,10 @@ public class BookPanel extends JPanel{
         columnModel.getColumn(0).setMinWidth(0);
         columnModel.getColumn(0).setPreferredWidth(0);
         columnModel.getColumn(0).setWidth(0);
+        columnModel.getColumn(8).setMaxWidth(0);
+        columnModel.getColumn(8).setMinWidth(0);
+        columnModel.getColumn(8).setPreferredWidth(0);
+        columnModel.getColumn(8).setWidth(0);
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBounds(140, 180, 930, 300);
         Styles.styleTable(table,scrollPane);
@@ -214,7 +236,8 @@ public class BookPanel extends JPanel{
     	    	    	Integer.parseInt(tableModel.getValueAt(selectedRow, 5).toString()),
     	    	    	tableModel.getValueAt(selectedRow, 3).toString(),
     	    	    	tableModel.getValueAt(selectedRow, 6).toString(),
-    	    	    	tableModel.getValueAt(selectedRow, 7).toString()
+    	    	    	tableModel.getValueAt(selectedRow, 7).toString(),
+    	    	    	Boolean.valueOf(tableModel.getValueAt(selectedRow, 8).toString())
     	    		);
     	    	UpdateBookPanel updateBookPanel = new UpdateBookPanel(cardLayout, cardPanel, this, book);
     	    	cardPanel.add(updateBookPanel, "UpdateBookPanel");
@@ -301,7 +324,7 @@ public class BookPanel extends JPanel{
         tableModel.setRowCount(0);
         booksList.clear();
         List<Book> updatedBooksList = bookDao.selectBooksByfilter(txtTitle.getText().trim(),ISBN, txtPublisher.getText().trim(), 
-        		year, txtGenre.getText().trim(), txtAuthor.getText().trim());
+        		year, txtGenre.getText().trim(), txtAuthor.getText().trim(), this.active);
     	if (updatedBooksList != null) {
             updatedBooksList.sort(Comparator.comparingInt(Book::getId));
             booksList.addAll(updatedBooksList);
@@ -316,7 +339,8 @@ public class BookPanel extends JPanel{
                                 book.getYearPublication(),
                                 book.getQuantity(),
                                 String.join(",", book.getAuthor()),
-                                String.join(",", book.getGenre())
+                                String.join(",", book.getGenre()),
+                                book.isActive()
                         });
                     }
                 });

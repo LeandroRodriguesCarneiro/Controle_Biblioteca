@@ -20,10 +20,10 @@ public class AuthorDAO {
         
     }
     
-    public void updateAuthor(int id, String name) throws Exception {
+    public void updateAuthor(int id, String name, boolean active) throws Exception {
 		try {
 			MySQLConnector sql = new MySQLConnector();
-	    	sql.executeProcedure("SP_UpdateAuthor", id, name);	
+	    	sql.executeProcedure("SP_UpdateAuthor", id, name, active);	
 		}catch(Exception e) {
     		throw new Exception("Este autor já foi adicionado");
     	}
@@ -41,13 +41,13 @@ public class AuthorDAO {
 
     public List<Author> selectAllAuthors() {
         MySQLConnector sql = new MySQLConnector();
-        ResultSet resultSet = sql.selectSQL("SELECT id, name FROM author");
+        ResultSet resultSet = sql.selectSQL("SELECT id, name, active FROM author");
         authorList.clear(); 
 
         if (resultSet != null) {
             try {
                 while (resultSet.next()) {
-                    authorList.add(new Author(resultSet.getInt("id"), resultSet.getString("name")));
+                    authorList.add(new Author(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getBoolean("active")));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -63,18 +63,22 @@ public class AuthorDAO {
         return authorList;
     }
 
-    public List<Author> selectAuthorsByName(String nameSearch) {
+    public List<Author> selectAuthorsByName(String nameSearch, boolean active) {
         MySQLConnector sql = new MySQLConnector();
-        String query = "SELECT id, name FROM author";
-        if(nameSearch != null && !nameSearch.isEmpty()) {
-        	query+=" WHERE name LIKE '%" +nameSearch+ "%'";
+        String query = "SELECT id, name, active FROM author WHERE 1=1";
+        if (nameSearch != null && !nameSearch.isEmpty()) {
+            query += " AND name LIKE '%" + nameSearch + "%'";
         }
+        if (active) {
+            query += " AND active = 1"; 
+        }
+
         ResultSet resultSet = sql.selectSQL(query);
         authorList.clear();
         if (resultSet != null) {
             try {
                 while (resultSet.next()) {
-                    authorList.add(new Author(resultSet.getInt("id"), resultSet.getString("name")));
+                    authorList.add(new Author(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getBoolean("active")));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();

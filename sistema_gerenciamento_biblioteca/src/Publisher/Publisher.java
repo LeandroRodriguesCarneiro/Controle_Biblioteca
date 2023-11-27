@@ -4,10 +4,20 @@ public class Publisher {
 	private String name;
 	private int id;
 	private int qtd_titles;
+	private boolean active;
 
-	public Publisher(int id,String name) {
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	public Publisher(int id,String name, boolean active) {
     	this.id = id;
     	this.name = name;
+    	this.active = active;
     }
 	
     public int getQtd_titles() {

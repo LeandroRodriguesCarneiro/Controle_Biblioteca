@@ -33,7 +33,8 @@ public class BookDAO {
         
     }
     
-    public void UpdateBook(int id, int id_publisher, String isbn, String title, Year year_publication, int quantity, List<Genres> genresList, List<Author> authorList) throws Exception {
+    public void UpdateBook(int id, int id_publisher, String isbn, String title, Year year_publication, int quantity, 
+    		List<Genres> genresList, List<Author> authorList, boolean active) throws Exception {
         MySQLConnector sql = new MySQLConnector();
         int idBook = 0;
         try {
@@ -78,7 +79,8 @@ public class BookDAO {
             try {
                 while (resultSet.next()) {
                 	booksList.add(new Book(resultSet.getInt("id"),resultSet.getString("title"),resultSet.getString("isbn"),resultSet.getInt("year"),
-                			resultSet.getInt("quantity"),resultSet.getString("publisher"),resultSet.getString("author"),resultSet.getString("genre")));
+                			resultSet.getInt("quantity"),resultSet.getString("publisher"),resultSet.getString("author"),resultSet.getString("genre"),
+                			resultSet.getBoolean("active")));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -94,7 +96,7 @@ public class BookDAO {
         return booksList;
     }
     
-    public List<Book> selectBooksByfilter(String title, long ISBN, String publisher, Integer yearPublication, String genre, String author) {
+    public List<Book> selectBooksByfilter(String title, long ISBN, String publisher, Integer yearPublication, String genre, String author, boolean active) {
         MySQLConnector sql = new MySQLConnector();
         String query = "SELECT * FROM vw_books WHERE 1=1";
         
@@ -117,6 +119,10 @@ public class BookDAO {
         	query+=" AND author LIKE '%"+author+"%'";
         }
         
+        if(active) {
+        	query+= " AND active = 1";
+        }
+        
         ResultSet resultSet = sql.selectSQL(query);
         booksList.clear(); 
 
@@ -124,7 +130,8 @@ public class BookDAO {
             try {
                 while (resultSet.next()) {
                 	booksList.add(new Book(resultSet.getInt("id"),resultSet.getString("title"),resultSet.getString("isbn"),resultSet.getInt("year"),
-                			resultSet.getInt("quantity"),resultSet.getString("publisher"),resultSet.getString("author"),resultSet.getString("genre")));
+                			resultSet.getInt("quantity"),resultSet.getString("publisher"),resultSet.getString("author"),resultSet.getString("genre"),
+                			resultSet.getBoolean("active")));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -140,9 +147,12 @@ public class BookDAO {
         return booksList;
     }
     
-    public List<Book> selectBooksByISBN(String ISBN) {
+    public List<Book> selectBooksByISBN(String ISBN, boolean active) {
         MySQLConnector sql = new MySQLConnector();
         String query = "SELECT * FROM vw_books WHERE isbn = '"+ISBN+"'";
+        if(active) {
+        	query+= " AND active = 1";
+        }
         ResultSet resultSet = sql.selectSQL(query);
         booksList.clear();
         if (resultSet != null) {
@@ -150,7 +160,7 @@ public class BookDAO {
                 while (resultSet.next()) {
                 	booksList.add(new Book(resultSet.getInt("id"), resultSet.getString("title"), resultSet.getString("isbn"),
                             resultSet.getInt("year"), resultSet.getInt("quantity"), resultSet.getString("publisher"),
-                            resultSet.getString("author"), resultSet.getString("genre")));
+                            resultSet.getString("author"), resultSet.getString("genre"), resultSet.getBoolean("active")));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -166,22 +176,31 @@ public class BookDAO {
         return booksList;
     }
     
-    public List<Book> selectBooksTimesBorrowed(String genre, Integer minTimesBorrowed) {
+    public List<Book> selectBooksTimesBorrowed(String genre, Integer minTimesBorrowed, String publisher) {
         MySQLConnector sql = new MySQLConnector();
         String query = "SELECT \r\n"
-        		+ "    vbk.*,\r\n"
-        		+ "    COUNT(bbk.id_book) AS times_borrowed\r\n"
-        		+ "FROM vw_books AS vbk\r\n"
-        		+ "LEFT JOIN borrowed_books AS bbk ON vbk.id = bbk.id_book\r\n"
-        		+ "LEFT JOIN loan ON bbk.id_book = loan.id\r\n";
-        		if(genre != null & !genre.isEmpty()) {
-        			query+= "WHERE vbk.genre LIKE '%"+genre+"%'  \r\n";
+        	    + "vbk.*,\r\n"
+        	    + "COUNT(bbk.id_book) AS times_borrowed,\r\n" 
+        	    + "vbk.active AS active " 
+        	    + "FROM vw_books AS vbk\r\n" 
+        	    + "LEFT JOIN borrowed_books AS bbk ON vbk.id = bbk.id_book\r\n"
+        	    + "WHERE 1=1";
+
+
+        		if(genre != null && !genre.isEmpty()) {
+        			query += " vbk.genre LIKE '%"+genre+"%'  \r\n";
         		}
-        		query += "GROUP BY vbk.id\r\n";
+        		
+        		if(publisher != null && !publisher.isEmpty()) {
+        			query += " vbk.publisher LIKE '%"+publisher+"%'";
+        		}
+        		
+        		query += " GROUP BY vbk.id\r\n";
+        		
         		if(minTimesBorrowed != null && minTimesBorrowed >0) {
-        			query+= "HAVING times_borrowed >= "+minTimesBorrowed+"  \r\n";
+        			query+= " HAVING times_borrowed >= "+minTimesBorrowed+"  \r\n";
         		}
-        		query+= "ORDER BY times_borrowed DESC;";
+        		query+= " ORDER BY times_borrowed DESC;";
         ResultSet resultSet = sql.selectSQL(query);
         booksList.clear();
         if (resultSet != null) {
@@ -189,7 +208,7 @@ public class BookDAO {
                 while (resultSet.next()) {
                 	Book book = new Book(resultSet.getInt("id"), resultSet.getString("title"), resultSet.getString("isbn"),
                             resultSet.getInt("year"), resultSet.getInt("quantity"), resultSet.getString("publisher"),
-                            resultSet.getString("author"), resultSet.getString("genre"));
+                            resultSet.getString("author"), resultSet.getString("genre"), resultSet.getBoolean("active"));
                 	book.setTimesBorrowed(resultSet.getInt("times_borrowed"));
                 	booksList.add(book);
                 }
@@ -235,7 +254,7 @@ public class BookDAO {
                 while (resultSet.next()) {
                 	Book book = new Book(resultSet.getInt("id"), resultSet.getString("title"), resultSet.getString("isbn"),
                             resultSet.getInt("year"), resultSet.getInt("quantity"), resultSet.getString("publisher"),
-                            resultSet.getString("author"), resultSet.getString("genre"));
+                            resultSet.getString("author"), resultSet.getString("genre"), resultSet.getBoolean("active"));
                 	booksList.add(book);
                 }
             } catch (SQLException e) {
@@ -274,7 +293,7 @@ public class BookDAO {
                 while (resultSet.next()) {
                 	Book book = new Book(resultSet.getInt("id"), resultSet.getString("title"), resultSet.getString("isbn"),
                             resultSet.getInt("year"), resultSet.getInt("quantity"), resultSet.getString("publisher"),
-                            resultSet.getString("author"), resultSet.getString("genre"));
+                            resultSet.getString("author"), resultSet.getString("genre"), resultSet.getBoolean("active"));
                 	booksList.add(book);
                 }
             } catch (SQLException e) {
@@ -294,33 +313,35 @@ public class BookDAO {
     public List<Book> selectBooksSpecificAuthor (String authorName, String title) {
         MySQLConnector sql = new MySQLConnector();
         String query = "SELECT "
-                + "bok.id AS id,"
-                + "bok.title AS title,"
-                + "bok.isbn AS isbn,"
-                + "bok.year_publication AS year,"
-                + "bok.quantity AS quantity,"
-                + "pub.name AS publisher,"
-                + "GROUP_CONCAT(DISTINCT atr.name "
-                + "    SEPARATOR ',') AS author,"
-                + "GROUP_CONCAT(DISTINCT gen.name "
-                + "    SEPARATOR ',') AS genre "
-                + "FROM "
-                + "book bok "
-                + "LEFT JOIN publisher pub ON bok.id_publisher = pub.id "
-                + "LEFT JOIN authors_books abk ON bok.id = abk.id_books "
-                + "LEFT JOIN author atr ON abk.id_author = atr.id "
-                + "LEFT JOIN genres_books gbk ON bok.id = gbk.id_books "
-                + "LEFT JOIN genre gen ON gbk.id_genre = gen.id "
-                + "WHERE 1=1 ";
-        if(authorName != null && !authorName.isEmpty()) {
-        	query +=" AND atr.name LIKE '%"+authorName+"%'";
-        }
-        
-        if (title != null && !title.isEmpty()) {
-            query += " AND bok.title LIKE '%" + title + "%' ";
-        }
-        
-        query+=" GROUP BY bok.id ORDER BY atr.name";
+        	    + "bok.id AS id,"
+        	    + "bok.title AS title,"
+        	    + "bok.isbn AS isbn,"
+        	    + "bok.year_publication AS year,"
+        	    + "bok.quantity AS quantity,"
+        	    + "pub.name AS publisher,"
+        	    + "GROUP_CONCAT(DISTINCT atr.name "
+        	    + "    SEPARATOR ',') AS author,"
+        	    + "GROUP_CONCAT(DISTINCT gen.name "
+        	    + "    SEPARATOR ',') AS genre,"
+        	    + "bok.active AS active " 
+        	    + "FROM "
+        	    + "book bok "
+        	    + "LEFT JOIN publisher pub ON bok.id_publisher = pub.id "
+        	    + "LEFT JOIN authors_books abk ON bok.id = abk.id_books "
+        	    + "LEFT JOIN author atr ON abk.id_author = atr.id "
+        	    + "LEFT JOIN genres_books gbk ON bok.id = gbk.id_books "
+        	    + "LEFT JOIN genre gen ON gbk.id_genre = gen.id "
+        	    + "WHERE 1=1 ";
+        	if(authorName != null && !authorName.isEmpty()) {
+        	    query +=" AND atr.name LIKE '%"+authorName+"%'";
+        	}
+
+        	if (title != null && !title.isEmpty()) {
+        	    query += " AND bok.title LIKE '%" + title + "%' ";
+        	}
+
+        	query+=" GROUP BY bok.id ORDER BY atr.name";
+
         ResultSet resultSet = sql.selectSQL(query);
         booksList.clear();
         if (resultSet != null) {
@@ -328,7 +349,7 @@ public class BookDAO {
                 while (resultSet.next()) {
                 	Book book = new Book(resultSet.getInt("id"), resultSet.getString("title"), resultSet.getString("isbn"),
                             resultSet.getInt("year"), resultSet.getInt("quantity"), resultSet.getString("publisher"),
-                            resultSet.getString("author"), resultSet.getString("genre"));
+                            resultSet.getString("author"), resultSet.getString("genre"), resultSet.getBoolean("active"));
                 	booksList.add(book);
                 }
             } catch (SQLException e) {
@@ -356,8 +377,9 @@ public class BookDAO {
                 + "GROUP_CONCAT(DISTINCT atr.name "
                 + "    SEPARATOR ',') AS author,"
                 + "GROUP_CONCAT(DISTINCT gen.name "
-                + "    SEPARATOR ',') AS genre "
-                + "FROM "
+                + "    SEPARATOR ',') AS genre,"
+                + "bok.active AS active"  
+                + " FROM "  
                 + "book bok "
                 + "LEFT JOIN publisher pub ON bok.id_publisher = pub.id "
                 + "LEFT JOIN authors_books abk ON bok.id = abk.id_books "
@@ -382,7 +404,7 @@ public class BookDAO {
                 while (resultSet.next()) {
                 	Book book = new Book(resultSet.getInt("id"), resultSet.getString("title"), resultSet.getString("isbn"),
                             resultSet.getInt("year"), resultSet.getInt("quantity"), resultSet.getString("publisher"),
-                            resultSet.getString("author"), resultSet.getString("genre"));
+                            resultSet.getString("author"), resultSet.getString("genre"), resultSet.getBoolean("active"));
                 	booksList.add(book);
                 }
             } catch (SQLException e) {

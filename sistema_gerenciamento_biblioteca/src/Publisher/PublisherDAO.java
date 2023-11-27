@@ -19,10 +19,10 @@ public class PublisherDAO {
     	}
     }
     
-    public void updatePublisher(int id, String name) throws Exception {
+    public void updatePublisher(int id, String name, boolean active) throws Exception {
     	try {
 			MySQLConnector sql = new MySQLConnector();
-	    	sql.executeProcedure("SP_UpdatePublisher", id, name);
+	    	sql.executeProcedure("SP_UpdatePublisher", id, name, active);
     	}catch(Exception e) {
     		throw new Exception("Está editora já foi adicionada");
     	}
@@ -39,13 +39,13 @@ public class PublisherDAO {
 
     public List<Publisher> selectAllPublisher() {
         MySQLConnector sql = new MySQLConnector();
-        ResultSet resultSet = sql.selectSQL("SELECT id, name FROM publisher");
+        ResultSet resultSet = sql.selectSQL("SELECT id, name, active FROM publisher");
         publisherList.clear(); 
 
         if (resultSet != null) {
             try {
                 while (resultSet.next()) {
-                	publisherList.add(new Publisher(resultSet.getInt("id"), resultSet.getString("name")));
+                	publisherList.add(new Publisher(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getBoolean("active")));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -61,14 +61,14 @@ public class PublisherDAO {
         return publisherList;
     }
 
-    public List<Publisher> selectPublisherByName(String nameSearch) {
+    public List<Publisher> selectPublisherByName(String nameSearch, boolean active) {
         MySQLConnector sql = new MySQLConnector();
-        ResultSet resultSet = sql.selectSQL("SELECT id, name FROM publisher WHERE name LIKE '%" + nameSearch + "%'");
+        ResultSet resultSet = sql.selectSQL("SELECT id, name, active FROM publisher WHERE name LIKE '%" + nameSearch + "%'");
         publisherList.clear();
         if (resultSet != null) {
             try {
                 while (resultSet.next()) {
-                	publisherList.add(new Publisher(resultSet.getInt("id"), resultSet.getString("name")));
+                	publisherList.add(new Publisher(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getBoolean("active")));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -90,6 +90,7 @@ public class PublisherDAO {
         		+ "	pub.id, \r\n"
         		+ "    pub.name as publisher,\r\n"
         		+ "    COUNT(bok.id) as qtd_titles\r\n"
+        		+ "	pub.active as active"
         		+ "FROM publisher AS pub \r\n"
         		+ "LEFT JOIN book AS bok ON pub.id = bok.id_publisher \r\n"
         		+ "GROUP BY pub.id, pub.name \r\n"
@@ -99,7 +100,7 @@ public class PublisherDAO {
         if (resultSet != null) {
             try {
                 while (resultSet.next()) {
-                	publisherList.add(new Publisher(resultSet.getInt("id"), resultSet.getString("publisher")));
+                	publisherList.add(new Publisher(resultSet.getInt("id"), resultSet.getString("publisher"), resultSet.getBoolean("active")));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -118,16 +119,18 @@ public class PublisherDAO {
     public List<Publisher> selectPublisherByCountTitles(String name, int qtd) {
         MySQLConnector sql = new MySQLConnector();
         String query = "SELECT \r\n"
-        		+ "	   pub.id, \r\n"
-        		+ "    pub.name as publisher,\r\n"
-        		+ "    COUNT(bok.id) as qtd_titles\r\n"
+        		+ "	pub.id, \r\n"
+        		+ "     pub.name as publisher,\r\n"
+        		+ "     COUNT(bok.id) as qtd_titles,\r\n"
+        		+ "	 pub.active as active\r\n"
         		+ "FROM publisher AS pub \r\n"
-        		+ "LEFT JOIN book AS bok ON pub.id = bok.id_publisher \r\n";
+        		+ "LEFT JOIN book AS bok ON pub.id = bok.id_publisher \r\n"
+        		+ " WHERE 1=1 ";
         
         if(name != null && !name.isEmpty()) {
-        	query +="WHERE pub.name LIKE '%"+name+"%'";
+        	query +=" pub.name LIKE '%"+name+"%'";
         }
-        		
+        
 		query+= " GROUP BY pub.id, pub.name ";
 		
 		if(qtd>0) {
@@ -140,7 +143,7 @@ public class PublisherDAO {
         if (resultSet != null) {
             try {
                 while (resultSet.next()) {
-                	Publisher publisher = new Publisher(resultSet.getInt("id"), resultSet.getString("publisher"));
+                	Publisher publisher = new Publisher(resultSet.getInt("id"), resultSet.getString("publisher"), resultSet.getBoolean("active"));
                 	publisher.setQtd_titles(resultSet.getInt("qtd_titles"));
                 	publisherList.add(publisher);
                 }

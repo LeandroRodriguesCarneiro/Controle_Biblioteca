@@ -6,13 +6,23 @@ public class Student {
 	private String name = new String();
 	private long numberRegistration;
 	private float debits;
+	private boolean active;
 	
-	public Student(int id, int borrowedBooks, String name, long numberRegistration, float debits) {
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	public Student(int id, int borrowedBooks, String name, long numberRegistration, float debits, boolean active) {
 		this.id = id;
 		this.borrowedBooks = borrowedBooks;
 		this.name = name;
 		this.numberRegistration = numberRegistration;
 		this.debits = debits;
+		this.active = active;
 	}
 
 	public int getId() {

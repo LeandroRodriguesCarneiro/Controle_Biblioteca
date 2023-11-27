@@ -7,6 +7,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
 import Author.Author;
@@ -17,13 +18,15 @@ import Screens.ConfigPanel.Styles;
 public class UpdateAuthorPanel extends JPanel{
 		private static final long serialVersionUID = 8876543210123456789L;
 	    private JTextField txtAuthor;
-	    private JLabel lblBooks, lblAuthor;
+	    private JLabel lblBooks, lblAuthor, lblActive;
+	    private JCheckBox chkActive;
 	    private JButton btnAdd;
 	    private JButton btnBack;
 	    private CardLayout cardLayout;
 	    private JPanel cardPanel;
 	    private AuthorPanel AuthorPanel;
 	    private Author author;
+	    private boolean active;
 
 	    public UpdateAuthorPanel(CardLayout cardLayout,
 	        JPanel cardPanel, AuthorPanel AuthorPanel, Author author) {
@@ -31,6 +34,7 @@ public class UpdateAuthorPanel extends JPanel{
 	        this.cardPanel = cardPanel;
 	        this.AuthorPanel = AuthorPanel;
 	        this.author = author;
+	        this.active = author.isActive();
 	        setLayout(null);
 	        
 	        lblBooks = new JLabel("Atualizar Autor");
@@ -48,6 +52,20 @@ public class UpdateAuthorPanel extends JPanel{
 	        txtAuthor.setText(author.getName());
 	        add(txtAuthor);
 
+	        lblActive = new JLabel("Ativo?");
+	        lblActive.setBounds(140,90, 150,30);
+	        Styles.styleFont(lblActive);
+	        add(lblActive);
+	        
+	        chkActive = new JCheckBox();
+	        chkActive.setBounds(292,90,90,30);
+	        chkActive.setSelected(this.active);
+	        add(chkActive);
+	        
+	        chkActive.addActionListener(e ->{
+	        	this.active = !this.active;
+	        });
+	        
 	        btnAdd = new JButton("Salvar");
 	        btnAdd.setBounds(140, 135, 150, 30);
 	        Styles.styleButton(btnAdd);
@@ -66,7 +84,7 @@ public class UpdateAuthorPanel extends JPanel{
 						int dialogResult = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja salvar?", "Confirmação", JOptionPane.YES_NO_OPTION);
 			    	    if (dialogResult == JOptionPane.YES_OPTION) {
 			    	    	AuthorDAO AuthorDAO = new AuthorDAO();
-							AuthorDAO.updateAuthor(author.getId(), Author);
+							AuthorDAO.updateAuthor(author.getId(), Author, active);
 							AuthorPanel.refreshAuthorTable();
 			                cardLayout.show(cardPanel, "AuthorPanel");
 			    	    } else {

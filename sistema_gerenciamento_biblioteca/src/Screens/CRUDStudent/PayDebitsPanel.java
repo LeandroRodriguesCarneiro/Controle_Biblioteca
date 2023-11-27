@@ -120,7 +120,7 @@ public class PayDebitsPanel extends JPanel{
 	            } else {
 	                studentDAO.payDebits(student.getId(), pay);
 	                JOptionPane.showMessageDialog(null, "O pagamento não é suficiente para quitar a dívida.");
-	            	this.student = studentDAO.selectStudentByNumerRegistration(student.getNumberRegistration()).get(0);
+	            	this.student = studentDAO.selectStudentByNumerRegistration(student.getNumberRegistration(), true).get(0);
 	    	    	lblPay.setText("O aluno deve: "+ (Screens.CRUDStudent.StudentPanel.formatDecimal(student.getDebits() * (-1)) +" Informe o pagamento" ));
 	            }
 			}catch(Exception ex){

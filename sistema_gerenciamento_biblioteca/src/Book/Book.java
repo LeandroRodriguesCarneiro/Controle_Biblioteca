@@ -14,14 +14,16 @@ public class Book {
 	private Year yearPublication;
 	private int quantity;
 	private int timesBorrowed;
+	private boolean active;
 	
-	public Book(int id, String title, String isbn, int yearPublication, int quantity, String publisher, String authors, String genres) {
+	public Book(int id, String title, String isbn, int yearPublication, int quantity, String publisher, String authors, String genres, boolean active) {
 		this.id = id;
 		this.title = title;
 		this.isbn = isbn;
 		this.yearPublication = Year.of(yearPublication);
 		this.quantity = quantity;
 		this.publisher = publisher;
+		this.active = active;
 		String[] Temp;
 		if (genres != null) {
 			 Temp = genres.split(",");
@@ -36,6 +38,14 @@ public class Book {
 				this.author.add(authorTemp);
 			}
 		}
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 	public int getId() {

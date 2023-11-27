@@ -15,6 +15,7 @@ import javax.swing.text.NumberFormatter;
 import Screens.ConfigPanel.Styles;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
 
@@ -23,7 +24,8 @@ import Student.Student;
 
 public class UpdateStudentPanel extends JPanel{
 	 private static final long serialVersionUID = -1723482129844832445L;
-	    private JLabel lblBooks,lblName, lblRegisterNumber, lblBorrowedBooks, lblDebits;
+	    private JLabel lblBooks,lblName, lblRegisterNumber, lblBorrowedBooks, lblDebits, lblActive;
+	    private JCheckBox chkActive;
 	    private JTextField txtName, txtRegisterNumber,txtBorrowedBooks;
 	    private JFormattedTextField txtDebits;
 	    private JButton btnAdd;
@@ -33,12 +35,14 @@ public class UpdateStudentPanel extends JPanel{
 	    private StudentPanel StudentPanel;
 	    private Student student;
 	    private StudentDAO studentDAO= new StudentDAO();
+	    private boolean active;
 
 	    public UpdateStudentPanel(CardLayout cardLayout,JPanel cardPanel, StudentPanel StudentPanel, Student student) {
 	        this.cardLayout = cardLayout;
 	        this.cardPanel = cardPanel;
 	        this.StudentPanel = StudentPanel;
 	        this.student = student;
+	        this.active = student.isActive();
 	        
 	        setLayout(null);
 	        
@@ -46,7 +50,21 @@ public class UpdateStudentPanel extends JPanel{
 	    	lblBooks.setBounds(250, 10, 400, 30);
 	    	Styles.styleTitleFont(lblBooks);
 	        add(lblBooks);
-
+	        
+	        lblActive = new JLabel("Ativo?");
+	        lblActive.setBounds(140,90, 150,30);
+	        Styles.styleFont(lblActive);
+	        add(lblActive);
+	        
+	        chkActive = new JCheckBox();
+	        chkActive.setBounds(292,90,90,30);
+	        chkActive.setSelected(this.active);
+	        add(chkActive);
+	        
+	        chkActive.addActionListener(e ->{
+	        	this.active = !this.active;
+	        });
+	        
 	        lblName = new JLabel("Nome:");
 	        lblName.setBounds(250, 45, 80, 25);
 	        Styles.styleFont(lblName);

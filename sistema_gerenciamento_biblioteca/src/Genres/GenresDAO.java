@@ -28,10 +28,10 @@ public class GenresDAO {
     	}
     }
     
-    public void updateGenre(int id, String name) throws Exception {
+    public void updateGenre(int id, String name, boolean active) throws Exception {
     	try {
 	    	MySQLConnector sql = new MySQLConnector();
-	   	 	sql.executeProcedure("SP_UpdateGenre", id, name);
+	   	 	sql.executeProcedure("SP_UpdateGenre", id, name, active);
     	}catch(Exception e) {
     		throw new Exception("Este gênero ja foi adicionado");
     	}
@@ -39,13 +39,13 @@ public class GenresDAO {
     
     public List<Genres> selectAllGenres() {
         MySQLConnector sql = new MySQLConnector();
-        ResultSet resultSet = sql.selectSQL("SELECT id, name FROM genre");
+        ResultSet resultSet = sql.selectSQL("SELECT id, name, active FROM genre");
         genresList.clear(); 
 
         if (resultSet != null) {
             try {
                 while (resultSet.next()) {
-                	genresList.add(new Genres(resultSet.getInt("id"), resultSet.getString("name")));
+                	genresList.add(new Genres(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getBoolean("active")));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -61,14 +61,23 @@ public class GenresDAO {
         return genresList;
     }
 
-    public List<Genres> selectGenresByName(String nameSearch) {
+    public List<Genres> selectGenresByName(String nameSearch, boolean active) {
         MySQLConnector sql = new MySQLConnector();
-        ResultSet resultSet = sql.selectSQL("SELECT id, name FROM genre WHERE name LIKE '%" + nameSearch + "%'");
+        String query = "SELECT id, name, active FROM genre WHERE 1=1";
+        
+        if (nameSearch != null && !nameSearch.isEmpty()) {
+        	query += " name LIKE '%" + nameSearch + "%' ";
+        }
+        
+        if(active) {
+        	query+= " AND active = 1";
+        }
+        ResultSet resultSet = sql.selectSQL(query);
         genresList.clear();
         if (resultSet != null) {
             try {
                 while (resultSet.next()) {
-                	genresList.add(new Genres(resultSet.getInt("id"), resultSet.getString("name")));
+                	genresList.add(new Genres(resultSet.getInt("id"), resultSet.getString("name"),resultSet.getBoolean("active")));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();

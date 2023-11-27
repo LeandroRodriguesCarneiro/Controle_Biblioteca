@@ -3,11 +3,21 @@ package Genres;
 public class Genres {
 	private String name;
 	private int id;
+	private boolean active;
     
-    public Genres(int id,String name) {
+    public Genres(int id,String name, boolean active) {
     	this.id = id;
     	this.name = name;
+    	this.active = active;
     }
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
 
 	public String getName() {
 		return name;
