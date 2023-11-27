@@ -49,7 +49,7 @@ public class UpdatePublisherPanel extends JPanel{
 	        txtPublisher.setText(publisher.getName());
 	        add(txtPublisher);
 
-	        btnAdd = new JButton("Adicionar Editora");
+	        btnAdd = new JButton("Salvar");
 	        btnAdd.setBounds(140, 135, 150, 30);
 	        Styles.styleButton(btnAdd);
 	        btnAdd.addActionListener(new ActionListener() {
