@@ -319,11 +319,18 @@ public class AddBookPanel extends JPanel{
 					    	return;
 					    }
 					    
-					    if(txtQuantity.getText().trim().isEmpty()) {
+					    if(txtQuantity.getText().trim().isEmpty() && txtQuantity.getText().trim().matches("[0-9]")) {
 					    	JOptionPane.showMessageDialog(null, "Por favor, Digite a quantidade");
 					    	txtQuantity.requestFocus();
 					        return;
 					    }
+					    quantity = Integer.valueOf(txtQuantity.getText());
+					    if (quantity < 0) {
+					    	JOptionPane.showMessageDialog(null, "Por favor, a quantidade não pode ser negativa");
+					        return;
+					    }
+					    
+					    
 					    if(selectedPublisher<1) {
 					    	JOptionPane.showMessageDialog(null, "Por favor, selecione uma editora.");
 					        return;
@@ -351,7 +358,6 @@ public class AddBookPanel extends JPanel{
 					    title = String.valueOf(txtTitle.getText());
 					    ISBN = String.valueOf(txtISBN.getText());
 					    yearPublication = Year.of(Integer.valueOf(txtYearPublication.getText()));
-					    quantity = Integer.valueOf(txtQuantity.getText());
 					} catch (NumberFormatException ex) {
 					    JOptionPane.showMessageDialog(null, "Certifique-se de inserir números válidos para Ano e Quantidade.");
 					    return;
