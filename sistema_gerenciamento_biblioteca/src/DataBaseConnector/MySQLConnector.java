@@ -101,6 +101,9 @@ public class MySQLConnector {
             if(e.getErrorCode() == 1644) {
             	throw new Exception("Erro de Exclusao");
             }
+            if(e.getErrorCode() == 1054) {
+            	System.out.println(procedureName);
+            }
             System.out.println(e.getMessage());
             System.out.println(e.getErrorCode());
         }

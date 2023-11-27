@@ -52,12 +52,12 @@ public class UpdateStudentPanel extends JPanel{
 	        add(lblBooks);
 	        
 	        lblActive = new JLabel("Ativo?");
-	        lblActive.setBounds(140,90, 150,30);
+	        lblActive.setBounds(770, 10, 150,30);
 	        Styles.styleFont(lblActive);
 	        add(lblActive);
 	        
 	        chkActive = new JCheckBox();
-	        chkActive.setBounds(292,90,90,30);
+	        chkActive.setBounds(820,10,90,30);
 	        chkActive.setSelected(this.active);
 	        add(chkActive);
 	        
@@ -164,7 +164,7 @@ public class UpdateStudentPanel extends JPanel{
 					int dialogResult = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja salvar?", "Confirmação", JOptionPane.YES_NO_OPTION);
 		    	    if (dialogResult == JOptionPane.YES_OPTION) {
 		    	    	try {
-							studentDAO.updateStudent(student.getId(),name, numberRegistration, borrowedBooks, debits);
+							studentDAO.updateStudent(student.getId(),name, numberRegistration, borrowedBooks, debits, active);
 							StudentPanel.refreshStudentTable();
 			                cardLayout.show(cardPanel, "StudentPanel");
 		    	    	}catch(Exception ex) {

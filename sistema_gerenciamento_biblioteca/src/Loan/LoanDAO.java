@@ -24,7 +24,16 @@ public class LoanDAO {
     		e.printStackTrace();
     	}
     }
-
+    
+    public void reNewLoan(int idStudent, LocalDate dateInit, LocalDate dateEnd) {
+        MySQLConnector sql = new MySQLConnector();
+        try {
+	        sql.executeProcedure("SP_ReNew", idStudent, dateInit, dateEnd);
+        }catch(Exception e) {
+    		e.printStackTrace();
+    	}
+    }
+    
     public void returBook(Loan loan, List <Book> listBooks, LocalDate deliveryDate) {
     	try {
 	    	MySQLConnector sql = new MySQLConnector();

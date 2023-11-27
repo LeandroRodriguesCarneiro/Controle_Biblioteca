@@ -38,7 +38,7 @@ public class BookDAO {
         MySQLConnector sql = new MySQLConnector();
         int idBook = 0;
         try {
-        	idBook = sql.executeProcedure("SP_UpdateBook", id, id_publisher, isbn, title, year_publication.getValue(), quantity);
+        	idBook = sql.executeProcedure("SP_UpdateBook", id, id_publisher, isbn, title, year_publication.getValue(), quantity, active);
             
             if(!authorList.isEmpty()) {
             	sql.executeProcedure("SP_DeleteAuthorBook", id);

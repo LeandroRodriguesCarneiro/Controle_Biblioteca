@@ -333,6 +333,8 @@ public class AddBookPanel extends JPanel{
 					String ISBN = null;
 					Year yearPublication = null;
 					Integer quantity = null;
+					List<Author> authorListID = new ArrayList<>();
+					List<Genres> genresListID = new ArrayList<>();
 					try {
 					    if (txtTitle.getText().trim().isEmpty()) {
 					        JOptionPane.showMessageDialog(null, "Por favor, preencha o título.");
@@ -382,20 +384,20 @@ public class AddBookPanel extends JPanel{
 					    	JOptionPane.showMessageDialog(null, "Por favor, Selecione um autor");
 					        return;
 					    }
-					    List<Integer> authorListID = new ArrayList<>();
+					    authorListID = new ArrayList<>();
 					    for (int i = 0; i < selectedAuthorModel.size(); i++) {
 					        Author author = selectedAuthorModel.getElementAt(i);
-					        authorListID.add(author.getId());
+					        authorListID.add(author);
 					    }
 					    
 					    if(selectedGenresModel.isEmpty()) {
 					    	JOptionPane.showMessageDialog(null, "Por favor, Selecione um genero");
 					        return;
 					    }
-					    List<Integer> genresListID = new ArrayList<>();
+					    genresListID = new ArrayList<>();
 					    for (int i = 0; i < selectedGenresModel.size(); i++) {
 					        Genres genre = selectedGenresModel.getElementAt(i);
-					        genresListID.add(genre.getId());
+					        genresListID.add(genre);
 					    }
 					    title = String.valueOf(txtTitle.getText());
 					    ISBN = String.valueOf(txtISBN.getText());
@@ -406,7 +408,7 @@ public class AddBookPanel extends JPanel{
 					}
 					try {
 						BookDAO bookDAO = new BookDAO();
-						bookDAO.insertBook(selectedPublisher, ISBN, title, yearPublication, quantity, allGenresList, allAuthorList);
+						bookDAO.insertBook(selectedPublisher, ISBN, title, yearPublication, quantity, genresListID, authorListID);
 						JOptionPane.showMessageDialog(null, "Livro inserido com sucesso.");
 					}catch(Exception ex){
 						JOptionPane.showMessageDialog(null, ex.getMessage());

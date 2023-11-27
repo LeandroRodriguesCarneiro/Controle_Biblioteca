@@ -287,7 +287,7 @@ public class ReturnBookPanel extends JPanel{
         	try {
         		loanDAO.returBook(loan, booksList, LocalDate.now());
             	setInvisible();
-            	JOptionPane.showMessageDialog(null, "Empréstimo realizado com sucesso!");
+            	JOptionPane.showMessageDialog(null, "Devolução realizada com sucesso!");
         	}catch(Exception ex) {
         		JOptionPane.showMessageDialog(null, "Houve um problema");
         		return;
@@ -331,9 +331,40 @@ public class ReturnBookPanel extends JPanel{
         });
         
         btnReNew = new JButton("Renovar");
-        btnReNew.setBounds(430, 305, 125, 25);
+        btnReNew.setBounds(620, 340, 125, 25);
         Styles.styleButton(btnReNew);
         add(btnReNew);
+        btnReNew.addActionListener(e ->{
+        	LocalDate endDate = null;
+        	try {
+        		int days = -1;
+        		 
+    			if(txtDays.getText().trim().isEmpty()) {
+        			JOptionPane.showMessageDialog(null, "Por favor!, digite o número de dias que deseja emprestar os livros");
+        			return;
+        		}
+        		
+        		days = Integer.parseInt(txtDays.getText());
+        		if (days >= 1 && days <= 15) {
+		            endDate = LocalDate.now().plusDays(days);
+		        } else {
+		        	JOptionPane.showMessageDialog(null, "O prazo do empréstimo deve estar entre 1 e 15 dias.");
+		        	return;
+		        }
+        	}catch(NumberFormatException ex) {
+        		JOptionPane.showMessageDialog(null, "Por favor!, digite um número válido");
+        		return;
+        	}
+        	try {
+        		loanDAO.reNewLoan(student.getId(), LocalDate.now(), endDate);
+            	setInvisible();
+            	JOptionPane.showMessageDialog(null, "Renovação realizada com sucesso!");
+        	}catch(Exception ex) {
+        		JOptionPane.showMessageDialog(null, "Houve um problema");
+        		return;
+        	}
+        	
+        });
         setInvisible();
     }
     public void setInvisible() {

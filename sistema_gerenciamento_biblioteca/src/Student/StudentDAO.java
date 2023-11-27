@@ -39,10 +39,10 @@ public class StudentDAO {
     	
     }
     
-    public void updateStudent(int id, String name, Long numberRegistration, int borrowedBooks, float debits) throws Exception {
+    public void updateStudent(int id, String name, Long numberRegistration, int borrowedBooks, float debits, boolean active) throws Exception {
 		try {
 			MySQLConnector sql = new MySQLConnector();
-	        sql.executeProcedure("SP_UpdateStudent", id, name, numberRegistration, borrowedBooks, debits);
+	        sql.executeProcedure("SP_UpdateStudent", id, name, numberRegistration, borrowedBooks, debits, active);
 		}catch(Exception e) {
 			throw new Exception("Esse Número de matricula ja está cadastrado em um aluno.");
 		}

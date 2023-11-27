@@ -1,5 +1,5 @@
 -- criacao do banco de dados
-CREATE DATABASE IF NOT EXISTS biblioteca2;
+CREATE DATABASE IF NOT EXISTS biblioteca;
 
 -- acessar banco de dados
 USE biblioteca;
@@ -248,21 +248,21 @@ CREATE PROCEDURE SP_InsertAuthor(
     IN p_author_name VARCHAR(50)
     )
 BEGIN
-	INSERT INTO author (name) VALUES (p_author_name);
+	INSERT INTO author (name, active) VALUES (p_author_name,1);
 END//
 
 CREATE PROCEDURE SP_InsertGenre(
     IN p_genre_name VARCHAR(50)
     )
 BEGIN
-	INSERT INTO genre (name) VALUES (p_genre_name);
+	INSERT INTO genre (name, active) VALUES (p_genre_name,1);
 END//
 
 CREATE PROCEDURE SP_InsertPublisher(
     IN p_publisher_name VARCHAR(50)
 )
 BEGIN
-    INSERT INTO publisher (name) VALUES (p_publisher_name);
+    INSERT INTO publisher (name, active) VALUES (p_publisher_name,1);
 END//
 
 CREATE PROCEDURE SP_InsertBook(
@@ -283,7 +283,7 @@ CREATE PROCEDURE SP_InsertGenreBook(
     IN p_id_genre INT
 )
 BEGIN
-    INSERT INTO genres_books (id_books, id_genre, active) VALUES (p_id_book, p_id_genre, 1);
+    INSERT INTO genres_books (id_books, id_genre) VALUES (p_id_book, p_id_genre);
 END//
 
 CREATE PROCEDURE SP_InsertAuthorBook(
@@ -291,7 +291,7 @@ CREATE PROCEDURE SP_InsertAuthorBook(
     IN p_id_author INT
 )
 BEGIN
-	INSERT INTO authors_books (id_books,id_author, active) VALUES (p_id_book,p_id_author, 1);
+	INSERT INTO authors_books (id_books,id_author) VALUES (p_id_book,p_id_author);
 END//
 
 CREATE PROCEDURE SP_InsertStudent(
@@ -340,7 +340,7 @@ BEGIN
 END//
 
 CREATE PROCEDURE SP_UpdateBook(
-    IN p_book_id INT,
+	IN p_book_id INT,
     IN p_id_publisher INT,
     IN p_isbn VARCHAR(13),
     IN p_title VARCHAR(50),
@@ -355,49 +355,50 @@ BEGIN
     SET @query = 'UPDATE book SET ';
 
     IF p_id_publisher IS NOT NULL THEN
-        SET @query = CONCAT(@query, 'id_publisher = ', p_id_publisher, ',  ');
+        SET @query = CONCAT(@query, 'id_publisher = ', p_id_publisher, ', ');
         SET set_added = TRUE;
     END IF;
 
     IF p_isbn IS NOT NULL THEN
-        SET @query = CONCAT(@query, 'isbn = ''', p_isbn, ''',  ');
+        SET @query = CONCAT(@query, 'isbn = ''', p_isbn, ''', ');
         SET set_added = TRUE;
     END IF;
 
     IF p_title IS NOT NULL THEN
-        SET @query = CONCAT(@query, 'title = ''', p_title, ''',  ');
+        SET @query = CONCAT(@query, 'title = ''', p_title, ''', ');
         SET set_added = TRUE;
     END IF;
 
     IF p_year_publication IS NOT NULL THEN
-        SET @query = CONCAT(@query, 'year_publication = ', p_year_publication, ',  ');
+        SET @query = CONCAT(@query, 'year_publication = ', p_year_publication, ', ');
         SET set_added = TRUE;
     END IF;
 
     IF p_quantity IS NOT NULL THEN
-        SET @query = CONCAT(@query, 'quantity = ', p_quantity, ',  ');
+        SET @query = CONCAT(@query, 'quantity = ', p_quantity, ', ');
         SET set_added = TRUE;
     END IF;
     
     IF p_active IS NOT NULL THEN
-		SET @query = CONCAT(@query, 'active =', p_active, ',  ');
+		SET @query = CONCAT(@query, 'active =', p_active, '   ');
         SET set_added = TRUE;
 	END IF;
 
     IF set_added THEN
         SET @query = SUBSTRING(@query, 1, LENGTH(@query) - 3);
-
-        SET @query = CONCAT(@query, '         WHERE id = ', p_book_id);
-
+        SET @query = CONCAT(@query, ' WHERE id = ', p_book_id);
+		
+        
         PREPARE stmt FROM @query;
         EXECUTE stmt;
         DEALLOCATE PREPARE stmt;
-        SELECT id FROM vw_books WHERE id = p_book_id;
     END IF;
+    
+	SELECT id FROM vw_books WHERE id = p_book_id;
 END//
 
 CREATE PROCEDURE SP_UpdateStudent(
-    IN p_author_id INT,
+     IN p_author_id INT,
     IN p_name VARCHAR(50),
 	IN p_numberRegistration LONG,
     IN p_borrowed_books INT,
@@ -431,7 +432,7 @@ BEGIN
     END IF;
 	
     IF p_active IS NOT NULL THEN
-		SET @query = CONCAT(@query, 'active = ', p_active, ',  ');
+		SET @query = CONCAT(@query, 'active = ', p_active, '     ');
         SET set_added = TRUE;
 	END IF;
     
@@ -439,7 +440,8 @@ BEGIN
         SET @query = SUBSTRING(@query, 1, LENGTH(@query) - 3);
 
         SET @query = CONCAT(@query, '         WHERE id = ', p_author_id);
-
+		
+        
         PREPARE stmt FROM @query;
         EXECUTE stmt;
         DEALLOCATE PREPARE stmt;

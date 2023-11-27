@@ -35,7 +35,7 @@ public class BookPanel extends JPanel{
     private JCheckBox chkActive;
     private JTextField txtTitle, txtISBN, txtYearPublication, txtPublisher,txtGenre, txtAuthor;
     private JLabel lblBooks, lblTitle, lblISBN, lblPublisher, lblYearPublication, lblAuthor, lblgenres, lblActive;
-    private boolean active;
+    private boolean active = true;
     private List<Book> booksList = new ArrayList<>();
     
     public BookPanel(CardLayout cardLayout, JPanel cardPanel) {

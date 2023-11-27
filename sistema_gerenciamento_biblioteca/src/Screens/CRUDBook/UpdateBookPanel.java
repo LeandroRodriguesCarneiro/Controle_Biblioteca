@@ -67,12 +67,12 @@ public class UpdateBookPanel extends JPanel{
 	        add(lblBooks);
 
 	        lblActive = new JLabel("Ativo?");
-	        lblActive.setBounds(140,90, 150,30);
+	        lblActive.setBounds(770, 10, 150,30);
 	        Styles.styleFont(lblActive);
 	        add(lblActive);
 	        
 	        chkActive = new JCheckBox();
-	        chkActive.setBounds(292,90,90,30);
+	        chkActive.setBounds(820,10,90,30);
 	        chkActive.setSelected(this.active);
 	        add(chkActive);
 	        

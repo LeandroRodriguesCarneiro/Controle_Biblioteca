@@ -66,7 +66,7 @@ public class GenresDAO {
         String query = "SELECT id, name, active FROM genre WHERE 1=1";
         
         if (nameSearch != null && !nameSearch.isEmpty()) {
-        	query += " name LIKE '%" + nameSearch + "%' ";
+        	query += " AND name LIKE '%" + nameSearch + "%' ";
         }
         
         if(active) {

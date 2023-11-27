@@ -63,7 +63,14 @@ public class PublisherDAO {
 
     public List<Publisher> selectPublisherByName(String nameSearch, boolean active) {
         MySQLConnector sql = new MySQLConnector();
-        ResultSet resultSet = sql.selectSQL("SELECT id, name, active FROM publisher WHERE name LIKE '%" + nameSearch + "%'");
+        String query = "SELECT id, name, active FROM publisher WHERE 1=1 ";
+        if (nameSearch!=null && !nameSearch.isEmpty()) {
+        	query+=" AND name LIKE '%" + nameSearch + "%'";
+        }
+        if(active) {
+        	query+= " AND active = 1";
+        }
+        ResultSet resultSet = sql.selectSQL(query);
         publisherList.clear();
         if (resultSet != null) {
             try {

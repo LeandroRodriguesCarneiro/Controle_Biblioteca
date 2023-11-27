@@ -125,6 +125,7 @@ public class StudentPanel extends JPanel{
         tableModel.addColumn("Matrícula");
         tableModel.addColumn("Alunos emprestados");
         tableModel.addColumn("Débitos");
+        tableModel.addColumn("Active");
 
         table = new JTable(tableModel);
         TableColumnModel columnModel = table.getColumnModel();
@@ -136,10 +137,10 @@ public class StudentPanel extends JPanel{
         columnModel.getColumn(3).setMinWidth(0);
         columnModel.getColumn(3).setPreferredWidth(0);
         columnModel.getColumn(3).setWidth(0);
-        columnModel.getColumn(4).setMaxWidth(0);
-        columnModel.getColumn(4).setMinWidth(0);
-        columnModel.getColumn(4).setPreferredWidth(0);
-        columnModel.getColumn(4).setWidth(0);
+        columnModel.getColumn(5).setMaxWidth(0);
+        columnModel.getColumn(5).setMinWidth(0);
+        columnModel.getColumn(5).setPreferredWidth(0);
+        columnModel.getColumn(5).setWidth(0);
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBounds(140, 135, 930, 300);
         Styles.styleTable(table,scrollPane);
@@ -253,7 +254,7 @@ public class StudentPanel extends JPanel{
     	}
     	tableModel.setRowCount(0);
         studentsList.clear();
-        List<Student> updatedStudentList = studentDAO.selectStudentByFilter(txtName.getText(), numberRegistration, true);
+        List<Student> updatedStudentList = studentDAO.selectStudentByFilter(txtName.getText(), numberRegistration, active);
         	if (updatedStudentList != null) {
                 updatedStudentList.sort(Comparator.comparingInt(Student::getId));
                 studentsList.addAll(updatedStudentList);
