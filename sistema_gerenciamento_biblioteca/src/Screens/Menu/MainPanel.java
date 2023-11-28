@@ -43,6 +43,6 @@ public class MainPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawImage(backgroundImage, 0, 95, getWidth(), getHeight(), this);
+        g.drawImage(backgroundImage, 360, 230, 500, 300, this);
     }
 }
