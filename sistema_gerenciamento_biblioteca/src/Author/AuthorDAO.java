@@ -39,30 +39,6 @@ public class AuthorDAO {
     	}
     }
 
-    public List<Author> selectAllAuthors() {
-        MySQLConnector sql = new MySQLConnector();
-        ResultSet resultSet = sql.selectSQL("SELECT id, name, active FROM author");
-        authorList.clear(); 
-
-        if (resultSet != null) {
-            try {
-                while (resultSet.next()) {
-                    authorList.add(new Author(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getBoolean("active")));
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    resultSet.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        return authorList;
-    }
-
     public List<Author> selectAuthorsByName(String nameSearch, boolean active) {
         MySQLConnector sql = new MySQLConnector();
         String query = "SELECT id, name, active FROM author WHERE 1=1";
@@ -71,6 +47,8 @@ public class AuthorDAO {
         }
         if (active) {
             query += " AND active = 1"; 
+        }else {
+        	query += " AND active = 0";
         }
 
         ResultSet resultSet = sql.selectSQL(query);

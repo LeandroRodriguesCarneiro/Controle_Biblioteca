@@ -69,32 +69,6 @@ public class BookDAO {
         }
     	
     }
-
-    public List<Book> selectAllBooks() {
-        MySQLConnector sql = new MySQLConnector();
-        ResultSet resultSet = sql.selectSQL("SELECT * FROM vw_books");
-        booksList.clear(); 
-
-        if (resultSet != null) {
-            try {
-                while (resultSet.next()) {
-                	booksList.add(new Book(resultSet.getInt("id"),resultSet.getString("title"),resultSet.getString("isbn"),resultSet.getInt("year"),
-                			resultSet.getInt("quantity"),resultSet.getString("publisher"),resultSet.getString("author"),resultSet.getString("genre"),
-                			resultSet.getBoolean("active")));
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    resultSet.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        return booksList;
-    }
     
     public List<Book> selectBooksByfilter(String title, long ISBN, String publisher, Integer yearPublication, String genre, String author, boolean active) {
         MySQLConnector sql = new MySQLConnector();
@@ -103,24 +77,31 @@ public class BookDAO {
         if(title!=null && !title.isEmpty()) {
         	query+=" AND title LIKE '%"+title+"%'";
         }
+        
         if(ISBN>0) {
         	query+=" AND isbn = '"+ISBN+"'";
         }
+        
         if(publisher!=null && !publisher.isEmpty()) {
         	query+=" AND publisher LIKE '%"+publisher+"%'";
         }
+        
         if(yearPublication>0 && yearPublication!=null) {
         	query+=" AND year = "+yearPublication;
         }
+        
         if(genre!=null && !genre.isEmpty()) {
         	query+=" AND genre LIKE '%"+genre+"%'";
         }
+        
         if(author!=null && !author.isEmpty()) {
         	query+=" AND author LIKE '%"+author+"%'";
         }
         
         if(active) {
         	query+= " AND active = 1";
+        }else {
+        	query += " AND active = 0";
         }
         
         ResultSet resultSet = sql.selectSQL(query);
@@ -150,9 +131,13 @@ public class BookDAO {
     public List<Book> selectBooksByISBN(String ISBN, boolean active) {
         MySQLConnector sql = new MySQLConnector();
         String query = "SELECT * FROM vw_books WHERE isbn = '"+ISBN+"'";
+        
         if(active) {
         	query+= " AND active = 1";
+        }else {
+        	query += " AND active = 0";
         }
+        
         ResultSet resultSet = sql.selectSQL(query);
         booksList.clear();
         if (resultSet != null) {
@@ -186,7 +171,6 @@ public class BookDAO {
         	    + "LEFT JOIN borrowed_books AS bbk ON vbk.id = bbk.id_book\r\n"
         	    + "WHERE 1=1";
 
-
         		if(genre != null && !genre.isEmpty()) {
         			query += " AND vbk.genre LIKE '%"+genre+"%'  \r\n";
         		}
@@ -201,6 +185,7 @@ public class BookDAO {
         			query+= " HAVING times_borrowed >= "+minTimesBorrowed+"  \r\n";
         		}
         		query+= " ORDER BY times_borrowed DESC;";
+        		
         ResultSet resultSet = sql.selectSQL(query);
         booksList.clear();
         if (resultSet != null) {

@@ -9,7 +9,6 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
-import Publisher.Publisher;
 import Publisher.PublisherDAO;
 
 import Screens.ConfigPanel.Styles;

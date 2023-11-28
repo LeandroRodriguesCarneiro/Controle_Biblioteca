@@ -12,7 +12,6 @@ import javax.swing.JOptionPane;
 
 import Author.Author;
 import Author.AuthorDAO;
-import Genres.GenresDAO;
 import Screens.ConfigPanel.Styles;
 
 public class UpdateAuthorPanel extends JPanel{

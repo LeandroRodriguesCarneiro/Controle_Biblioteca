@@ -1,19 +1,14 @@
 package Screens.CRUDStudent;
 //-*- coding: utf-8 -*-
 import java.awt.CardLayout;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -23,8 +18,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
-import javax.swing.text.DefaultFormatterFactory;
-import javax.swing.text.NumberFormatter;
 
 import Screens.ConfigPanel.Styles;
 import Student.StudentDAO;
@@ -227,6 +220,7 @@ public class StudentPanel extends JPanel{
     	        JOptionPane.showMessageDialog(null, "Por favor, selecione um Aluno na tabela.");
     	    }
         });
+        refreshStudentTable();
     }
     public void refreshStudentTable() {
     	loadStudentsIntoTable();

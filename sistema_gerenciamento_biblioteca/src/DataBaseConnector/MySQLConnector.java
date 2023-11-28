@@ -9,7 +9,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 
 public class MySQLConnector {
-	private String url = "jdbc:mysql://localhost:3306/biblioteca2";
+	private String url = "jdbc:mysql://localhost:3306/biblioteca";
     private String user = "root";
     private String password = "";
 
@@ -32,26 +32,6 @@ public class MySQLConnector {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-    
-    public int insertSQL(String query) {
-        int id = 0;
-
-        try (Connection connection = startConnection();
-             Statement statement = connection.createStatement()) {
-
-            statement.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
-
-            ResultSet generatedKeys = statement.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                id = generatedKeys.getInt(1); 
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            id = 0;
-        }
-
-        return id;
     }
     
     private CallableStatement prepareCallableStatement(Connection connection, String procedureName, Object... parameters) throws SQLException {
@@ -101,16 +81,10 @@ public class MySQLConnector {
             if(e.getErrorCode() == 1644) {
             	throw new Exception("Erro de Exclusao");
             }
-            if(e.getErrorCode() == 1054) {
-            	System.out.println(procedureName);
-            }
-            System.out.println(e.getMessage());
-            System.out.println(e.getErrorCode());
         }
 
         return -1;
     }
-
     
     public void executeSQL(String query) {
         try {

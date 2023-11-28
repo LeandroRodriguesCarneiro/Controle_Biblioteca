@@ -1,7 +1,6 @@
 package Screens.CRUDBook;
 //-*- coding: utf-8 -*-
 import java.awt.CardLayout;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JLabel;
@@ -9,9 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
 
-import Genres.Genres;
 import Genres.GenresDAO;
 import Screens.ConfigPanel.Styles;
 

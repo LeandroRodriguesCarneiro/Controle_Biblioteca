@@ -1,7 +1,5 @@
 package Screens.Reports;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 
 //-*- coding: utf-8 -*-
 
@@ -9,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;

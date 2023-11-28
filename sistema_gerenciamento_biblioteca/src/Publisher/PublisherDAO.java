@@ -39,7 +39,7 @@ public class PublisherDAO {
 
     public List<Publisher> selectAllPublisher() {
         MySQLConnector sql = new MySQLConnector();
-        ResultSet resultSet = sql.selectSQL("SELECT id, name, active FROM publisher");
+        ResultSet resultSet = sql.selectSQL("SELECT id, name, active FROM publisher WHERE active = 1");
         publisherList.clear(); 
 
         if (resultSet != null) {
@@ -69,6 +69,8 @@ public class PublisherDAO {
         }
         if(active) {
         	query+= " AND active = 1";
+        }else {
+        	query += " AND active = 0";
         }
         ResultSet resultSet = sql.selectSQL(query);
         publisherList.clear();

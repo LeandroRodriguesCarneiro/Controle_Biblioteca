@@ -1,7 +1,13 @@
 package Screens;
 //-*- coding: utf-8 -*-
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
+import java.awt.Color;
+import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.Insets;
 
 
 public class MainPanel extends JPanel {

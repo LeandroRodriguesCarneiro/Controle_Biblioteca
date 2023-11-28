@@ -102,6 +102,8 @@ public class StudentDAO {
         
         if(active) {
         	query+= " AND active = 1";
+        }else {
+        	query+= " AND active = 0";
         }
         
         ResultSet resultSet = sql.selectSQL(query);
@@ -141,6 +143,8 @@ public class StudentDAO {
         
         if(active) {
         	query+= " AND active = 1";
+        }else {
+        	query+= " AND active = 0";
         }
         
         ResultSet resultSet = sql.selectSQL(query);
