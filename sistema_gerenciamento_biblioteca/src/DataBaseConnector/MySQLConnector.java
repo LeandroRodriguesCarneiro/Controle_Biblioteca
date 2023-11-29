@@ -9,7 +9,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 
 public class MySQLConnector {
-	private String url = "jdbc:mysql://localhost:3306/biblioteca";
+	private String url = "jdbc:mysql://localhost:3306/biblioteca2";
     private String user = "root";
     private String password = "";
 
@@ -74,12 +74,32 @@ public class MySQLConnector {
         	if(e.getErrorCode() == 1062) {
         		throw new Exception("Entrada duplicada"); 
         	}
-        	else {
-        		e.printStackTrace();
-        	}
         } catch (SQLException e) {
             if(e.getErrorCode() == 1644) {
-            	throw new Exception("Erro de Exclusao");
+            	if (e.getMessage().equals("Tem emprestimos relacionados a esse livro")){
+            		throw new Exception("Erro de Exclusao");
+            	}
+            	if (e.getMessage().equals("Tem emprestimos relacionados a esse aluno")) {
+            		throw new Exception("Erro de Exclusao");
+            	}
+            	if (e.getMessage().equals("Tem livros relacionados a esse genero")) {
+            		throw new Exception("Erro de Exclusao");
+            	}
+            	if (e.getMessage().equals("Tem livros relacionados a essa editora")) {
+            		throw new Exception("Erro de Exclusao");
+            	}
+            	if (e.getMessage().equals("Tem livros relacionados a esse autor")) {
+            		throw new Exception("Erro de Exclusao");
+            	}
+            	if (e.getMessage().equals("Este livro está emprestado e não pode ter o status alterado.")) {
+            		throw new Exception("Erro de Alteracao");
+            	}
+            	if (e.getMessage().equals("O aluno possui livros emprestados e não pode ser inativado.")) {
+            		throw new Exception("Erro de Alteracao");
+            	}
+            	if (e.getMessage().equals("O aluno possui empréstimos ativos e a coluna borrowed_books não pode ser alterada.")) {
+            		throw new Exception("Erro de Alteracao");
+            	}
             }
         }
 

@@ -243,6 +243,63 @@ BEGIN
             SET MESSAGE_TEXT = 'Tem livros relacionados a essa editora';
     END IF;
 END//
+
+CREATE TRIGGER TRG_book_BF_UP_inactivation
+BEFORE UPDATE ON book
+FOR EACH ROW
+BEGIN
+    DECLARE borrowed_count INT;
+    
+    SELECT COUNT(*)
+    INTO borrowed_count
+    FROM VW_BorrowedBooks
+    WHERE book_id = NEW.id;
+
+    IF borrowed_count > 0 AND NEW.active = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Este livro está emprestado e não pode ter o status alterado.';
+    END IF;
+END//
+
+CREATE TRIGGER TRG_student_BF_UP_inactivation
+BEFORE UPDATE ON student
+FOR EACH ROW
+BEGIN
+    DECLARE borrowed_count INT;
+
+    SELECT COUNT(*)
+    INTO borrowed_count
+    FROM VW_BorrowedBooks
+    WHERE student_id = 1;
+
+    IF borrowed_count > 0 AND NEW.active = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'O aluno possui livros emprestados e não pode ser inativado.';
+    END IF;
+END//
+
+DROP TRIGGER IF EXISTS TRG_student_BF_UP_borrowed_books_update;
+DELIMITER // 
+CREATE TRIGGER TRG_student_BF_UP_borrowed_books_update
+BEFORE UPDATE ON student
+FOR EACH ROW
+BEGIN
+    DECLARE has_active_borrowed_books INT;
+
+    SELECT COUNT(*)
+    INTO has_active_borrowed_books
+    FROM loan AS loa
+    LEFT JOIN borrowed_books AS bob ON loa.id = bob.id_loan
+    WHERE loa.id_student = NEW.id AND loa.status IN ('Emprestimo', 'Atrasado') AND bob.status <> 'Devolvido';
+
+    IF has_active_borrowed_books > 0 AND NEW.borrowed_books <> OLD.borrowed_books THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'O aluno possui empréstimos ativos e a coluna borrowed_books não pode ser alterada.';
+    END IF;
+END//
+DELIMITER ;
+
+
 -- procedures
 CREATE PROCEDURE SP_InsertAuthor(
     IN p_author_name VARCHAR(50)

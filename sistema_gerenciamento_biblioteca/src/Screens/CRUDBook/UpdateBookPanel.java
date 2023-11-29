@@ -460,7 +460,7 @@ public class UpdateBookPanel extends JPanel{
 			    	    }
 						
 					}catch(Exception ex){
-						JOptionPane.showMessageDialog(null, "Este ISBN já está em uso. Por favor, insira um ISBN diferente.");
+						JOptionPane.showMessageDialog(null, ex.getMessage());
 					}
 	            }
 	            

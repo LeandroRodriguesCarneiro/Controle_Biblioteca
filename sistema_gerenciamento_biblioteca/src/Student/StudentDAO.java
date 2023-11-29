@@ -44,7 +44,7 @@ public class StudentDAO {
 			MySQLConnector sql = new MySQLConnector();
 	        sql.executeProcedure("SP_UpdateStudent", id, name, numberRegistration, borrowedBooks, debits, active);
 		}catch(Exception e) {
-			throw new Exception("Esse Número de matricula ja está cadastrado em um aluno.");
+			throw new Exception("Este aluno não pode ser inativado ou ter alteração nos emprestimos");
 		}
     	
 	}

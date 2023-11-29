@@ -54,7 +54,7 @@ public class BookDAO {
                 }
             }
         }catch(Exception e){
-        	throw new Exception("Esse ISBN ja está cadastrado em um livro");
+        	throw new Exception("Este livro não pode ser inativado");
         }
         
     }
