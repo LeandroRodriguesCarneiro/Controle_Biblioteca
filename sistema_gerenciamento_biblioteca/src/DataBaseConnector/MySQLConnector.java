@@ -100,6 +100,7 @@ public class MySQLConnector {
             	if (e.getMessage().equals("O aluno possui empréstimos ativos e a coluna borrowed_books não pode ser alterada.")) {
             		throw new Exception("Erro de Alteracao");
             	}
+            	System.out.println(e.getMessage());
             }
         }
 
